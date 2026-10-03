@@ -5,3 +5,6 @@ out
 .DS_Store
 npm-debug.log*
 *.tsbuildinfo
+
+# Local-only mock imagery from the reference corpus. Never commit or deploy.
+public/mock-assets/

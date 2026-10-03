@@ -12,6 +12,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        {/* Local mock imagery (git-ignored public/mock-assets). Dev only: production never loads it. */}
+        {process.env.NODE_ENV === 'development' && <link rel="stylesheet" href="/mock-assets/mock.css" />}
+      </head>
       <body>
         <StoreProvider>
           <StoreHeader />
