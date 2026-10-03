@@ -1,73 +1,9 @@
 'use client';
-
 import Link from 'next/link';
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
-import { useStore } from '@/components/store-provider';
-import { FREE_DELIVERY_FROM } from '@/lib/orders';
+import { Plus, Minus, Trash2, ArrowRight } from 'lucide-react';
+import { useStore } from '@/components/store';
 
 export default function CartPage() {
-  const { cart, updateQty, removeFromCart, canAddMore, subtotal, deliveryFee, total, toFreeDelivery, mounted } = useStore();
-
-  if (!mounted) {
-    return <main className="page"><div className="container page-loader" /></main>;
-  }
-
-  return (
-    <main className="page">
-      <section className="section cart-head">
-        <div className="container">
-          <div className="eyebrow">Your bag</div>
-          <h1 className="display h2">Keep the good things coming.</h1>
-          <p className="muted">Everything you add stays here in this browser until you check out.</p>
-        </div>
-      </section>
-      <div className="container cart-layout">
-        <section className="panel cart-panel">
-          {cart.length === 0 ? (
-            <div className="empty-state">
-              <ShoppingBag size={28} />
-              <h3>Your bag is empty.</h3>
-              <p>Start with a craving. We’ll do the rest.</p>
-              <Link className="btn btn-brand" href="/shop">Browse menu <ArrowRight size={15} /></Link>
-            </div>
-          ) : (
-            cart.map((item) => {
-              const atLimit = canAddMore(item.product, item.size) === 0;
-              return (
-                <div className="cart-item" key={item.lineId}>
-                  <Link href={`/shop/${item.product.id}`} className={`cart-thumb ${item.product.image}`} />
-                  <div>
-                    <Link href={`/shop/${item.product.id}`} className="cart-item-name">{item.product.name}</Link>
-                    <div className="small muted">{item.product.category}{item.size === 'Large' ? ' · Large' : ''} · ₹{item.unitPrice}</div>
-                    <div className="qty" style={{ marginTop: 10 }}>
-                      <button aria-label="Decrease" onClick={() => updateQty(item.lineId, item.qty - 1)}><Minus size={14} /></button>
-                      <span>{item.qty}</span>
-                      <button aria-label="Increase" onClick={() => updateQty(item.lineId, item.qty + 1)} disabled={atLimit}><Plus size={14} /></button>
-                    </div>
-                    {atLimit && <div className="stock-note">That’s all we can make right now.</div>}
-                  </div>
-                  <div className="cart-item-total">
-                    <strong>₹{item.unitPrice * item.qty}</strong>
-                    <button className="icon-btn ghost-icon" onClick={() => removeFromCart(item.lineId)} aria-label={`Remove ${item.product.name}`}><Trash2 size={15} /></button>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </section>
-        <aside className="panel summary-panel">
-          <div className="summary-kicker">Your order</div>
-          <h2 className="display h3">A calm little total.</h2>
-          <div className="summary-row"><span>Subtotal</span><strong>₹{subtotal}</strong></div>
-          <div className="summary-row"><span>Delivery</span><span>{deliveryFee === 0 && subtotal > 0 ? 'Free' : subtotal > 0 ? `₹${deliveryFee}` : '—'}</span></div>
-          {toFreeDelivery > 0 && <div className="free-delivery-note">Add ₹{toFreeDelivery} more for free delivery (orders from ₹{FREE_DELIVERY_FROM}).</div>}
-          <div className="summary-total-line"><span>Total</span><strong>₹{total}</strong></div>
-          <Link className={`btn btn-brand btn-lg full-btn ${cart.length === 0 ? 'disabled' : ''}`} href={cart.length ? '/checkout' : '/shop'}>
-            Continue to checkout <ArrowRight size={16} />
-          </Link>
-          <Link className="btn btn-secondary full-btn" href="/shop">Continue shopping</Link>
-        </aside>
-      </div>
-    </main>
-  );
+  const { cart, subtotal, delivery, total, setQuantity, removeFromCart } = useStore();
+  return <main className="cart-page"><div className="cart-wrap"><section><div className="eyebrow" style={{ color:'var(--sage-light)' }}>YOUR BAG</div><h1 className="font-display">A small order.<br/>A very good idea.</h1>{cart.length ? cart.map((item,i)=><div className="cart-item" key={item.slug}><div className="cart-index">{String(i+1).padStart(2,'0')}</div><div><div className="cart-name">{item.name}</div><div className="cart-meta">{item.quantity} × ₹{item.price}</div><div style={{ display:'flex', gap:6, marginTop:10 }}><button aria-label="Decrease quantity" onClick={()=>setQuantity(item.slug,item.quantity-1)} className="cart-icon"><Minus size={13}/></button><button aria-label="Increase quantity" onClick={()=>setQuantity(item.slug,item.quantity+1)} className="cart-icon"><Plus size={13}/></button><button aria-label={`Remove ${item.name}`} onClick={()=>removeFromCart(item.slug)} className="cart-icon"><Trash2 size={13}/></button></div></div><strong style={{ fontSize:15 }}>₹{item.price*item.quantity}</strong></div>) : <div style={{ padding:'70px 0', color:'var(--sage-light)' }}>Your bag is waiting. Explore the menu and bring something home.</div>}</section><aside className="cart-total-card"><div className="eyebrow">ORDER SUMMARY</div><h2 className="font-display" style={{ marginTop:16 }}>₹{subtotal.toLocaleString('en-IN')}</h2><div className="summary-row"><span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span></div><div className="summary-row"><span>Delivery</span><span>{delivery ? `₹${delivery}` : 'FREE'}</span></div><div className="summary-row summary-total"><span>Total</span><span>₹{total.toLocaleString('en-IN')}</span></div><Link href={cart.length ? '/checkout' : '/menu'} className="btn btn-primary" style={{ width:'100%', marginTop:24 }}>{cart.length ? <>CHECKOUT <ArrowRight size={14}/></> : 'EXPLORE MENU'}</Link><Link href="/menu" style={{ display:'block', textAlign:'center', marginTop:22, color:'var(--sage-deep)', fontSize:12 }}>Continue shopping →</Link></aside></div></main>;
 }

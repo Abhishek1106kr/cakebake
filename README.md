@@ -1,48 +1,28 @@
-# Tresor Bakery — Mock Commerce Frontend
+# Tresor V2 Website
 
-A high-fidelity, interactive mock website for the Tresor bakery proposal.
-
-## What is included
-
-- Animated homepage / storytelling sections
-- Customer-facing menu catalogue
-- Semantic-style local search (“something chocolatey”, “a cold coffee”, etc.)
-- Category filters and sorting
-- Product detail pages
-- Persistent local cart with quantity updates
-- Mock checkout with UPI / Card / Pay-at-door states
-- Mock payment processing and order creation
-- Order confirmation page
-- Live order tracking timeline
-- About and Contact pages
-- Zomato / Swiggy handoff buttons
-- Simple account page (guest-first; production auth can replace it later)
-- Responsive mobile / tablet / desktop layout
-
-## Business logic mocked in-browser
-
-The frontend persists the cart and latest order in `localStorage`.
-Checkout creates a mock order ID and moves the order to `CONFIRMED` after a simulated payment delay.
-
-No real payment is processed. Replace the checkout action with the backend payment intent / Razorpay flow when the API is ready.
-
-## Environment variables
-
-```bash
-NEXT_PUBLIC_ZOMATO_URL=https://www.zomato.com/<actual-restaurant-link>
-NEXT_PUBLIC_SWIGGY_URL=https://www.swiggy.com/<actual-restaurant-link>
-NEXT_PUBLIC_API_URL=/api
-```
+A responsive Next.js mock implementation of the **Tresor — Art Direction v2** Figma screens.
 
 ## Stack
+- Next.js App Router + TypeScript
+- Framer Motion
+- Lucide React
+- CSS variables + responsive CSS
+- Local state + localStorage cart
 
-Next.js 15 · React 19 · TypeScript · Lucide React · CSS tokens/animations
+## Customer flows
+Home → Menu → Semantic-style search → Product → Cart → Checkout → Mock payment → Order confirmation → Tracking.
+
+Additional pages: About, Contact, Account.
 
 ## Run
-
 ```bash
 npm install
 npm run dev
 ```
 
-The project intentionally uses CSS motion instead of requiring a heavy animation dependency so the mock stays easy to run and hand over.
+## Config
+Copy `.env.example` to `.env.local` and replace the Zomato / Swiggy URLs with the actual restaurant listing URLs.
+
+## Notes
+Product photography is represented by local editorial placeholders because the Figma v2 reference does not contain actual Tresor photography. Replace those blocks with local assets when supplied.
+Payment is explicitly simulated; no real transaction is performed.
