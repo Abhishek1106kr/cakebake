@@ -1,0 +1,129 @@
+{
+  "updated_at": "2026-10-03T20:58:39Z",
+  "current_task_id": "TRESOR-COMMERCE-ORDERS",
+  "tasks": [
+    {
+      "id": "TRESOR-COMMERCE-ORDERS",
+      "title": "Order and pricing domain",
+      "description": "lib/orders.ts: order model, status flow, single pricing source (delivery ₹70, free from ₹999, Large +₹40 drinks only), checkout validation, stats, filters, CSV, seed orders.",
+      "status": "in_progress",
+      "priority": "critical",
+      "dependencies": [],
+      "files": [
+        "lib/orders.ts",
+        "types/index.ts"
+      ],
+      "started_at": "2026-10-03T20:58:39Z",
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-INVENTORY",
+      "title": "Ingredient inventory",
+      "description": "lib/inventory.ts: ingredients, per-product recipes, stock consumption on order, restore on early cancel, availability per product, manual stock movements.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-COMMERCE-ORDERS"
+      ],
+      "files": [
+        "lib/inventory.ts"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-COMMERCE-STORE",
+      "title": "Store provider rewrite",
+      "description": "Cart lines keyed by product+size with correct unit price; orders list; inventory; movements; cross-tab sync; legacy cart/order migration.",
+      "status": "pending",
+      "priority": "critical",
+      "dependencies": [
+        "TRESOR-COMMERCE-ORDERS",
+        "TRESOR-INVENTORY"
+      ],
+      "files": [
+        "components/store-provider.tsx"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-STOREFRONT",
+      "title": "Storefront wiring",
+      "description": "Product card and product page respect stock and sizes; cart limits; checkout validation and stock check; confirmation and tracking read real orders by id.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-COMMERCE-STORE"
+      ],
+      "files": [
+        "components/product-card.tsx",
+        "app/shop/[id]/page.tsx",
+        "app/cart/page.tsx",
+        "app/checkout/page.tsx",
+        "app/order-confirmed/page.tsx",
+        "app/track-order/page.tsx",
+        "app/account/page.tsx"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-ADMIN",
+      "title": "Admin wired to the store",
+      "description": "Overview stats from real orders, orders table with filters/search/actions, kitchen status board, inventory with movements, product availability; admin styles (v2 CSS has none).",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-COMMERCE-STORE"
+      ],
+      "files": [
+        "app/admin/",
+        "app/globals.css"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-TESTING-BUILD",
+      "title": "Build fixes and validation",
+      "description": "Fix typedRoutes error in app/admin/layout.tsx and useSearchParams Suspense; tsc and next build must pass.",
+      "status": "pending",
+      "priority": "critical",
+      "dependencies": [
+        "TRESOR-STOREFRONT",
+        "TRESOR-ADMIN"
+      ],
+      "files": [],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-DEPLOYMENT-GIT",
+      "title": "Push v2 to GitHub",
+      "description": "Push baseline + work commits to origin/main (fast-forward, no force).",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-TESTING-BUILD"
+      ],
+      "files": [],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": []
+    }
+  ]
+}

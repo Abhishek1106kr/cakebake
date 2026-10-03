@@ -1,9 +1,2 @@
-export type OrderStatus = 'NEW' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'OUT_FOR_DELIVERY' | 'DELIVERED';
-
-export type Order = {
-  id: string;
-  customerName: string;
-  total: number;
-  status: OrderStatus;
-  createdAt: string;
-};
+// Order types live with the order logic; re-exported here for convenience.
+export type { Order, OrderStatus, CartLine, Size, PaymentMethod } from '@/lib/orders';
