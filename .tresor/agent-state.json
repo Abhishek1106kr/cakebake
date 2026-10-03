@@ -5,7 +5,7 @@
     "session_id": "session_011gAotvzZtmvMeDbDfgTpSd",
     "status": "reviewing",
     "started_at": null,
-    "last_updated_at": "2026-10-03T21:13:08Z"
+    "last_updated_at": "2026-10-03T21:29:15Z"
   },
   "project": {
     "name": "Tresor",
@@ -14,7 +14,7 @@
   },
   "current_activity": {
     "task_id": "TRESOR-TESTING-VISUAL",
-    "description": "v2 pushed; owner reviewing at localhost:3002",
+    "description": "Both sites built and pushed; owner reviewing (v2 :3002, v3 :3003)",
     "stage": "reviewing",
     "current_file": null,
     "current_action": null
@@ -47,5 +47,5 @@
     "Owner decision on hello@tresor.cafe",
     "Licensed or original imagery"
   ],
-  "last_event": "events/2026-10-03T211308Z-deployment-completed.json"
+  "last_event": "events/2026-10-03T212915Z-task-completed.json"
 }

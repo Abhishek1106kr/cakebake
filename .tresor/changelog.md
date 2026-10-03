@@ -21,6 +21,8 @@
   - order confirmation and tracking looked up by order ID, with an order lookup form
   - "Your orders" on the account page
 - Admin styles (none existed before).
+- "Customize cake" navbar link with a coming-soon placeholder page (`/customize-cake`).
+- v3 variation on branch `v3-variation` (real orders and tracking, Framer Motion system).
 
 ### Changed
 - v2 storefront imported unchanged as the final base (commit 99aae89).

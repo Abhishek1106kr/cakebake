@@ -26,6 +26,7 @@ export function StoreHeader() {
           <Link href="/" className="logo">Tresor<span>•</span></Link>
           <nav className="nav-links" aria-label="Primary navigation">
             <Link href="/shop">Menu</Link>
+            <Link href="/customize-cake">Customize cake</Link>
             <Link href="/#story">Our story</Link>
             <Link href="/track-order">Track order</Link>
             <Link href="/contact">Visit</Link>

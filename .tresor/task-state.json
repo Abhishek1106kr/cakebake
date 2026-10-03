@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T21:13:08Z",
+  "updated_at": "2026-10-03T21:29:15Z",
   "current_task_id": "TRESOR-TESTING-VISUAL",
   "tasks": [
     {
@@ -213,6 +213,41 @@
       "description": "Replace c1–c12 gradient placeholders with licensed images.",
       "status": "blocked",
       "priority": "medium"
+    },
+    {
+      "dependencies": [],
+      "files": [
+        "app/customize-cake/page.tsx",
+        "components/store-header.tsx"
+      ],
+      "started_at": "2026-10-03T21:29:15Z",
+      "completed_at": "2026-10-03T21:29:15Z",
+      "blockers": [],
+      "id": "TRESOR-EXPERIENCE-CUSTOMIZE-CAKE",
+      "title": "Customize cake (placeholder)",
+      "description": "Owner asked for an empty \"Customize cake\" page in the navbar. Added /customize-cake with a coming-soon message, on main (v2) and the v3-variation branch.",
+      "status": "completed",
+      "priority": "medium",
+      "validation": [
+        "next build passes; /customize-cake returns 200; link present in the header HTML"
+      ]
+    },
+    {
+      "dependencies": [],
+      "files": [
+        "branch: v3-variation"
+      ],
+      "started_at": "2026-10-03T21:29:15Z",
+      "completed_at": "2026-10-03T21:29:15Z",
+      "blockers": [],
+      "id": "TRESOR-VARIATION-V3",
+      "title": "v3 variation branch",
+      "description": "v3 (sage Figma V2 site) on branch v3-variation: real orders and tracking in the browser, IST slots, simulated payment with failure/retry, Framer Motion system (page veil, hero choreography, line reveals, layout re-ranking, add-to-cart, cart reflow, confirmation, tracking pulse), REFERENCES.md section 6 modules.",
+      "status": "completed",
+      "priority": "medium",
+      "validation": [
+        "tsc 0 errors; next build passes (12 routes); all routes 200 in dev"
+      ]
     }
   ]
 }
