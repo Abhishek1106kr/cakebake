@@ -1,16 +1,2 @@
 import Link from 'next/link';
-import { ArtDrawing } from '@/components/media/product-art';
-
-export default function NotFound() {
-  return (
-    <main className="status-page wrap">
-      <div className="status-art tone-cream"><ArtDrawing art="teacup" /></div>
-      <div className="eyebrow">404</div>
-      <h1 className="page-title display">This page wandered off for a coffee.</h1>
-      <div className="empty-actions">
-        <Link href="/" className="btn btn-primary">Back home</Link>
-        <Link href="/menu" className="btn btn-secondary">See the menu</Link>
-      </div>
-    </main>
-  );
-}
+export default function NotFound(){return <main className="status-page"><div className="container"><div className="order-card" style={{textAlign:'center'}}><div className="eyebrow">404</div><h1 className="display h2">That page wandered off.</h1><p className="muted">The menu is still here, though.</p><Link className="btn btn-brand" href="/shop">Back to the menu</Link></div></div></main>}
