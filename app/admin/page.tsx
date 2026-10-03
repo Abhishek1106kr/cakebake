@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUpRight, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useStore } from '@/components/store-provider';
+import { AnimatedNumber } from '@/components/motion';
 import { StatusBadge, StockBadge, downloadCsv, rupees, todayStamp, useNow } from '@/components/admin/admin-utils';
 import { NEXT_ACTION, isActive, isSameDay, itemsSummary, orderStats, ordersToCsv } from '@/lib/orders';
 import { formatQty, stockState } from '@/lib/inventory';
@@ -39,12 +41,12 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="kpi-grid">
-        <div className="kpi"><div className="kpi-meta">Today’s revenue</div><div className="kpi-value">{rupees(stats.revenue)}</div><div className="kpi-meta">{stats.cancelledToday ? `${stats.cancelledToday} cancelled, not counted` : 'Excludes cancelled orders'}</div></div>
-        <div className="kpi"><div className="kpi-meta">Orders today</div><div className="kpi-value">{stats.count}</div><div className="kpi-meta">{stats.inKitchen} in the kitchen</div></div>
-        <div className="kpi"><div className="kpi-meta">Avg. order value</div><div className="kpi-value">{rupees(stats.averageValue)}</div><div className="kpi-meta">{stats.ready} ready · {stats.onTheWay} on the way</div></div>
-        <div className="kpi"><div className="kpi-meta">Stock alerts</div><div className="kpi-value">{low.length}</div><div className="kpi-meta">{low.length ? 'Needs attention today' : 'All shelves healthy'}</div></div>
-      </div>
+      <motion.div className="kpi-grid" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.08 } } }}>
+        <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Today’s revenue</div><div className="kpi-value"><AnimatedNumber value={stats.revenue} /></div><div className="kpi-meta">{stats.cancelledToday ? `${stats.cancelledToday} cancelled, not counted` : 'Excludes cancelled orders'}</div></motion.div>
+        <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Orders today</div><div className="kpi-value"><AnimatedNumber value={stats.count} prefix="" /></div><div className="kpi-meta">{stats.inKitchen} in the kitchen</div></motion.div>
+        <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Avg. order value</div><div className="kpi-value"><AnimatedNumber value={stats.averageValue} /></div><div className="kpi-meta">{stats.ready} ready · {stats.onTheWay} on the way</div></motion.div>
+        <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Stock alerts</div><div className="kpi-value"><AnimatedNumber value={low.length} prefix="" /></div><div className="kpi-meta">{low.length ? 'Needs attention today' : 'All shelves healthy'}</div></motion.div>
+      </motion.div>
 
       <div className="admin-grid">
         <section className="panel">

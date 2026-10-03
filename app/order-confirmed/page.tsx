@@ -6,6 +6,10 @@ import { useStore } from '@/components/store-provider';
 import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { STATUS_LABEL, nextStatus } from '@/lib/orders';
+import { motion } from 'framer-motion';
+import { EASE } from '@/lib/motion';
+
+const up = (delay: number) => ({ initial: { opacity: 0, y: 22 }, animate: { opacity: 1, y: 0 }, transition: { delay, duration: 0.7, ease: EASE } });
 
 function OrderConfirmed() {
   const { findOrder, latestOrder, mounted } = useStore();
@@ -21,7 +25,24 @@ function OrderConfirmed() {
 
   const copy = async () => { try { await navigator.clipboard.writeText(order.id); setCopied(true); setTimeout(()=>setCopied(false), 1200); } catch {} };
   const upcoming = nextStatus(order.status);
-  return <main className="status-page success-page"><div className="container"><div className="success-orbit"><div className="success-check"><CheckCircle2 size={45}/></div></div><div className="order-card success-card"><div className="eyebrow">Order confirmed</div><h1 className="display h2">We’ve got it.</h1><p className="success-copy">Order <strong>{order.id}</strong> is confirmed. We’ll keep you posted as it moves from counter to door.</p><div className="order-id"><span>Order ID</span><strong>{order.id}</strong><button onClick={copy} aria-label="Copy order ID">{copied ? <CheckCircle2 size={16}/> : <Copy size={16}/>}</button></div><div className="success-actions"><Link className="btn btn-brand btn-lg" href={`/track-order?id=${order.id}`}>Track my order <ArrowRight size={16}/></Link><Link className="btn btn-secondary btn-lg" href="/shop">Order something else</Link></div><div className="quick-status"><div><MapPin size={18}/><span>Delivery to<br/><strong>{order.city}</strong></span></div><div><Sparkles size={18}/><span>Next update<br/><strong>{upcoming ? STATUS_LABEL[upcoming] : STATUS_LABEL[order.status]}</strong></span></div><div><MessageCircle size={18}/><span>Payment<br/><strong>{order.paymentStatus === 'DUE' ? `₹${order.total} at the door` : `₹${order.total} paid (simulated)`}</strong></span></div></div></div></div></main>;
+  return <main className="status-page success-page"><div className="container">
+    <motion.div className="success-orbit" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 14 }}>
+      <svg className="success-ring" viewBox="0 0 120 120" aria-hidden="true"><motion.circle cx="60" cy="60" r="56" fill="none" stroke="currentColor" strokeWidth="1" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.2, duration: 1.2, ease: EASE }} /></svg>
+      <motion.div className="success-check" initial={{ scale: 0, rotate: -45 }} animate={{ scale: 1, rotate: 0 }} transition={{ delay: 0.35, type: 'spring', stiffness: 260, damping: 12 }}><CheckCircle2 size={45}/></motion.div>
+    </motion.div>
+    <motion.div className="order-card success-card" {...up(0.25)}>
+      <motion.div className="eyebrow" {...up(0.45)}>Order confirmed</motion.div>
+      <motion.h1 className="display h2" {...up(0.55)}>We’ve got it.</motion.h1>
+      <motion.p className="success-copy" {...up(0.65)}>Order <strong>{order.id}</strong> is confirmed. We’ll keep you posted as it moves from counter to door.</motion.p>
+      <motion.div className="order-id" {...up(0.75)}><span>Order ID</span><strong>{order.id}</strong><button onClick={copy} aria-label="Copy order ID">{copied ? <CheckCircle2 size={16}/> : <Copy size={16}/>}</button></motion.div>
+      <motion.div className="success-actions" {...up(0.85)}><Link className="btn btn-brand btn-lg" href={`/track-order?id=${order.id}`}>Track my order <ArrowRight size={16}/></Link><Link className="btn btn-secondary btn-lg" href="/shop">Order something else</Link></motion.div>
+      <motion.div className="quick-status" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1, delayChildren: 1.0 } } }}>
+        {[[<MapPin key="m" size={18}/>, 'Delivery to', order.city], [<Sparkles key="s" size={18}/>, 'Next update', upcoming ? STATUS_LABEL[upcoming] : STATUS_LABEL[order.status]], [<MessageCircle key="c" size={18}/>, 'Payment', order.paymentStatus === 'DUE' ? `₹${order.total} at the door` : `₹${order.total} paid (simulated)`]].map(([icon, label, value]) => (
+          <motion.div key={String(label)} variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } } }}>{icon}<span>{label}<br/><strong>{value}</strong></span></motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
+  </div></main>;
 }
 
 export default function OrderConfirmedPage() {

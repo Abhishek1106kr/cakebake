@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Menu, Search, ShoppingBag, X, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { semanticSearch } from '@/lib/search';
 import { products } from '@/lib/data';
 import { useStore } from './store-provider';
@@ -33,7 +34,7 @@ export function StoreHeader() {
           </nav>
           <div className="nav-actions">
             <button className="icon-btn" onClick={() => setOpen(true)} aria-label="Search the menu"><Search size={18}/></button>
-            <Link className="bag-button" href="/cart" aria-label="Cart"><ShoppingBag size={18}/><span>Bag</span>{cartCount > 0 && <b>{cartCount}</b>}</Link>
+            <Link className="bag-button" href="/cart" aria-label="Cart"><ShoppingBag size={18}/><span>Bag</span><AnimatePresence mode="popLayout" initial={false}>{cartCount > 0 && <motion.b key={cartCount} initial={{ scale: 0.4, y: 6, opacity: 0 }} animate={{ scale: [1.35, 1], y: 0, opacity: 1 }} exit={{ scale: 0.4, opacity: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>{cartCount}</motion.b>}</AnimatePresence></Link>
             <Link className="icon-btn menu-btn" href="/shop" aria-label="Open menu"><Menu size={18}/></Link>
           </div>
         </div>
