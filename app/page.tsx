@@ -55,7 +55,7 @@ export default function HomePage() {
       </section>
 
       <section className="section visit-section">
-        <div className="container visit-grid"><div className="visit-card"><div className="eyebrow">Come by</div><h2 className="display h2">Indiranagar.<br/><em>Your corner table.</em></h2><p>Mon–Sun · 8:00–22:00<br/>Dine-in, takeaway, delivery.</p><div className="visit-actions"><Link className="btn btn-primary" href="/contact">Get directions <MapPin size={15}/></Link><a className="text-link" href="tel:+919999999999">Call the café</a></div></div><div className="map-card"><div className="map-grid"/><div className="map-pin"><MapPin size={22}/><span>Tresor<br/><small>Indiranagar, Bengaluru</small></span></div><div className="map-note">Walk in. Stay longer.</div></div></div>
+        <div className="container visit-grid"><div className="visit-card"><div className="eyebrow">Come by</div><h2 className="display h2">Indiranagar.<br/><em>Your corner table.</em></h2><p>Mon–Sun · 8:00–22:00<br/>Dine-in, takeaway, delivery.</p><div className="visit-actions"><Link className="btn btn-primary" href="/contact">Get directions <MapPin size={15}/></Link><a className="text-link" href="tel:+919999999999">Call the bakery</a></div></div><div className="map-card"><div className="map-grid"/><div className="map-pin"><MapPin size={22}/><span>Tresor<br/><small>Indiranagar, Bengaluru</small></span></div><div className="map-note">Walk in. Stay longer.</div></div></div>
       </section>
     </main>
   );

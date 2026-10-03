@@ -43,3 +43,66 @@ Consequences:
 - Swapping in a backend means replacing the provider's persistence, not the UI.
 
 Related: TRESOR-COMMERCE-ORDERS, TRESOR-INVENTORY, TRESOR-COMMERCE-STORE.
+
+## DEC-003 — Rich sage palette from CLAUDE.md applied to v2
+
+Date: 2026-10-04
+
+Status: accepted
+
+Context:
+The owner asked to "follow the color palette and make it rich using the same color" and chose the CLAUDE.md sage palette over v2's warm browns.
+
+Decision:
+- Root tokens are replaced (`--brand` `#657876` for white-text contrast, `--brand-dark` `#4A5957`, `--deep` `#2E3938`, `--sage` `#7E9291`, mist `#E8EEEC`, cream `#F8F4EC`, warm `#EFE8DD`).
+- The 12 product-art gradients run from palette lights to deep sage.
+- Other warm literals are remapped: browns become sage of equal lightness, creams stay in the palette's cream/warm range.
+- Semantic colours (success, error, Zomato/Swiggy hovers) are unchanged.
+
+Reasoning:
+Richness comes from layering tones of one hue rather than adding new hues (CLAUDE.md §4).
+
+Consequences:
+v2 keeps its layout and typography; only colour changes.
+
+Related: TRESOR-EXPERIENCE-PALETTE, `app/globals.css`.
+
+## DEC-004 — Tresor is a bakery
+
+Date: 2026-10-04
+
+Status: accepted
+
+Context:
+Owner instruction: "it is a bakery not a cafe".
+
+Decision:
+- All copy, metadata and docs say bakery.
+- Coffee and drinks remain on the menu.
+- `hello@tresor.cafe` is left as-is pending the owner's decision, because changing it would invent a new address.
+
+Related: TRESOR-CONTENT-BAKERY.
+
+## DEC-005 — No images from the reference corpus
+
+Date: 2026-10-04
+
+Status: accepted
+
+Context:
+The owner suggested using images from the reference zips as site assets.
+
+Decision:
+Declined.
+
+Reasoning:
+- They are other brands' copyrighted product photography, several showing their logos and packaging.
+- Using them would misrepresent those products as Tresor's.
+- The owner's own reference brief forbids it.
+
+Alternatives:
+- Tresor's own photography.
+- Commercially licensed stock (Unsplash/Pexels), recorded in THIRD_PARTY_NOTICES.
+- Higgsfield generation (needs credits).
+
+Related: TRESOR-MEDIA-ASSETS.

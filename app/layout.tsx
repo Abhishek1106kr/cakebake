@@ -5,8 +5,8 @@ import { StoreFooter } from '@/components/store-footer';
 import { StoreProvider } from '@/components/store-provider';
 
 export const metadata = {
-  title: 'Tresor Café — coffee, pastry & slow rituals',
-  description: 'A premium neighbourhood café and bakery experience in Bengaluru.',
+  title: 'Tresor Bakery — pastry, cakes & slow rituals',
+  description: 'A premium neighbourhood bakery in Bengaluru.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -1,6 +1,6 @@
 // Ingredient inventory: what's on the shelf, what each product uses, and how
 // many of a product can still be made. Pure functions only.
-// Starting levels and recipes are sample values to confirm with the café.
+// Starting levels and recipes are sample values to confirm with the bakery.
 
 import type { CartLine, Size } from './orders';
 

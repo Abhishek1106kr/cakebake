@@ -1,6 +1,6 @@
-# Tresor Café — Mock Commerce Frontend
+# Tresor Bakery — Mock Commerce Frontend
 
-A high-fidelity, interactive mock website for the Tresor café/bakery proposal.
+A high-fidelity, interactive mock website for the Tresor bakery proposal.
 
 ## What is included
 

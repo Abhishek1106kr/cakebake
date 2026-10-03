@@ -1,12 +1,12 @@
 {
-  "updated_at": "2026-10-03T20:58:39Z",
-  "current_task_id": "TRESOR-COMMERCE-ORDERS",
+  "updated_at": "2026-10-03T21:12:22Z",
+  "current_task_id": "TRESOR-DEPLOYMENT-GIT",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
       "title": "Order and pricing domain",
       "description": "lib/orders.ts: order model, status flow, single pricing source (delivery ₹70, free from ₹999, Large +₹40 drinks only), checkout validation, stats, filters, CSV, seed orders.",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "critical",
       "dependencies": [],
       "files": [
@@ -14,15 +14,17 @@
         "types/index.ts"
       ],
       "started_at": "2026-10-03T20:58:39Z",
-      "completed_at": null,
-      "validation": [],
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "10 logic assertions passed (pricing, Large fix, validation, lifecycle, stats, CSV, migration)"
+      ],
       "blockers": []
     },
     {
       "id": "TRESOR-INVENTORY",
       "title": "Ingredient inventory",
       "description": "lib/inventory.ts: ingredients, per-product recipes, stock consumption on order, restore on early cancel, availability per product, manual stock movements.",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "dependencies": [
         "TRESOR-COMMERCE-ORDERS"
@@ -30,16 +32,18 @@
       "files": [
         "lib/inventory.ts"
       ],
-      "started_at": null,
-      "completed_at": null,
-      "validation": [],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "Logic assertions: shared-ingredient availability, consume and restore"
+      ],
       "blockers": []
     },
     {
       "id": "TRESOR-COMMERCE-STORE",
       "title": "Store provider rewrite",
       "description": "Cart lines keyed by product+size with correct unit price; orders list; inventory; movements; cross-tab sync; legacy cart/order migration.",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "dependencies": [
         "TRESOR-COMMERCE-ORDERS",
@@ -48,16 +52,18 @@
       "files": [
         "components/store-provider.tsx"
       ],
-      "started_at": null,
-      "completed_at": null,
-      "validation": [],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "tsc 0 errors; next build passes"
+      ],
       "blockers": []
     },
     {
       "id": "TRESOR-STOREFRONT",
       "title": "Storefront wiring",
       "description": "Product card and product page respect stock and sizes; cart limits; checkout validation and stock check; confirmation and tracking read real orders by id.",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "dependencies": [
         "TRESOR-COMMERCE-STORE"
@@ -71,16 +77,18 @@
         "app/track-order/page.tsx",
         "app/account/page.tsx"
       ],
-      "started_at": null,
-      "completed_at": null,
-      "validation": [],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "next build passes; all storefront routes return 200 in dev"
+      ],
       "blockers": []
     },
     {
       "id": "TRESOR-ADMIN",
       "title": "Admin wired to the store",
       "description": "Overview stats from real orders, orders table with filters/search/actions, kitchen status board, inventory with movements, product availability; admin styles (v2 CSS has none).",
-      "status": "pending",
+      "status": "completed",
       "priority": "high",
       "dependencies": [
         "TRESOR-COMMERCE-STORE"
@@ -89,41 +97,120 @@
         "app/admin/",
         "app/globals.css"
       ],
-      "started_at": null,
-      "completed_at": null,
-      "validation": [],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "next build passes; all 5 admin routes return 200 in dev"
+      ],
       "blockers": []
     },
     {
       "id": "TRESOR-TESTING-BUILD",
       "title": "Build fixes and validation",
       "description": "Fix typedRoutes error in app/admin/layout.tsx and useSearchParams Suspense; tsc and next build must pass.",
-      "status": "pending",
+      "status": "completed",
       "priority": "critical",
       "dependencies": [
         "TRESOR-STOREFRONT",
         "TRESOR-ADMIN"
       ],
       "files": [],
-      "started_at": null,
-      "completed_at": null,
-      "validation": [],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "npx tsc --noEmit: 0 errors",
+        "npx next build: 17 pages (after fixing the typedRoutes error and three useSearchParams Suspense breakers)"
+      ],
       "blockers": []
     },
     {
       "id": "TRESOR-DEPLOYMENT-GIT",
       "title": "Push v2 to GitHub",
       "description": "Push baseline + work commits to origin/main (fast-forward, no force).",
-      "status": "pending",
+      "status": "in_progress",
       "priority": "high",
       "dependencies": [
         "TRESOR-TESTING-BUILD"
       ],
       "files": [],
-      "started_at": null,
+      "started_at": "2026-10-03T21:12:22Z",
       "completed_at": null,
       "validation": [],
       "blockers": []
+    },
+    {
+      "dependencies": [],
+      "files": [
+        "app/globals.css"
+      ],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "next build passes",
+        "Not yet reviewed visually in a browser"
+      ],
+      "blockers": [],
+      "id": "TRESOR-EXPERIENCE-PALETTE",
+      "title": "Rich sage palette on v2",
+      "description": "Owner chose the CLAUDE.md sage palette, made richer with its own tones. Root tokens replaced; 12 product-art gradients hand-picked; remaining warm literals remapped.",
+      "status": "completed",
+      "priority": "high"
+    },
+    {
+      "dependencies": [],
+      "files": [
+        "app/layout.tsx",
+        "app/about/page.tsx",
+        "app/contact/page.tsx",
+        "app/page.tsx",
+        "app/shop/[id]/page.tsx",
+        "components/store-footer.tsx",
+        "README.md"
+      ],
+      "started_at": "2026-10-03T21:12:22Z",
+      "completed_at": "2026-10-03T21:12:22Z",
+      "validation": [
+        "grep finds no café wording except the email address"
+      ],
+      "blockers": [],
+      "id": "TRESOR-CONTENT-BAKERY",
+      "title": "Bakery, not café",
+      "description": "Owner: Tresor is a bakery. Copy, metadata and README updated. hello@tresor.cafe left unchanged pending owner decision.",
+      "status": "completed",
+      "priority": "medium"
+    },
+    {
+      "dependencies": [
+        "TRESOR-EXPERIENCE-PALETTE"
+      ],
+      "files": [],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": [],
+      "id": "TRESOR-TESTING-VISUAL",
+      "title": "Visual walkthrough in a browser",
+      "description": "Review the re-themed storefront and admin at desktop and mobile widths; place an order and move it through the kitchen.",
+      "status": "ready",
+      "priority": "high"
+    },
+    {
+      "dependencies": [],
+      "files": [
+        "lib/data.ts",
+        "app/globals.css"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": [
+        "Reference-zip images declined (other brands’ copyrighted photos with their branding). Needs Tresor photos, licensed stock, or Higgsfield credits (balance 0)."
+      ],
+      "id": "TRESOR-MEDIA-ASSETS",
+      "title": "Real imagery",
+      "description": "Replace c1–c12 gradient placeholders with licensed images.",
+      "status": "blocked",
+      "priority": "medium"
     }
   ]
 }
