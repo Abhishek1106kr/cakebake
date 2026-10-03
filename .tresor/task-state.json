@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T21:29:15Z",
+  "updated_at": "2026-10-03T22:00:14Z",
   "current_task_id": "TRESOR-TESTING-VISUAL",
   "tasks": [
     {
@@ -247,6 +247,47 @@
       "priority": "medium",
       "validation": [
         "tsc 0 errors; next build passes (12 routes); all routes 200 in dev"
+      ]
+    },
+    {
+      "id": "TRESOR-EXPERIENCE-CINEMATIC-HOME",
+      "title": "Cinematic homepage (re-art-direction phase 1)",
+      "description": "Homepage rebuilt as 8 scenes + footer per MOTION.md: opening (proving, camera push, steam), craft (lamination), signatures (pinned scrollytelling), glaze (liquid wipe), discovery (horizontal universe + product travel + cart morph), story (layered parallax), visit, finale.",
+      "status": "completed",
+      "priority": "critical",
+      "dependencies": [],
+      "files": [
+        "MOTION.md",
+        "lib/motion.ts",
+        "lib/media.ts",
+        "components/cinematic.tsx",
+        "components/transitions.tsx",
+        "components/home-scenes.tsx",
+        "app/page.tsx"
+      ],
+      "started_at": "2026-10-03T22:00:14Z",
+      "completed_at": "2026-10-03T22:00:14Z",
+      "validation": [
+        "tsc 0 errors",
+        "Headless Chromium screenshots at 1440x900 and 390x844 through the full scroll; fixed: glaze empty box, MaskedReveal never firing, story heights, finale empty frame, mobile useScroll ref warning"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-EXPERIENCE-CINEMATIC-PROPAGATE",
+      "title": "Propagate the cinematic language",
+      "description": "Menu product universe, product campaign page, cart morph polish, checkout/confirmation/tracking transition family, About film, Contact.",
+      "status": "pending",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-EXPERIENCE-CINEMATIC-HOME"
+      ],
+      "files": [],
+      "started_at": null,
+      "completed_at": null,
+      "validation": [],
+      "blockers": [
+        "Waiting for owner review of the homepage (MOTION.md step 9: validate the language first)"
       ]
     }
   ]
