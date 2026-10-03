@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-03T21:12:22Z",
-  "current_task_id": "TRESOR-DEPLOYMENT-GIT",
+  "updated_at": "2026-10-03T21:13:08Z",
+  "current_task_id": "TRESOR-TESTING-VISUAL",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -127,15 +127,17 @@
       "id": "TRESOR-DEPLOYMENT-GIT",
       "title": "Push v2 to GitHub",
       "description": "Push baseline + work commits to origin/main (fast-forward, no force).",
-      "status": "in_progress",
+      "status": "completed",
       "priority": "high",
       "dependencies": [
         "TRESOR-TESTING-BUILD"
       ],
       "files": [],
       "started_at": "2026-10-03T21:12:22Z",
-      "completed_at": null,
-      "validation": [],
+      "completed_at": "2026-10-03T21:13:08Z",
+      "validation": [
+        "git push origin main: 4b6b5f4..b16b336 (fast-forward, no force)"
+      ],
       "blockers": []
     },
     {
