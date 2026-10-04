@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-04T11:20:00Z",
-  "current_task_id": "TRESOR-INTEL-ENGINE",
+  "updated_at": "2026-10-04T12:10:00Z",
+  "current_task_id": "TRESOR-INTEL-NEXT",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -369,18 +369,48 @@
     },
     {
       "id": "TRESOR-INTEL-NEXT",
-      "title": "Engine phases 8-10",
-      "description": "Content/media selection, decision engine with approval levels, admin copilot. Also show for-you row in the UI.",
-      "status": "pending",
+      "title": "Engine phases 8-10 and for-you row",
+      "description": "Content/media selection (homepage counter, moods, renditions), decision engine with approval policy and log, admin copilot; for-you row on the menu.",
+      "status": "completed",
       "priority": "medium",
       "dependencies": [
         "TRESOR-INTEL-ENGINE"
       ],
-      "files": [],
-      "started_at": null,
+      "files": [
+        "engine/intelligence/content/content.ts",
+        "engine/intelligence/decisions/decisions.ts",
+        "engine/intelligence/copilot/copilot.ts",
+        "components/admin/copilot.tsx",
+        "components/admin/insights.tsx",
+        "components/home-scenes.tsx",
+        "components/cinematic.tsx",
+        "app/shop/page.tsx"
+      ],
+      "started_at": "2026-10-04T11:30:00Z",
+      "completed_at": "2026-10-04T12:10:00Z",
+      "validation": [
+        "128 tests passing",
+        "tsc clean",
+        "headless e2e: homepage counter, menu for-you, copilot answers, approve restock (beans 2.1 -> 4.3 kg, logged), dismiss; no console errors"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-OUR-STORY",
+      "title": "Owner-supplied our-story media",
+      "description": "public/our-story/ (12 files: Klickpin downloads and personal photos) appeared in the workspace. Git-ignored like mock-assets; not published. Owner to decide use.",
+      "status": "blocked",
+      "priority": "low",
+      "dependencies": [],
+      "files": [
+        ".gitignore"
+      ],
+      "started_at": "2026-10-04T12:10:00Z",
       "completed_at": null,
       "validation": [],
-      "blockers": []
+      "blockers": [
+        "Owner decision: use locally as mock, replace with licensed media, or remove"
+      ]
     }
   ]
 }

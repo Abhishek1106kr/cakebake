@@ -8,6 +8,7 @@ import { ProductCard } from '@/components/product-card';
 import { SplitText } from '@/components/cinematic';
 import { categories, products, semanticSuggestions } from '@/lib/data';
 import { track, useSearch, useTrackSearch } from '@/components/intelligence';
+import { ForYouRow } from '@/components/recommendations';
 import { useSearchParams } from 'next/navigation';
 
 const SORTS = [
@@ -74,6 +75,8 @@ function Shop() {
         </motion.div>
       </div>
     </section>
+
+    {!query.trim() && category === 'All' && <ForYouRow />}
 
     <div className="menu-bar">
       <div className="container menu-bar-inner">

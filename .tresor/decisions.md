@@ -131,3 +131,20 @@ Decision:
 Search and recommendations never show something the kitchen can't make. They never break a stated exclusion ("no nuts", "no caffeine"), even in fallback. Budget, category, group size and "today" may be relaxed, and the UI says which one was.
 
 Related: TRESOR-INTEL-ENGINE.
+
+
+## DEC-008 · Nothing that changes data runs without approval
+Date: 2026-10-04
+
+Decision:
+The policy table has no EXECUTE-level action. Restocks are APPROVAL_REQUIRED and need a two-step Approve → Confirm. Kitchen, search and product findings are RECOMMEND only. Every verdict goes to an append-only local decision log and the event stream. The engine returns a plan; the store applies it.
+
+Related: TRESOR-INTEL-NEXT.
+
+## DEC-009 · public/our-story kept local
+Date: 2026-10-04
+
+Decision:
+public/our-story/ is git-ignored and not published. It holds third-party downloads and personal-looking photos the owner added. Asked the owner how to use it.
+
+Related: TRESOR-OUR-STORY.

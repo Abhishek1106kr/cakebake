@@ -26,3 +26,6 @@ export { similarTo, pairsWith, cartSuggestions, forYou, unitsSold, type Recommen
 export { salesByDay, productPerformance, funnel, searchAnalytics, categoryMix } from './analytics/metrics';
 export { stockOutlook, ses, backtest, type StockOutlook } from './forecast/forecast';
 export { generateInsights, type Insight } from './insights/insights';
+export { orderShowcase, moodsFor, selectRendition, type ShowcaseItem, type Rendition } from './content/content';
+export { proposeActions, approveAndApply, reject, pending, browserDecisionStore, memoryDecisionStore, POLICY, type ProposedAction, type DecisionLevel, type DecisionRecord, type DecisionStore, type ExecutionPlan } from './decisions/decisions';
+export { askCopilot, type CopilotAnswer, type CopilotTopic } from './copilot/copilot';

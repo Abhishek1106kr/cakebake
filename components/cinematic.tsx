@@ -7,8 +7,20 @@ import { motion, useInView, useMotionValue, useReducedMotion, useScroll, useTran
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { MediaAsset } from '@/lib/media';
 import { EASE, EASE_IMAGE } from '@/lib/motion';
+import { browserContext, selectRendition, type IntelligenceContext } from '@/engine/intelligence';
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+
+// Device, network and motion settings for choosing media. Read once per page load and shared by every <Media>.
+let mediaCtx: Pick<IntelligenceContext, 'network' | 'reducedMotion' | 'device'> | null = null;
+function useMediaContext() {
+  const [ctx, setCtx] = useState(mediaCtx);
+  useEffect(() => {
+    if (!mediaCtx) { const c = browserContext(); mediaCtx = { network: c.network, reducedMotion: c.reducedMotion, device: c.device }; }
+    setCtx(mediaCtx);
+  }, []);
+  return ctx;
+}
 
 /**
  * Image from the media registry over its tone gradient. Uses a mobile-specific
@@ -16,12 +28,22 @@ const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayout
  */
 export function Media({ asset, className = '', imgStyle, eager = false, sizes = '100vw' }: { asset: MediaAsset; className?: string; imgStyle?: MotionStyle; eager?: boolean; sizes?: string }) {
   const [failed, setFailed] = useState(!asset.src);
+  const ctx = useMediaContext();
+  // Before mount (and on the server) serve the safe default: a still image.
+  const rendition = ctx ? selectRendition(asset, ctx, eager) : { mode: 'image' as const, src: asset.type === 'video' ? asset.poster ?? asset.src : asset.src, loading: eager || asset.priority === 'high' ? 'eager' as const : 'lazy' as const };
+  if (rendition.mode === 'video' && !failed) {
+    return (
+      <div className={`media ${className}`} style={{ background: `linear-gradient(145deg, ${asset.tone[0]}, ${asset.tone[1]})` }}>
+        <video src={rendition.src} poster={asset.poster} autoPlay muted loop playsInline aria-label={asset.alt} onError={() => setFailed(true)} />
+      </div>
+    );
+  }
   const img = (
     <motion.img
-      src={asset.src}
+      src={asset.type === 'video' ? rendition.src : asset.src}
       alt={asset.alt}
       sizes={sizes}
-      loading={eager || asset.priority === 'high' ? 'eager' : 'lazy'}
+      loading={rendition.loading}
       fetchPriority={asset.priority === 'high' ? 'high' : 'auto'}
       decoding="async"
       onError={() => setFailed(true)}

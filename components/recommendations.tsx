@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import type { IntelligenceResult, Recommendation } from '@/engine/intelligence';
 import { ProductCard } from './product-card';
-import { track, useCartSuggestions, usePairs, useTrackOnce } from './intelligence';
+import { track, useCartSuggestions, useForYou, usePairs, useTrackOnce } from './intelligence';
 import { useStore } from './store-provider';
 import { EASE } from '@/lib/motion';
 
@@ -34,6 +34,17 @@ function Row({ surface, eyebrow, title, recs }: { surface: string; eyebrow: stri
 export function PairsRow({ productId }: { productId: string }) {
   const recs = usePairs([productId], 4);
   return <Row surface="product" eyebrow="Goes well with" title="Make it a moment." recs={recs} />;
+}
+
+const WHEN: Record<string, string> = { morning: 'This morning', afternoon: 'This afternoon', evening: 'This evening', night: 'Tonight' };
+
+/** Picks for this moment, and favourites this browser has ordered before. */
+export function ForYouRow() {
+  const recs = useForYou(4);
+  const reorder = recs?.result.some((r) => r.kind === 'reorder');
+  const when = recs?.evidence.find((e) => e.label === 'Time of day')?.value as string | undefined;
+  if (!recs) return null;
+  return <Row surface="for-you" eyebrow={when ? WHEN[when] : 'For you'} title={reorder ? 'Your favourites, and a few ideas.' : 'Made for right now.'} recs={recs} />;
 }
 
 /** Add-ons under the bag, including the free-delivery nudge. */

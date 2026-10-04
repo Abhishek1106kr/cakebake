@@ -10,6 +10,7 @@ import { StatusBadge, StockBadge, downloadCsv, rupees, todayStamp, useNow } from
 import { NEXT_ACTION, isActive, isSameDay, itemsSummary, orderStats, ordersToCsv } from '@/lib/orders';
 import { formatQty, stockState } from '@/lib/inventory';
 import { InsightsPanel } from '@/components/admin/insights';
+import { CopilotPanel } from '@/components/admin/copilot';
 
 function greeting(now: Date) {
   const h = now.getHours();
@@ -49,7 +50,10 @@ export default function AdminPage() {
         <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Stock alerts</div><div className="kpi-value"><AnimatedNumber value={low.length} prefix="" /></div><div className="kpi-meta">{low.length ? 'Needs attention today' : 'All shelves healthy'}</div></motion.div>
       </motion.div>
 
-      <InsightsPanel now={now} />
+      <div className="admin-intel">
+        <InsightsPanel now={now} />
+        <CopilotPanel now={now} />
+      </div>
 
       <div className="admin-grid">
         <section className="panel">

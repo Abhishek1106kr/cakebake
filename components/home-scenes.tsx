@@ -10,6 +10,7 @@ import { ArrowRight, MapPin, Plus } from 'lucide-react';
 import { GlazeReveal, HorizontalTrack, LaminationReveal, MaskedReveal, Media, Parallax, ScrollScene, SplitText } from './cinematic';
 import { Magnetic } from './motion';
 import { useStore } from './store-provider';
+import { useShowcase } from './intelligence';
 import { useTransitions } from './transitions';
 import { media, productMedia } from '@/lib/media';
 import { cakeScenes } from '@/lib/cake-assets';
@@ -190,6 +191,8 @@ const MOODS = ['something chocolatey', 'a cold coffee', 'something for brunch', 
 export function SceneDiscovery() {
   const router = useRouter();
   const [q, setQ] = useState('');
+  const showcase = useShowcase();
+  const moods = showcase.moods ?? MOODS;
   return (
     <section className="scene-discovery">
       <div className="container discovery-head">
@@ -200,11 +203,11 @@ export function SceneDiscovery() {
           <button className="btn btn-brand" type="submit">Find it <ArrowRight size={15} /></button>
         </form>
         <motion.div className="mood-chips-row" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={{ visible: { transition: { staggerChildren: 0.06 } } }}>
-          {MOODS.map((m) => <motion.button key={m} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileHover={{ y: -2 }} onClick={() => router.push(`/shop?q=${encodeURIComponent(m)}` as never)}>“{m}”</motion.button>)}
+          {moods.map((m) => <motion.button key={m} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }} whileHover={{ y: -2 }} onClick={() => router.push(`/shop?q=${encodeURIComponent(m)}` as never)}>“{m}”</motion.button>)}
         </motion.div>
       </div>
       <HorizontalTrack className="discovery-track">
-        {products.map((p, i) => <DiscoveryItem key={p.id} product={p} index={i} />)}
+        {showcase.items.map((item, i) => <DiscoveryItem key={item.product.id} product={item.product} index={i} reason={item.reason} />)}
         <Link href="/shop" className="discovery-end display">The whole<br />counter <ArrowRight size={28} /></Link>
       </HorizontalTrack>
     </section>
@@ -213,7 +216,7 @@ export function SceneDiscovery() {
 
 const SIZES = ['tall', 'wide', 'small', 'tall', 'small', 'wide'];
 
-function DiscoveryItem({ product, index }: { product: Product; index: number }) {
+function DiscoveryItem({ product, index, reason }: { product: Product; index: number; reason?: string | null }) {
   const reduce = useReducedMotion();
   const { addToCart } = useStore();
   const { flyToBag, travelTo } = useTransitions();
@@ -232,6 +235,7 @@ function DiscoveryItem({ product, index }: { product: Product; index: number }) 
       <motion.div className="discovery-caption" variants={reduce ? undefined : { rest: { y: 0 }, hover: { y: -6, transition: T.ui } }}>
         <span className="discovery-index">{String(index + 1).padStart(2, '0')}</span>
         <h3 className="display">{product.name}</h3>
+        {reason && <span className="discovery-why">{reason}</span>}
         <motion.div className="discovery-meta" variants={reduce ? undefined : { rest: { opacity: 0.6 }, hover: { opacity: 1 } }}>
           <span>₹{product.price} · {product.category}</span>
           <motion.button whileTap={{ scale: 0.9 }} className="discovery-add" aria-label={`Add ${product.name} to bag`} onClick={() => { if (addToCart(product) > 0) flyToBag(imgRef.current, visual); }}><Plus size={15} /></motion.button>

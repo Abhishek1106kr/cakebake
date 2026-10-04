@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added (2026-10-04, phases 8-10)
+- **Homepage counter:** ordered for the moment (time of day, season, stock, sales), with a reason on each item. Mood prompts change with the time and always return results.
+- **Menu:** "This morning / This evening" for-you row while browsing.
+- **Media:** a video plays only on good connections without reduced motion; otherwise a still image is shown.
+- **Admin insights:** carry proposed actions. Restocks need Approve → Confirm; anything can be dismissed for a day. All decisions are logged.
+- **Ask Tresor:** plain-language questions on the admin overview, answered from live numbers, with the facts shown.
+
+### Fixed
+- The homepage counter heading overlapped the mood form.
+
 ### Added (2026-10-04)
 - **Tests:** Vitest with 111 tests covering pricing, orders, checkout, inventory and every engine module. Run with `npm test`.
 - **Search engine:** understands moods ("warm, nutty, not too sweet"), negation, budget, group size and "today". It corrects typos and never shows unavailable items. Each result comes with a short reason, and relaxed matches say what was dropped.

@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-10-04T12:10:00Z",
+  "session_id": "session_011gAotvzZtmvMeDbDfgTpSd",
+  "agent": "claude-code",
+  "type": "task_completed",
+  "task_id": "TRESOR-INTEL-NEXT",
+  "summary": "Engine phases 8-10 wired: content selection, decision engine, admin copilot; for-you row",
+  "details": {
+    "tests": 128,
+    "phases_done": [
+      8,
+      9,
+      10
+    ]
+  },
+  "files": [
+    "engine/intelligence/content/",
+    "engine/intelligence/decisions/",
+    "engine/intelligence/copilot/"
+  ],
+  "status": "completed"
+}

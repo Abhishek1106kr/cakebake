@@ -8,3 +8,5 @@ npm-debug.log*
 
 # Local-only mock imagery from the reference corpus. Never commit or deploy.
 public/mock-assets/
+# Owner-supplied reference media (third-party downloads, personal photos): local only, never published.
+public/our-story/

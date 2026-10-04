@@ -5,16 +5,16 @@
     "session_id": "session_011gAotvzZtmvMeDbDfgTpSd",
     "status": "idle",
     "started_at": null,
-    "last_updated_at": "2026-10-04T11:20:00Z"
+    "last_updated_at": "2026-10-04T12:10:00Z"
   },
   "project": {
     "name": "Tresor",
     "phase": "v2 storefront: intelligence engine",
-    "current_objective": "Engine phases 1-7 wired with tests; phases 8-10 next"
+    "current_objective": "Engine phases 1-10 complete; real imagery and cinematic propagation remain"
   },
   "current_activity": {
-    "task_id": "TRESOR-INTEL-ENGINE",
-    "description": "Engine phases 1-7 wired into the site; 111 tests passing",
+    "task_id": "TRESOR-INTEL-NEXT",
+    "description": "Engine phases 8-10 wired; 128 tests passing",
     "stage": "done",
     "current_file": null,
     "current_action": null
@@ -28,7 +28,7 @@
   },
   "validation": {
     "last_test_command": "npm test && npx tsc --noEmit",
-    "tests_passed": 111,
+    "tests_passed": 128,
     "tests_failed": 0,
     "lint_status": "not configured",
     "typecheck_status": "passed",
