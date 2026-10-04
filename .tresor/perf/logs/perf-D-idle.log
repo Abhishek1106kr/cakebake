@@ -1,0 +1,4 @@
+D-idle story          1440 lenis=T fps=60.0 p95=16.9 drop=0.0% commits=0 loaf=0ms script=14.7 layout=0.0 style=28.5 anims=2 trace=None
+D-idle story           390 lenis=F fps=60.0 p95=17.0 drop=0.0% commits=0 loaf=0ms script=16.8 layout=0.0 style=44.6 anims=2 trace=None
+D-idle home           1440 lenis=T fps=60.0 p95=16.91 drop=0.0% commits=0 loaf=0ms script=8.0 layout=0.0 style=28.8 anims=1 trace=None
+D-idle home            390 lenis=F fps=60.0 p95=17.0 drop=0.0% commits=0 loaf=0ms script=13.9 layout=0.0 style=41.0 anims=1 trace=None

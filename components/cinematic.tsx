@@ -3,11 +3,12 @@
 // Cinematic primitives (MOTION.md). Scenes compose these; none of them invent
 // their own timings. Every primitive degrades to a static layout under reduced motion.
 
-import { motion, useInView, useMotionValue, useReducedMotion, useScroll, useTransform, type MotionValue, type MotionStyle } from 'framer-motion';
+import { motion, useInView, useMotionValue, useReducedMotion, useTransform, type MotionValue, type MotionStyle } from 'framer-motion';
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import type { MediaAsset } from '@/lib/media';
 import { EASE, EASE_IMAGE } from '@/lib/motion';
 import { browserContext, selectRendition, type IntelligenceContext } from '@/engine/intelligence';
+import { useElementScrollProgress } from './scroll-progress';
 
 /**
  * Reduced-motion preference, but only after mount. The server can't know it, so the
@@ -94,11 +95,10 @@ export function SplitText({ text, by = 'word', as = 'span', className = '', dela
 export function ScrollScene({ height = '300vh', className = '', children }: { height?: string; className?: string; children: (progress: MotionValue<number>) => ReactNode }) {
   const reduce = useReducedMotionSafe();
   const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
-  // A function-derived value keeps transforms on the JS path. Handing scrollYProgress straight
-  // to useTransform lets Framer accelerate opacity via ScrollTimeline, which ignores the clamp
-  // and fades text back in past the end of its range.
-  const progress = useTransform(scrollYProgress, (v) => v);
+  // The shared scroll source (scroll-progress.ts) is a plain motion value, so transforms stay
+  // on the JS path; Framer never hands them to a ScrollTimeline (which ignored the clamp and
+  // faded text back in past the end of its range).
+  const progress = useElementScrollProgress(ref, ['start start', 'end end']);
   const settled = useMotionValue(1);
   return (
     <section ref={ref} className={`scroll-scene ${className}`} style={{ height: reduce ? 'auto' : height }}>
@@ -114,7 +114,7 @@ export function HorizontalTrack({ children, className = '' }: { children: ReactN
   const trackRef = useRef<HTMLDivElement>(null);
   const [distance, setDistance] = useState(0);
   const [pinned, setPinned] = useState(false);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end end'] });
+  const scrollYProgress = useElementScrollProgress(sectionRef, ['start start', 'end end'], pinned);
   const x = useTransform(scrollYProgress, [0, 1], [0, -distance]);
 
   useIsoLayoutEffect(() => {
@@ -207,7 +207,7 @@ export function GlazeReveal({ asset, progress, className = '' }: { asset: MediaA
 export function Parallax({ children, distance = 80, className = '' }: { children: ReactNode; distance?: number; className?: string }) {
   const reduce = useReducedMotionSafe();
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const scrollYProgress = useElementScrollProgress(ref, ['start end', 'end start']);
   const y = useTransform(scrollYProgress, [0, 1], [distance / 2, -distance / 2]);
   return <div ref={ref} className={className}><motion.div style={reduce ? undefined : { y }}>{children}</motion.div></div>;
 }

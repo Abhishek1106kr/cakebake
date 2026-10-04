@@ -68,12 +68,25 @@ export function useCakeDesign(initial?: CakeConfiguration | null) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Autosave (debounced) once the customer has started.
+  // Autosave (debounced) once the customer has started. A pending save is
+  // written at once if the page is hidden or the studio unmounts, so the last
+  // edit before leaving is never lost.
+  const pendingSave = useRef<(() => void) | null>(null);
   useEffect(() => {
     if (!ready.current || draft) return;
-    const t = setTimeout(() => write(DRAFT_KEY, { config: h.present, savedAt: new Date().toISOString() }), 400);
+    const config = h.present;
+    const save = () => { pendingSave.current = null; write(DRAFT_KEY, { config, savedAt: new Date().toISOString() }); };
+    pendingSave.current = save;
+    const t = setTimeout(save, 400);
     return () => clearTimeout(t);
   }, [h.present, draft]);
+  useEffect(() => {
+    const flush = () => pendingSave.current?.();
+    const onHide = () => { if (document.visibilityState === 'hidden') flush(); };
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', onHide);
+    return () => { window.removeEventListener('pagehide', flush); document.removeEventListener('visibilitychange', onHide); flush(); };
+  }, []);
 
   // Abandonment: left with a started cake that never reached the bag.
   useEffect(() => {

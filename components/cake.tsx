@@ -3,7 +3,8 @@
 // Cake presentation: editorial collection entries and the cake campaign page.
 
 import Link from 'next/link';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useTransform } from 'framer-motion';
+import { useElementScrollProgress } from './scroll-progress';
 import { useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Minus, Plus } from 'lucide-react';
 import { MaskedReveal, Media, SplitText } from './cinematic';
@@ -75,7 +76,7 @@ export function CakeCampaign({ product }: { product: Product }) {
   const [note, setNote] = useState('');
   const productRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: stripRef, offset: ['start end', 'end start'] });
+  const scrollYProgress = useElementScrollProgress(stripRef, ['start end', 'end start']);
   const stripX = useTransform(scrollYProgress, [0, 1], ['6%', '-26%']);
   const hero = cakeImage(cake.slug, 'hero');
   const shot = cakeImage(cake.slug, 'product');

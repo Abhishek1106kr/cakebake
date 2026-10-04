@@ -1,7 +1,8 @@
 'use client';
 
-import { motion, useMotionTemplate, useMotionValue, useMotionValueEvent, useScroll, useTransform, AnimatePresence, type MotionValue } from 'framer-motion';
+import { motion, useMotionTemplate, useMotionValue, useMotionValueEvent, useTransform, AnimatePresence, type MotionValue } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
+import { useElementScrollProgress } from '@/components/scroll-progress';
 import { ScrollScene, SplitText, Parallax, useReducedMotionSafe } from '@/components/cinematic';
 import { craft, opening, people, today, years } from '@/lib/story';
 import { storyAsset } from '@/lib/story-media';
@@ -79,7 +80,7 @@ function OpeningFrame({ progress }: { progress: MotionValue<number> | null }) {
 export function StoryYears() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotionSafe();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const scrollYProgress = useElementScrollProgress(ref, ['start end', 'end start']);
   const bgY = useTransform(scrollYProgress, [0, 1], ['20%', '80%']);
   const bgPos = useMotionTemplate`50% ${bgY}`;
   const mask = storyAsset(years.maskImage);
@@ -161,6 +162,9 @@ function CraftScene({ progress }: { progress: MotionValue<number> }) {
         </ol>
         <div className="craft-track"><motion.span style={{ width: bar }} /></div>
         <div className="craft-line-wrap">
+          {/* Invisible copies of every line hold the box at the tallest one, so the frame
+              beside it never jumps when a shorter or longer line swaps in. */}
+          {craft.steps.map((s) => <span key={s.id} className="craft-line craft-line-sizer" aria-hidden="true">{s.line}</span>)}
           <AnimatePresence mode="wait">
             <motion.h2 key={step.id} className="craft-line" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.55, ease: EASE }}>{step.line}</motion.h2>
           </AnimatePresence>

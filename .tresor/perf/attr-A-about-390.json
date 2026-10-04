@@ -1,0 +1,216 @@
+{
+ "page": "/about",
+ "width": 390,
+ "lenisForcedOff": false,
+ "busyMs": 835,
+ "paintByNode": [
+  [
+   "#document.",
+   371.1,
+   365
+  ],
+  [
+   "div.scene-sticky",
+   22.5,
+   148
+  ],
+  [
+   "header.header",
+   16.1,
+   206
+  ],
+  [
+   "html.__variable_a10525",
+   14.9,
+   15
+  ],
+  [
+   "div.scene-sticky",
+   6.7,
+   114
+  ],
+  [
+   "div.",
+   1.6,
+   38
+  ],
+  [
+   "div.",
+   1.3,
+   35
+  ],
+  [
+   "div.",
+   1.1,
+   38
+  ],
+  [
+   "div.",
+   1.1,
+   40
+  ],
+  [
+   "div.reveal-inner",
+   1.1,
+   33
+  ]
+ ],
+ "byChunk": [
+  [
+   "5489-be25ce4753ada3ad.js",
+   539
+  ],
+  [
+   "6435-bbd184b07df129f7.js",
+   211
+  ],
+  [
+   "(native)",
+   26
+  ],
+  [
+   "7e0ac96b-8d7334dd6b17db5f.js",
+   25
+  ],
+  [
+   "(garbage",
+   23
+  ],
+  [
+   "template-a9dda34c5ee279f0.js",
+   4
+  ],
+  [
+   "page-054d243db2f26473.js",
+   3
+  ],
+  [
+   "(anonymous)",
+   2
+  ],
+  [
+   "9816-c66fcf91f889b868.js",
+   1
+  ],
+  [
+   "3882-4dd13a555fcb6f1b.js",
+   1
+  ],
+  [
+   "2046-83694024021c2d09.js",
+   1
+  ]
+ ],
+ "topFunctions": [
+  [
+   "5489-be25ce4753ada3ad.js :: (anonymous)",
+   426.6
+  ],
+  [
+   "5489-be25ce4753ada3ad.js :: v",
+   87.6
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: n",
+   41.5
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: (anonymous)",
+   29.5
+  ],
+  [
+   "(garbage collector)",
+   23.1
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: updateAndNotify",
+   22.5
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: set",
+   21.8
+  ],
+  [
+   "5489-be25ce4753ada3ad.js :: measure",
+   20.9
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: h",
+   10.4
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: q",
+   9.1
+  ],
+  [
+   "(native) animate",
+   8.0
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: y",
+   7.4
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: a",
+   5.7
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: notify",
+   5.3
+  ],
+  [
+   "(native) requestAnimationFrame",
+   5.1
+  ],
+  [
+   "(native) play",
+   4.5
+  ],
+  [
+   "7e0ac96b-8d7334dd6b17db5f.js :: (anonymous)",
+   4.3
+  ],
+  [
+   "(native) queueMicrotask",
+   3.9
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: o",
+   3.5
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: transform",
+   3.3
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: now",
+   3.2
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: schedule",
+   3.2
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: tick",
+   3.1
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: process",
+   3.0
+  ],
+  [
+   "template-a9dda34c5ee279f0.js :: (anonymous)",
+   2.9
+  ]
+ ],
+ "runningAnimations": [
+  [
+   "story-grain @ film-grain off-screen",
+   6
+  ],
+  [
+   "story-grain @ love-grain on-screen",
+   1
+  ]
+ ]
+}

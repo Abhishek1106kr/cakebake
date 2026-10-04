@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-04T18:30:00Z",
-  "current_task_id": "TRESOR-CAKE-PLAYGROUND",
+  "updated_at": "2026-10-04T23:00:00Z",
+  "current_task_id": "TRESOR-PERF",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -497,6 +497,31 @@
       "blockers": [
         "Sample prices and production times need bakery confirmation"
       ]
+    },
+    {
+      "id": "TRESOR-PERF",
+      "title": "Performance / UX smoothness pass",
+      "description": "Profile first (A current, B no Lenis, C scroll source, D paint/media, E final, plus interleaved before/after), then fix measured bottlenecks without changing the design.",
+      "status": "completed",
+      "priority": "high",
+      "dependencies": [],
+      "files": [
+        "components/scroll-progress.ts",
+        "components/cinematic.tsx",
+        "components/motion.tsx",
+        "components/story/",
+        "app/globals.css",
+        "tests/perf/"
+      ],
+      "started_at": "2026-10-04T14:30:00Z",
+      "completed_at": "2026-10-04T23:00:00Z",
+      "validation": [
+        "197 unit tests pass",
+        "visual diff 94/102 identical (differences = DEC-016 + icon antialiasing)",
+        "reduced motion 84/84 identical",
+        "story CLS 0.028 -> 0"
+      ],
+      "blockers": []
     }
   ]
 }

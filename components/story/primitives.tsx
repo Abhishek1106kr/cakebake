@@ -21,6 +21,27 @@ function useFilmAllowed() {
 }
 
 /**
+ * Marks an element `.is-live` while it is near the viewport, so its decorative loops
+ * (grain) only run when they can be seen. Toggles the class directly: no re-render.
+ */
+export function useLiveWhileVisible<T extends HTMLElement>(onChange?: (live: boolean) => void) {
+  const ref = useRef<T>(null);
+  const cb = useRef(onChange);
+  cb.current = onChange;
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      el.classList.toggle('is-live', e.isIntersecting);
+      cb.current?.(e.isIntersecting);
+    }, { rootMargin: '150px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return ref;
+}
+
+/**
  * A short film fragment: muted, looping, inline, poster first. Loads nothing until it is
  * near the viewport, pauses when it leaves, and stays a still poster for reduced motion
  * or reduced data.
@@ -32,20 +53,22 @@ export function FilmLoop({ id, className = '', eager = false, focus, style }: { 
   const [failed, setFailed] = useState(false);
   const [posterFailed, setPosterFailed] = useState(false);
   const objectPosition = focus ?? asset.focus;
+  // One observer drives both the video and the grain over it.
+  const frame = useLiveWhileVisible<HTMLDivElement>((live) => {
+    const v = ref.current;
+    if (!v) return;
+    if (live) v.play().catch(() => { /* autoplay refused: the poster stays */ });
+    else v.pause();
+  });
 
+  // The video mounts after the observer (allowed is decided after mount): start it if already in view.
   useEffect(() => {
     const v = ref.current;
-    if (!allowed || !v) return;
-    const io = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) v.play().catch(() => { /* autoplay refused: the poster stays */ });
-      else v.pause();
-    }, { rootMargin: '150px 0px' });
-    io.observe(v);
-    return () => io.disconnect();
-  }, [allowed]);
+    if (allowed && v && frame.current?.classList.contains('is-live')) v.play().catch(() => {});
+  }, [allowed, frame]);
 
   return (
-    <div className={`film ${className}`} style={{ background: `linear-gradient(160deg, ${asset.tone[0]}, ${asset.tone[1]})`, ...style }}>
+    <div ref={frame} className={`film ${className}`} style={{ background: `linear-gradient(160deg, ${asset.tone[0]}, ${asset.tone[1]})`, ...style }}>
       {allowed && !failed ? (
         <video ref={ref} src={asset.src} poster={asset.poster} muted loop playsInline preload={eager ? 'auto' : 'none'} aria-label={asset.alt} onError={() => setFailed(true)} style={{ objectPosition }} />
       ) : !posterFailed && (

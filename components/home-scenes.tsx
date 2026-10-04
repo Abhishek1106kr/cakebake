@@ -64,7 +64,7 @@ function OpeningInner({ progress, reduce }: { progress: MotionValue<number>; red
       </div>
 
       <motion.div className="scroll-cue" style={reduce ? undefined : { opacity: cueOpacity }} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: HERO.detail }}>
-        <span>Scroll</span><motion.i animate={reduce ? undefined : { scaleY: [0, 1, 0], originY: [0, 0, 1] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} />
+        <span>Scroll</span><i className="scroll-cue-line" />
       </motion.div>
     </div>
   );

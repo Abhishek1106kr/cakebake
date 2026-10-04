@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+### Performance (2026-10-04, smoothness pass; measured: `.tresor/perf/PERFORMANCE_REPORT.md`)
+- **One scroll source** (`components/scroll-progress.ts`) replaces per-element `useScroll({ target })`. Framer re-measured each target on every scroll frame. Interleaved measurement of main-thread script during one scroll: home 482 → 242 ms (1440) and 604 → 233 ms (390); Our Story 730 → 326 ms and 962 → 383 ms. Pixel-identical frames.
+- **Cake Playground:** the price count-up no longer re-renders the studio on every animation frame. React commits for 8 option clicks fell from 135–155 to 10–11.
+- **Grain only runs on screen:** Our Story grain animates only near the viewport, and its blended area is about 3x smaller with the same jitter. Story running animations fell from 7 to 2 at idle, and idle style work on phones from 113 to 51 ms per 4 s.
+- **Hero scroll cue and empty-bag icon:** now compositor CSS loops (were Framer JS loops every frame forever). Home idle script on phones fell from 94 to 22 ms per 4 s.
+- **Lenis kept:** native scrolling was measured as not smoother (DEC-014).
+- **Tooling:** `tests/perf/` (profiler, paired before/after, attribution, visual diff, report).
+
+### Fixed (2026-10-04)
+- **Our Story craft scene:** no longer shifts layout when its line changes (CLS 0.028 → 0 on phones). While a short line shows, the copy sits slightly higher (DEC-016).
+- **Cake Playground draft:** the autosave flushes on tab hide, page close and leaving the studio (the last edit within 400 ms used to be lost).
+- **Event store:** analytics events are no longer lost on navigation or between tabs (flush on pagehide, merge by id).
+- **Status changes:** rapid status clicks can no longer double-advance an order (stale state).
+- **Edible print:** "Fit" now fits round and heart cakes. Custom cake titles use the sponge name; "an 8 inch".
+- **Cake Playground below 1040px:** step tabs and options are no longer hidden under the sticky preview.
+
+### Added (2026-10-04, live order tracking)
+- **`/track/[orderId]`:**
+  - a real-time status stream (mock source shaped like WebSocket/SSE, cross-tab)
+  - one validated state machine
+  - per-status scenes, an animated timeline and honest ETA ranges
+  - reconnect and reconcile
+  - dev-only test controls
+  - `/track-order` redirects to it.
+- **Mock automations (labelled simulations):** invoice and WhatsApp jobs with retries and idempotency, plus mock payments with fault injection. Admin → Automations shows jobs, invoices, the outbox and the log.
+
+### Added (2026-10-04, testing)
+- **100-client stress harness** (`tests/stress/`): seeded, replayable, with P0–P4 classification and reports in `.tresor/test-results/`.
+
+### Added (2026-10-04, smooth scrolling)
+- **Lenis** smooth wheel scrolling on desktop: off for touch, reduced motion and admin, and paused while overlays lock the page.
+
 ### Added (2026-10-04, Cake Playground)
 - **`/customize`:** a live cake designer covering size, shape, sponge, filling, frosting, finish, colour, toppings, decorations, topper, candles and packaging. It includes a message editor with fit checks and an edible photo print with a safe-area outline.
 - **Smarter design:** designer suggestions, style presets and "Surprise me".

@@ -1,0 +1,156 @@
+{
+ "page": "/",
+ "width": 1440,
+ "lenisForcedOff": false,
+ "busyMs": 675,
+ "byChunk": [
+  [
+   "6252-882017dcd235ab6f.js",
+   258
+  ],
+  [
+   "(native)",
+   162
+  ],
+  [
+   "9050-ca860ab03b31afb5.js",
+   152
+  ],
+  [
+   "8505-da1209cdb729b8ec.js",
+   56
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js",
+   36
+  ],
+  [
+   "(garbage",
+   6
+  ],
+  [
+   "layout-5afe416e34924ef3.js",
+   2
+  ],
+  [
+   "1255-8dc91b756d944555.js",
+   1
+  ],
+  [
+   "(anonymous)",
+   1
+  ],
+  [
+   "5434-39f494465f5ab77f.js",
+   0
+  ]
+ ],
+ "topFunctions": [
+  [
+   "6252-882017dcd235ab6f.js :: (anonymous)",
+   199.2
+  ],
+  [
+   "(native) scrollTo",
+   128.7
+  ],
+  [
+   "6252-882017dcd235ab6f.js :: v",
+   50.2
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: n",
+   29.6
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: (anonymous)",
+   21.7
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: updateAndNotify",
+   17.0
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: set",
+   15.1
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: onVirtualScroll",
+   13.1
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: (anonymous)",
+   12.8
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: y",
+   12.0
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: emit",
+   10.0
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: setScroll",
+   9.5
+  ],
+  [
+   "(native) closest",
+   7.0
+  ],
+  [
+   "(native) queueMicrotask",
+   6.7
+  ],
+  [
+   "(native) requestAnimationFrame",
+   6.6
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: a",
+   6.5
+  ],
+  [
+   "(garbage collector)",
+   6.3
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: tick",
+   6.2
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: h",
+   6.1
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: onWheel",
+   6.1
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: cs",
+   5.6
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: q",
+   5.3
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: schedule",
+   5.0
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: process",
+   4.4
+  ],
+  [
+   "(native) composedPath",
+   4.0
+  ]
+ ],
+ "runningAnimations": [
+  [
+   "story-grain @ love-grain off-screen",
+   1
+  ]
+ ]
+}

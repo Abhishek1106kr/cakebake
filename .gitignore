@@ -17,3 +17,4 @@ public/our-story/
 /tests/stress/fixtures/
 /tests/stress/catalogue.json
 /tests/stress/__pycache__/
+/tests/perf/__pycache__/

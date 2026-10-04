@@ -1,0 +1,6 @@
+E-reduced-motion home           1440 lenis=F fps=56.8 p95=18.1 drop=0.0% commits=4 loaf=0ms script=138.3 layout=8.1 style=49.6 anims=5 trace=None
+E-reduced-motion home            390 lenis=F fps=56.7 p95=18.1 drop=0.22% commits=2 loaf=0ms script=230.7 layout=15.4 style=74.6 anims=5 trace=None
+E-reduced-motion story          1440 lenis=F fps=56.4 p95=18.1 drop=0.54% commits=0 loaf=0ms script=155.7 layout=3.5 style=74.0 anims=1 trace=None
+E-reduced-motion story           390 lenis=F fps=56.7 p95=18.1 drop=0.22% commits=0 loaf=0ms script=293.7 layout=8.7 style=135.6 anims=1 trace=None
+E-reduced-motion customize      1440 lenis=F fps=56.5 p95=18.1 drop=0.65% commits=12 loaf=0ms script=163.9 layout=19.9 style=44.5 anims=13 trace=None
+E-reduced-motion customize       390 lenis=F fps=54.9 p95=18.15 drop=1.35% commits=12 loaf=355ms script=374.5 layout=37.2 style=96.1 anims=12 trace=None

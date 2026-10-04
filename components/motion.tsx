@@ -3,7 +3,7 @@
 // Reusable motion primitives for the v3 variation.
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useSpring } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { EASE, EASE_IN_OUT, quiet, revealUp } from '@/lib/motion';
 
 /** Rises into place the first time it scrolls into view. */
@@ -68,18 +68,28 @@ export function CartCount({ count }: { count: number }) {
 }
 
 /** Counts to a new value so totals feel recalculated. */
+// React renders the final value; the count-up writes the in-between numbers straight to
+// that text node. (It used to setState on every frame: ~27 re-renders of the parent per
+// price change, which made every Cake Playground click re-render the whole studio.)
 export function AnimatedNumber({ value, prefix = '₹' }: { value: number; prefix?: string }) {
   const reduce = useReducedMotion();
-  const [shown, setShown] = useState(value);
+  const ref = useRef<HTMLSpanElement>(null);
   const from = useRef(value);
-  useEffect(() => {
-    if (reduce) { setShown(value); from.current = value; return; }
-    const controls = animate(from.current, value, { duration: 0.45, ease: EASE, onUpdate: (v) => setShown(Math.round(v)) });
+  const format = (n: number) => `${prefix}${Math.round(n).toLocaleString('en-IN')}`;
+  useIsoLayoutEffect(() => {
+    const start = from.current;
     from.current = value;
-    return () => controls.stop();
+    const node = ref.current?.firstChild;
+    if (reduce || start === value || !node) return;
+    node.nodeValue = format(start); // before paint, so the final number never flashes first
+    const controls = animate(start, value, { duration: 0.45, ease: EASE, onUpdate: (v) => { node.nodeValue = format(v); } });
+    return () => { controls.stop(); node.nodeValue = format(value); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, reduce]);
-  return <span className="tabular">{prefix}{shown.toLocaleString('en-IN')}</span>;
+  return <span ref={ref} className="tabular">{format(value)}</span>;
 }
+
+const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 /** Subtle pointer attraction for primary CTAs; desktop fine pointers only. */
 export function Magnetic({ children }: { children: ReactNode }) {

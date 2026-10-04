@@ -1,0 +1,15 @@
+home           1440 fps 56.7->56.7  p95 18.1->18.1  drop 0.0->0.0%  script 482->242  style 120->119  commits 5->5  loaf 0->52  anims 8->8
+home           1024 fps 56.7->56.8  p95 18.1->18.1  drop 0.0->0.0%  script 479->245  style 121->126  commits 8->8  loaf 0->0  anims 8->8
+home            390 fps 56.7->56.7  p95 18.1->18.1  drop 0.22->0.0%  script 604->233  style 181->195  commits 2->2  loaf 62->63  anims 8->8
+story          1440 fps 56.8->56.7  p95 18.1->18.1  drop 0.0->0.0%  script 730->326  style 181->181  commits 8->8  loaf 0->0  anims 18->12
+story          1024 fps 56.7->56.7  p95 18.1->18.1  drop 0.0->0.0%  script 706->303  style 178->167  commits 8->8  loaf 0->0  anims 18->12
+story           390 fps 55.6->56.0  p95 18.2->18.37  drop 1.8->0.45%  script 962->383  style 299->290  commits 8->8  loaf 0->84  anims 16->11
+product-cake   1440 fps 56.7->56.8  p95 18.1->18.1  drop 0.0->0.0%  script 86->74  style 29->31  commits 1->1  loaf 0->0  anims 4->4
+product-cake   1024 fps 56.9->56.8  p95 18.1->18.1  drop 0.0->0.0%  script 91->78  style 29->31  commits 1->1  loaf 0->0  anims 4->4
+product-cake    390 fps 56.6->56.6  p95 18.1->18.1  drop 0.5->0.5%  script 126->107  style 57->62  commits 1->1  loaf 0->0  anims 3->3
+customize      1440 fps 56.9->56.6  p95 18.1->18.1  drop 0.18->0.36%  script 276->287  style 72->96  commits 135->10  loaf 50->0  anims 13->12
+customize      1024 fps 56.7->56.6  p95 18.1->18.1  drop 0.24->0.24%  script 270->235  style 56->57  commits 155->11  loaf 0->0  anims 15->15
+customize       390 fps 55.4->55.6  p95 18.1->18.1  drop 1.1->0.92%  script 582->493  style 144->139  commits 155->11  loaf 351->337  anims 14->14
+menu           1440 fps 56.7->56.8  p95 18.1->18.1  drop 0.0->0.0%  script 51->46  style 1->1  commits 0->0  loaf 0->0  anims 0->0
+menu           1024 fps 57.1->56.8  p95 18.1->18.1  drop 0.0->0.0%  script 71->72  style 7->7  commits 0->0  loaf 0->0  anims 2->2
+menu            390 fps 57.0->56.7  p95 18.1->18.1  drop 0.0->0.0%  script 78->71  style 9->11  commits 0->0  loaf 0->0  anims 2->2

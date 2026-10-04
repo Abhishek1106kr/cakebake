@@ -1,0 +1,10 @@
+E-idle home           1440 lenis=T fps=56.9 p95=18.1 drop=0.0% commits=0 loaf=0ms script=6.0 layout=0.0 style=23.0 anims=1 trace=None
+E-idle home            390 lenis=F fps=43.8 p95=24.9 drop=0.0% commits=0 loaf=0ms script=21.5 layout=0.0 style=70.3 anims=1 trace=None
+E-idle story          1440 lenis=T fps=43.7 p95=25.0 drop=0.0% commits=0 loaf=0ms script=8.8 layout=0.0 style=23.7 anims=2 trace=None
+E-idle story           390 lenis=F fps=44.0 p95=25.1 drop=0.0% commits=0 loaf=0ms script=24.1 layout=0.0 style=50.7 anims=2 trace=None
+E-idle product-cake   1440 lenis=T fps=43.5 p95=25.1 drop=0.0% commits=0 loaf=0ms script=4.4 layout=0.0 style=0.0 anims=0 trace=None
+E-idle product-cake    390 lenis=F fps=43.9 p95=25.2 drop=0.0% commits=0 loaf=0ms script=17.1 layout=0.0 style=0.0 anims=0 trace=None
+E-idle menu           1440 lenis=T fps=43.3 p95=25.2 drop=0.0% commits=0 loaf=0ms script=4.3 layout=0 style=0.0 anims=0 trace=None
+E-idle menu            390 lenis=F fps=56.6 p95=18.1 drop=0.0% commits=0 loaf=0ms script=15.6 layout=0.0 style=0.0 anims=0 trace=None
+E-idle customize      1440 lenis=T fps=56.8 p95=18.17 drop=0.0% commits=0 loaf=0ms script=2.9 layout=0 style=0.0 anims=0 trace=None
+E-idle customize       390 lenis=F fps=56.7 p95=18.1 drop=0.0% commits=0 loaf=0ms script=15.1 layout=0 style=0 anims=0 trace=None

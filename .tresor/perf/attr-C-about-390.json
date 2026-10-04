@@ -1,0 +1,212 @@
+{
+ "page": "/about",
+ "width": 390,
+ "lenisForcedOff": false,
+ "busyMs": 208,
+ "paintByNode": [
+  [
+   "#document.",
+   352.5,
+   372
+  ],
+  [
+   "div.scene-sticky",
+   21.4,
+   153
+  ],
+  [
+   "header.header",
+   15.6,
+   212
+  ],
+  [
+   "html.__variable_a10525",
+   15.0,
+   16
+  ],
+  [
+   "div.scene-sticky",
+   5.1,
+   118
+  ],
+  [
+   "div.reveal-inner",
+   2.0,
+   39
+  ],
+  [
+   "div.",
+   1.4,
+   39
+  ],
+  [
+   "div.",
+   1.2,
+   35
+  ],
+  [
+   "div.",
+   1.1,
+   35
+  ],
+  [
+   "div.opening-film-inner",
+   1.0,
+   13
+  ]
+ ],
+ "byChunk": [
+  [
+   "240-21ede5203206689d.js",
+   98
+  ],
+  [
+   "6061-46261d1b2087c461.js",
+   47
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js",
+   19
+  ],
+  [
+   "(native)",
+   16
+  ],
+  [
+   "(garbage",
+   13
+  ],
+  [
+   "3398-dc7283abbb7417de.js",
+   9
+  ],
+  [
+   "(anonymous)",
+   2
+  ],
+  [
+   "1255-8dc91b756d944555.js",
+   2
+  ],
+  [
+   "page-476312eed6bd201e.js",
+   1
+  ],
+  [
+   "4411-33baf5d8bf91210e.js",
+   1
+  ]
+ ],
+ "topFunctions": [
+  [
+   "6061-46261d1b2087c461.js :: window.addEventListener.passive",
+   45.5
+  ],
+  [
+   "240-21ede5203206689d.js :: n",
+   22.9
+  ],
+  [
+   "240-21ede5203206689d.js :: (anonymous)",
+   14.4
+  ],
+  [
+   "(garbage collector)",
+   12.9
+  ],
+  [
+   "(native) play",
+   7.0
+  ],
+  [
+   "240-21ede5203206689d.js :: schedule",
+   5.6
+  ],
+  [
+   "240-21ede5203206689d.js :: set",
+   5.5
+  ],
+  [
+   "3398-dc7283abbb7417de.js :: (anonymous)",
+   5.2
+  ],
+  [
+   "240-21ede5203206689d.js :: h",
+   5.2
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: (anonymous)",
+   3.4
+  ],
+  [
+   "240-21ede5203206689d.js :: o",
+   3.4
+  ],
+  [
+   "(native) requestAnimationFrame",
+   3.0
+  ],
+  [
+   "(native) animate",
+   3.0
+  ],
+  [
+   "240-21ede5203206689d.js :: updateAndNotify",
+   2.7
+  ],
+  [
+   "240-21ede5203206689d.js :: transform",
+   2.5
+  ],
+  [
+   "240-21ede5203206689d.js :: process",
+   2.4
+  ],
+  [
+   "3398-dc7283abbb7417de.js :: u",
+   2.4
+  ],
+  [
+   "240-21ede5203206689d.js :: notify",
+   2.4
+  ],
+  [
+   "240-21ede5203206689d.js :: R.render",
+   2.4
+  ],
+  [
+   "240-21ede5203206689d.js :: y",
+   2.4
+  ],
+  [
+   "(anonymous)",
+   2.3
+  ],
+  [
+   "240-21ede5203206689d.js :: tick",
+   1.6
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: ug",
+   1.5
+  ],
+  [
+   "240-21ede5203206689d.js :: e",
+   1.5
+  ],
+  [
+   "240-21ede5203206689d.js :: now",
+   1.4
+  ]
+ ],
+ "runningAnimations": [
+  [
+   "story-grain @ film-grain off-screen",
+   6
+  ],
+  [
+   "story-grain @ love-grain on-screen",
+   1
+  ]
+ ]
+}

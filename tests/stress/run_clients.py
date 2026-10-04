@@ -273,6 +273,7 @@ async def draft(page):
     return (d or {}).get('config')
 
 async def verify_price_and_lead(page, rec, where):
+    await page.wait_for_timeout(600)  # the draft autosave is debounced 400 ms
     cfg = await draft(page)
     if not cfg:
         rec.check('draft configuration saved', False, 'P2', detail='no autosaved configuration', where=where)
@@ -377,7 +378,7 @@ async def verify_order_automation(page, base, rec, order_id, faults, custom=Fals
         rec.check('order still valid when whatsapp fails', order['status'] in ('CONFIRMED', 'NEW'), 'P1', 'automation')
     if outbox:
         t = outbox[0]['text']
-        has = f"#{order_id}" in t and f"₹{inr(order['total'])}" in t and order['slot'] in t and f"/track-order?id={order_id}" in t
+        has = f"#{order_id}" in t and f"₹{inr(order['total'])}" in t and order['slot'] in t and f"/track/{order_id}" in t
         rec.check('whatsapp has order number, total, slot and link', has, 'P1', 'automation', detail=t[:160].replace(chr(10), ' | '))
         rec.check('whatsapp sent to the customer phone', outbox[0]['to'] == order['customer']['phone'], 'P1', 'automation')
         if custom:
@@ -406,7 +407,10 @@ async def verify_order_automation(page, base, rec, order_id, faults, custom=Fals
         rows = await page.locator('.spec-row').count()
         rec.check('custom cake spec rows present', rows >= 10, 'P1', 'automation', detail=f'{rows} rows')
         if expect_print:
-            await page.wait_for_timeout(800)
+            try:
+                await page.wait_for_selector('.cc-artwork img', timeout=5000)  # read back from IndexedDB
+            except Exception:
+                pass
             rec.check('print artwork available to the bakery', await page.locator('.cc-artwork img').count() > 0, 'P1', 'automation', where='/admin/custom-cakes')
     await go(page, base, f'/track-order?id={order_id}')
     await settle(page, 700)
@@ -452,7 +456,12 @@ async def j_standard(page, base, rec, r, c):
             if await btn.is_disabled():
                 rec.note(f'{pid} sold out'); continue
             await btn.click()
-            await page.wait_for_url('**/cart', timeout=8000)
+            if await page.locator('.cake-campaign').count():
+                # Whole cakes stay on the page and confirm in place.
+                await settle(page, 600)
+                rec.check(f'{pid}: add confirmed on the page', await page.locator('.cake-campaign').get_by_text('is in your bag').count() > 0, 'P2', where=f'/shop/{pid}')
+            else:
+                await page.wait_for_url('**/cart', timeout=8000)
         else:
             # Whole cakes use the campaign layout with its own add button.
             add = page.locator('button:has-text("Add to bag")').first

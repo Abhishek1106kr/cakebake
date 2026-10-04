@@ -1,0 +1,208 @@
+{
+ "page": "/",
+ "width": 390,
+ "lenisForcedOff": false,
+ "busyMs": 167,
+ "paintByNode": [
+  [
+   "#document.",
+   219.8,
+   194
+  ],
+  [
+   "div.htrack-row",
+   15.8,
+   24
+  ],
+  [
+   "div.scene-sticky",
+   11.9,
+   127
+  ],
+  [
+   "header.header",
+   10.7,
+   127
+  ],
+  [
+   "div.scene-sticky",
+   8.6,
+   127
+  ],
+  [
+   "div.scene-sticky",
+   7.1,
+   3
+  ],
+  [
+   "span.line-inner",
+   6.9,
+   1
+  ],
+  [
+   "div.scene-sticky",
+   4.4,
+   127
+  ],
+  [
+   "div.cake-reveal-frame",
+   2.8,
+   43
+  ],
+  [
+   "div.scene-sticky",
+   2.1,
+   95
+  ]
+ ],
+ "byChunk": [
+  [
+   "240-21ede5203206689d.js",
+   71
+  ],
+  [
+   "6061-46261d1b2087c461.js",
+   57
+  ],
+  [
+   "(native)",
+   15
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js",
+   11
+  ],
+  [
+   "(garbage",
+   5
+  ],
+  [
+   "6634-47df525de5bae02b.js",
+   3
+  ],
+  [
+   "1255-8dc91b756d944555.js",
+   3
+  ],
+  [
+   "(anonymous)",
+   2
+  ],
+  [
+   "7725-1ff6e17fe5950c81.js",
+   0
+  ]
+ ],
+ "topFunctions": [
+  [
+   "6061-46261d1b2087c461.js :: window.addEventListener.passive",
+   56.6
+  ],
+  [
+   "240-21ede5203206689d.js :: n",
+   18.4
+  ],
+  [
+   "240-21ede5203206689d.js :: (anonymous)",
+   9.2
+  ],
+  [
+   "(native) requestAnimationFrame",
+   6.4
+  ],
+  [
+   "240-21ede5203206689d.js :: h",
+   5.7
+  ],
+  [
+   "240-21ede5203206689d.js :: updateAndNotify",
+   5.5
+  ],
+  [
+   "(garbage collector)",
+   5.4
+  ],
+  [
+   "240-21ede5203206689d.js :: schedule",
+   5.0
+  ],
+  [
+   "240-21ede5203206689d.js :: set",
+   3.9
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: cs",
+   3.0
+  ],
+  [
+   "6634-47df525de5bae02b.js :: (anonymous)",
+   2.7
+  ],
+  [
+   "240-21ede5203206689d.js :: notify",
+   2.5
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: (anonymous)",
+   2.4
+  ],
+  [
+   "240-21ede5203206689d.js :: y",
+   2.1
+  ],
+  [
+   "240-21ede5203206689d.js :: now",
+   2.1
+  ],
+  [
+   "(native) animate",
+   2.0
+  ],
+  [
+   "(anonymous)",
+   1.6
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: c",
+   1.4
+  ],
+  [
+   "240-21ede5203206689d.js :: applyProjectionStyles",
+   1.4
+  ],
+  [
+   "240-21ede5203206689d.js :: build",
+   1.2
+  ],
+  [
+   "(native) fetch",
+   1.1
+  ],
+  [
+   "(native) evaluate",
+   1.1
+  ],
+  [
+   "240-21ede5203206689d.js :: a",
+   1.0
+  ],
+  [
+   "240-21ede5203206689d.js :: setActive",
+   0.9
+  ],
+  [
+   "(native) queueMicrotask",
+   0.8
+  ]
+ ],
+ "runningAnimations": [
+  [
+   "cue-line @ scroll-cue-line off-screen",
+   1
+  ],
+  [
+   "story-grain @ love-grain off-screen",
+   1
+  ]
+ ]
+}

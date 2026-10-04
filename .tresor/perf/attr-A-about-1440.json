@@ -1,0 +1,160 @@
+{
+ "page": "/about",
+ "width": 1440,
+ "lenisForcedOff": false,
+ "busyMs": 903,
+ "byChunk": [
+  [
+   "6252-882017dcd235ab6f.js",
+   436
+  ],
+  [
+   "(native)",
+   194
+  ],
+  [
+   "9050-ca860ab03b31afb5.js",
+   152
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js",
+   52
+  ],
+  [
+   "8505-da1209cdb729b8ec.js",
+   43
+  ],
+  [
+   "(garbage",
+   21
+  ],
+  [
+   "1255-8dc91b756d944555.js",
+   3
+  ],
+  [
+   "layout-5afe416e34924ef3.js",
+   2
+  ],
+  [
+   "page-e35c524de63ce89a.js",
+   1
+  ]
+ ],
+ "topFunctions": [
+  [
+   "6252-882017dcd235ab6f.js :: (anonymous)",
+   323.5
+  ],
+  [
+   "(native) scrollTo",
+   164.3
+  ],
+  [
+   "6252-882017dcd235ab6f.js :: v",
+   88.2
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: n",
+   25.3
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: (anonymous)",
+   24.7
+  ],
+  [
+   "(garbage collector)",
+   21.3
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: set",
+   16.4
+  ],
+  [
+   "6252-882017dcd235ab6f.js :: measure",
+   15.3
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: (anonymous)",
+   12.4
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: y",
+   12.2
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: updateAndNotify",
+   11.7
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: cs",
+   9.8
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: onVirtualScroll",
+   6.9
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: setScroll",
+   6.9
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: h",
+   6.7
+  ],
+  [
+   "(native) closest",
+   6.4
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: emit",
+   6.1
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: schedule",
+   5.8
+  ],
+  [
+   "4bd1b696-100b9d70ed4e49c1.js :: c",
+   5.4
+  ],
+  [
+   "(native) requestAnimationFrame",
+   5.0
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: q",
+   4.7
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: onWheel",
+   4.5
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: get prefersReducedMotion",
+   4.4
+  ],
+  [
+   "9050-ca860ab03b31afb5.js :: s",
+   4.3
+  ],
+  [
+   "8505-da1209cdb729b8ec.js :: (anonymous)",
+   4.2
+  ]
+ ],
+ "runningAnimations": [
+  [
+   "story-grain @ film-grain off-screen",
+   6
+  ],
+  [
+   "story-grain @ love-grain on-screen",
+   1
+  ],
+  [
+   "Animation @ reveal-inner on-screen",
+   1
+  ]
+ ]
+}

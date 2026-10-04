@@ -1,0 +1,200 @@
+{
+ "page": "/",
+ "width": 390,
+ "lenisForcedOff": false,
+ "busyMs": 330,
+ "paintByNode": [
+  [
+   "#document.",
+   201.4,
+   189
+  ],
+  [
+   "div.htrack-row",
+   14.4,
+   25
+  ],
+  [
+   "div.scene-sticky",
+   10.8,
+   127
+  ],
+  [
+   "div.scene-sticky",
+   9.2,
+   127
+  ],
+  [
+   "header.header",
+   6.5,
+   127
+  ],
+  [
+   "div.scene-sticky",
+   5.4,
+   3
+  ],
+  [
+   "span.line-inner",
+   5.4,
+   1
+  ],
+  [
+   "div.scene-sticky",
+   3.8,
+   127
+  ],
+  [
+   "div.scene-sticky",
+   2.4,
+   95
+  ],
+  [
+   "div.cake-reveal-frame",
+   2.1,
+   39
+  ]
+ ],
+ "byChunk": [
+  [
+   "5489-be25ce4753ada3ad.js",
+   186
+  ],
+  [
+   "6435-bbd184b07df129f7.js",
+   107
+  ],
+  [
+   "(garbage",
+   13
+  ],
+  [
+   "(native)",
+   13
+  ],
+  [
+   "7e0ac96b-8d7334dd6b17db5f.js",
+   5
+  ],
+  [
+   "2046-83694024021c2d09.js",
+   4
+  ],
+  [
+   "template-a9dda34c5ee279f0.js",
+   2
+  ],
+  [
+   "(anonymous)",
+   1
+  ]
+ ],
+ "topFunctions": [
+  [
+   "5489-be25ce4753ada3ad.js :: (anonymous)",
+   143.0
+  ],
+  [
+   "5489-be25ce4753ada3ad.js :: v",
+   34.8
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: n",
+   27.1
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: (anonymous)",
+   13.9
+  ],
+  [
+   "(garbage collector)",
+   12.9
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: updateAndNotify",
+   8.9
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: set",
+   8.4
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: o",
+   5.6
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: a",
+   5.5
+  ],
+  [
+   "(native) requestAnimationFrame",
+   4.6
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: h",
+   3.9
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: process",
+   2.7
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: tick",
+   2.7
+  ],
+  [
+   "5489-be25ce4753ada3ad.js :: f.current.Q",
+   2.6
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: y",
+   2.5
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: schedule",
+   2.5
+  ],
+  [
+   "2046-83694024021c2d09.js :: w",
+   2.5
+  ],
+  [
+   "5489-be25ce4753ada3ad.js :: measure",
+   2.4
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: s",
+   1.9
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: notify",
+   1.7
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: build",
+   1.6
+  ],
+  [
+   "(native) animate",
+   1.5
+  ],
+  [
+   "6435-bbd184b07df129f7.js :: q",
+   1.5
+  ],
+  [
+   "(native) digest",
+   1.5
+  ],
+  [
+   "7e0ac96b-8d7334dd6b17db5f.js :: (anonymous)",
+   1.4
+  ]
+ ],
+ "runningAnimations": [
+  [
+   "story-grain @ love-grain off-screen",
+   1
+  ]
+ ]
+}

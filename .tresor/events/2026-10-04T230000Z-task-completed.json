@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-10-04T23:00:00Z",
+  "agent": "claude-code",
+  "type": "task_completed",
+  "task_id": "TRESOR-PERF",
+  "summary": "Performance / smoothness pass: measured first, fixed what measurement showed, design preserved",
+  "details": {
+    "method": "Chrome + CDP scroll profiling, 9 pages x 5 widths, stages A-E, interleaved before/after run, CPU and paint attribution, pixel visual diff",
+    "lenis": "kept: native scrolling measured not smoother (DEC-014)",
+    "scroll_script_ms_story_390": [962, 383],
+    "scroll_script_ms_home_1440": [482, 242],
+    "studio_commits_8_clicks": [155, 11],
+    "story_dropped_frames_390_pct": [1.8, 0.45],
+    "story_cls_390": [0.028, 0],
+    "idle_running_animations_story": [7, 2],
+    "visual_frames_identical": "94/102 (8 differing: craft-scene line reservation DEC-016; cart icon antialiasing <0.15%)",
+    "reduced_motion_frames_identical": "84/84",
+    "unit_tests": 197
+  },
+  "files": [
+    "components/scroll-progress.ts",
+    "components/cinematic.tsx",
+    "components/motion.tsx",
+    "components/story/primitives.tsx",
+    "components/story/chapters.tsx",
+    "app/globals.css",
+    "tests/perf/",
+    ".tresor/perf/PERFORMANCE_REPORT.md"
+  ],
+  "status": "completed"
+}

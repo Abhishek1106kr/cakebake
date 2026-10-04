@@ -35,7 +35,7 @@ export default function CartPage() {
           <AnimatePresence mode="popLayout" initial={false}>
             {cart.length === 0 && (
               <motion.div key="empty" className="empty-state" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, ease: EASE }}>
-                <motion.span animate={reduce ? undefined : { y: [0, -6, 0] }} transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}><ShoppingBag size={28} /></motion.span>
+                <span className="empty-bob"><ShoppingBag size={28} /></span>
                 <h3>Your bag is empty.</h3>
                 <p>Start with a craving. We’ll do the rest.</p>
                 <Link className="btn btn-brand" href="/shop">Browse menu <ArrowRight size={15} /></Link>

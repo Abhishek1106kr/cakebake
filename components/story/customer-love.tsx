@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { SplitText } from '@/components/cinematic';
 import { love, visibleReviews, type Review } from '@/lib/story';
-import { Reveal, StoryMedia, type RevealKind } from './primitives';
+import { Reveal, StoryMedia, useLiveWhileVisible, type RevealKind } from './primitives';
 
 type Piece = { type: 'photo'; asset: string; moment: string } | { type: 'quote'; review: Review };
 
@@ -32,8 +32,9 @@ export function CustomerLove({ variant = 'full' }: { variant?: 'full' | 'compact
   const compact = variant === 'compact';
   const pieces = interleave(love.photos, reviews, compact ? 3 : 5, compact ? 3 : 5);
   const hasMock = reviews.some((r) => r.mock);
+  const live = useLiveWhileVisible<HTMLElement>();
   return (
-    <section className={`story-love ${compact ? 'is-compact' : ''}`} aria-label={love.title}>
+    <section ref={live} className={`story-love ${compact ? 'is-compact' : ''}`} aria-label={love.title}>
       <span className="love-grain" aria-hidden="true" />
       <div className="container love-head">
         <div className="eyebrow">{love.eyebrow}</div>

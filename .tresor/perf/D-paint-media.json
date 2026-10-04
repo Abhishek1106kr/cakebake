@@ -1,0 +1,501 @@
+{
+ "label": "D-paint-media",
+ "base": "http://localhost:3004",
+ "measuredAt": "2026-10-04T15:44:38",
+ "lenisForcedOff": false,
+ "idle": false,
+ "reducedMotion": false,
+ "reps": 2,
+ "method": "Chrome (headless) via Playwright + CDP; synthesized scroll gesture; phones 4x CPU throttle, DPR 3; desktop 2x throttle, DPR 1; median run of reps by p95 frame time; one extra traced run for thread breakdown.",
+ "results": {
+  "story@1440": {
+   "scrollPx": 12000,
+   "scrolledTo": 12000,
+   "wallS": 9.98,
+   "lenis": true,
+   "frames": 596,
+   "seconds": 9.97,
+   "fps": 59.7,
+   "frameMs": {
+    "p50": 16.7,
+    "p95": 17.0,
+    "p99": 17.14,
+    "max": 33.4
+   },
+   "stdevMs": 1.19,
+   "droppedPct": 0.5,
+   "droppedFrames": 3,
+   "over50ms": 0,
+   "reactCommits": 8,
+   "commitsPerSecond": 0.8,
+   "loaf": {
+    "count": 1,
+    "totalMs": 62,
+    "blockingMs": 0,
+    "renderMs": 1,
+    "topScripts": []
+   },
+   "longTasks": {
+    "count": 0,
+    "totalMs": 0
+   },
+   "cdp": {
+    "scriptMs": 365.4,
+    "layoutMs": 41.6,
+    "styleMs": 189.3,
+    "taskMs": 2068.2,
+    "layouts": 141,
+    "styleRecalcs": 1204,
+    "heapMB": 7.6,
+    "heapGrowthMB": 1.15
+   },
+   "cls": 0,
+   "runningAnimations": 1,
+   "maxRunningAnimations": 14,
+   "videos": {
+    "total": 6,
+    "playing": 0,
+    "preload": [
+     "auto",
+     "none",
+     "none",
+     "none",
+     "none",
+     "none"
+    ],
+    "decoded": 379
+   },
+   "images": {
+    "count": 14,
+    "overDecodeMedian": 3.9830377062958897,
+    "over4x": 6,
+    "imageKB": 563,
+    "videoKB": 3612,
+    "totalKB": 4519
+   },
+   "domNodes": 663,
+   "slowEvents": [],
+   "trace": {
+    "script": 1129.8,
+    "style": 191.5,
+    "layout": 44.1,
+    "layerize": 541.0,
+    "paint": 238.9,
+    "raster": 67.8,
+    "decode": 135.8
+   },
+   "repsP95": [
+    17.0,
+    17.0
+   ],
+   "repsDropped": [
+    0.0,
+    0.5
+   ]
+  },
+  "story@1024": {
+   "scrollPx": 12000,
+   "scrolledTo": 12000,
+   "wallS": 9.97,
+   "lenis": true,
+   "frames": 597,
+   "seconds": 9.95,
+   "fps": 59.9,
+   "frameMs": {
+    "p50": 16.7,
+    "p95": 17.0,
+    "p99": 17.1,
+    "max": 33.3
+   },
+   "stdevMs": 0.71,
+   "droppedPct": 0.17,
+   "droppedFrames": 1,
+   "over50ms": 0,
+   "reactCommits": 8,
+   "commitsPerSecond": 0.8,
+   "loaf": {
+    "count": 0,
+    "totalMs": 0,
+    "blockingMs": 0,
+    "renderMs": 0,
+    "topScripts": []
+   },
+   "longTasks": {
+    "count": 0,
+    "totalMs": 0
+   },
+   "cdp": {
+    "scriptMs": 366.8,
+    "layoutMs": 27.2,
+    "styleMs": 189.7,
+    "taskMs": 2063.5,
+    "layouts": 122,
+    "styleRecalcs": 1203,
+    "heapMB": 7.4,
+    "heapGrowthMB": 1.05
+   },
+   "cls": 0,
+   "runningAnimations": 1,
+   "maxRunningAnimations": 12,
+   "videos": {
+    "total": 6,
+    "playing": 0,
+    "preload": [
+     "auto",
+     "none",
+     "none",
+     "none",
+     "none",
+     "none"
+    ],
+    "decoded": 336
+   },
+   "images": {
+    "count": 14,
+    "overDecodeMedian": 6.847569763663062,
+    "over4x": 11,
+    "imageKB": 563,
+    "videoKB": 3219,
+    "totalKB": 4097
+   },
+   "domNodes": 671,
+   "slowEvents": [],
+   "trace": {
+    "script": 1089.4,
+    "style": 190.6,
+    "layout": 39.6,
+    "layerize": 512.8,
+    "paint": 228.6,
+    "raster": 69.3,
+    "decode": 136.0
+   },
+   "repsP95": [
+    17.0,
+    17.0
+   ],
+   "repsDropped": [
+    0.0,
+    0.17
+   ]
+  },
+  "story@390": {
+   "scrollPx": 12000,
+   "scrolledTo": 12000,
+   "wallS": 8.02,
+   "lenis": false,
+   "frames": 473,
+   "seconds": 8.0,
+   "fps": 59.0,
+   "frameMs": {
+    "p50": 16.7,
+    "p95": 17.0,
+    "p99": 33.23,
+    "max": 33.4
+   },
+   "stdevMs": 2.16,
+   "droppedPct": 1.69,
+   "droppedFrames": 8,
+   "over50ms": 0,
+   "reactCommits": 8,
+   "commitsPerSecond": 1.0,
+   "loaf": {
+    "count": 0,
+    "totalMs": 0,
+    "blockingMs": 0,
+    "renderMs": 0,
+    "topScripts": []
+   },
+   "longTasks": {
+    "count": 0,
+    "totalMs": 0
+   },
+   "cdp": {
+    "scriptMs": 328.0,
+    "layoutMs": 53.6,
+    "styleMs": 224.0,
+    "taskMs": 2755.0,
+    "layouts": 104,
+    "styleRecalcs": 880,
+    "heapMB": 7.9,
+    "heapGrowthMB": 1.61
+   },
+   "cls": 0,
+   "runningAnimations": 0,
+   "maxRunningAnimations": 9,
+   "videos": {
+    "total": 6,
+    "playing": 0,
+    "preload": [
+     "auto",
+     "none",
+     "none",
+     "none",
+     "none",
+     "none"
+    ],
+    "decoded": 297
+   },
+   "images": {
+    "count": 13,
+    "overDecodeMedian": 0.6628253570343832,
+    "over4x": 1,
+    "imageKB": 329,
+    "videoKB": 3219,
+    "totalKB": 3862
+   },
+   "domNodes": 657,
+   "slowEvents": [],
+   "trace": {
+    "script": 1165.5,
+    "style": 304.8,
+    "layout": 63.2,
+    "layerize": 880.5,
+    "paint": 474.9,
+    "raster": 64.8,
+    "decode": 64.2
+   },
+   "repsP95": [
+    17.0,
+    17.0
+   ],
+   "repsDropped": [
+    1.69,
+    0.42
+   ]
+  },
+  "home@1440": {
+   "scrollPx": 12000,
+   "scrolledTo": 12000,
+   "wallS": 9.95,
+   "lenis": true,
+   "frames": 597,
+   "seconds": 9.93,
+   "fps": 60.0,
+   "frameMs": {
+    "p50": 16.7,
+    "p95": 17.0,
+    "p99": 17.1,
+    "max": 17.2
+   },
+   "stdevMs": 0.15,
+   "droppedPct": 0.0,
+   "droppedFrames": 0,
+   "over50ms": 0,
+   "reactCommits": 5,
+   "commitsPerSecond": 0.5,
+   "loaf": {
+    "count": 1,
+    "totalMs": 52,
+    "blockingMs": 0,
+    "renderMs": 2,
+    "topScripts": []
+   },
+   "longTasks": {
+    "count": 0,
+    "totalMs": 0
+   },
+   "cdp": {
+    "scriptMs": 278.4,
+    "layoutMs": 27.6,
+    "styleMs": 141.8,
+    "taskMs": 1647.3,
+    "layouts": 108,
+    "styleRecalcs": 947,
+    "heapMB": 10.1,
+    "heapGrowthMB": 2.14
+   },
+   "cls": 0.1109,
+   "runningAnimations": 1,
+   "maxRunningAnimations": 8,
+   "videos": {
+    "total": 0,
+    "playing": 0,
+    "preload": [],
+    "decoded": 0
+   },
+   "images": {
+    "count": 15,
+    "overDecodeMedian": 4.022915279064192,
+    "over4x": 9,
+    "imageKB": 812,
+    "videoKB": 0,
+    "totalKB": 1150
+   },
+   "domNodes": 989,
+   "slowEvents": [],
+   "trace": {
+    "script": 966.3,
+    "style": 166.3,
+    "layout": 36.7,
+    "layerize": 397.9,
+    "paint": 136.2,
+    "raster": 35.1,
+    "decode": 215.2
+   },
+   "repsP95": [
+    16.9,
+    17.0
+   ],
+   "repsDropped": [
+    0.0,
+    0.0
+   ]
+  },
+  "home@1024": {
+   "scrollPx": 12000,
+   "scrolledTo": 12000,
+   "wallS": 9.95,
+   "lenis": true,
+   "frames": 596,
+   "seconds": 9.93,
+   "fps": 59.9,
+   "frameMs": {
+    "p50": 16.7,
+    "p95": 17.0,
+    "p99": 17.1,
+    "max": 33.3
+   },
+   "stdevMs": 0.7,
+   "droppedPct": 0.17,
+   "droppedFrames": 1,
+   "over50ms": 0,
+   "reactCommits": 8,
+   "commitsPerSecond": 0.8,
+   "loaf": {
+    "count": 0,
+    "totalMs": 0,
+    "blockingMs": 0,
+    "renderMs": 0,
+    "topScripts": []
+   },
+   "longTasks": {
+    "count": 0,
+    "totalMs": 0
+   },
+   "cdp": {
+    "scriptMs": 318.1,
+    "layoutMs": 38.1,
+    "styleMs": 160.6,
+    "taskMs": 1867.2,
+    "layouts": 143,
+    "styleRecalcs": 989,
+    "heapMB": 9.1,
+    "heapGrowthMB": 1.33
+   },
+   "cls": 0.2685,
+   "runningAnimations": 1,
+   "maxRunningAnimations": 8,
+   "videos": {
+    "total": 0,
+    "playing": 0,
+    "preload": [],
+    "decoded": 0
+   },
+   "images": {
+    "count": 17,
+    "overDecodeMedian": 7.3119279607114205,
+    "over4x": 10,
+    "imageKB": 1085,
+    "videoKB": 0,
+    "totalKB": 1383
+   },
+   "domNodes": 993,
+   "slowEvents": [],
+   "trace": {
+    "script": 1043.3,
+    "style": 167.8,
+    "layout": 42.4,
+    "layerize": 433.5,
+    "paint": 162.1,
+    "raster": 33.3,
+    "decode": 253.0
+   },
+   "repsP95": [
+    17.0,
+    16.9
+   ],
+   "repsDropped": [
+    0.17,
+    0.0
+   ]
+  },
+  "home@390": {
+   "scrollPx": 12000,
+   "scrolledTo": 12000,
+   "wallS": 8.05,
+   "lenis": false,
+   "frames": 479,
+   "seconds": 8.03,
+   "fps": 59.5,
+   "frameMs": {
+    "p50": 16.7,
+    "p95": 16.92,
+    "p99": 17.12,
+    "max": 33.4
+   },
+   "stdevMs": 1.52,
+   "droppedPct": 0.84,
+   "droppedFrames": 4,
+   "over50ms": 0,
+   "reactCommits": 2,
+   "commitsPerSecond": 0.2,
+   "loaf": {
+    "count": 1,
+    "totalMs": 68,
+    "blockingMs": 0,
+    "renderMs": 2,
+    "topScripts": []
+   },
+   "longTasks": {
+    "count": 0,
+    "totalMs": 0
+   },
+   "cdp": {
+    "scriptMs": 263.8,
+    "layoutMs": 27.1,
+    "styleMs": 223.3,
+    "taskMs": 2094.7,
+    "layouts": 38,
+    "styleRecalcs": 702,
+    "heapMB": 7.8,
+    "heapGrowthMB": 0.42
+   },
+   "cls": 0.0164,
+   "runningAnimations": 1,
+   "maxRunningAnimations": 8,
+   "videos": {
+    "total": 0,
+    "playing": 0,
+    "preload": [],
+    "decoded": 0
+   },
+   "images": {
+    "count": 13,
+    "overDecodeMedian": 1.3052517006802722,
+    "over4x": 0,
+    "imageKB": 601,
+    "videoKB": 0,
+    "totalKB": 899
+   },
+   "domNodes": 985,
+   "slowEvents": [],
+   "trace": {
+    "script": 1107.1,
+    "style": 265.2,
+    "layout": 33.2,
+    "layerize": 510.9,
+    "paint": 271.7,
+    "raster": 20.7,
+    "decode": 244.2
+   },
+   "repsP95": [
+    16.9,
+    16.92
+   ],
+   "repsDropped": [
+    1.26,
+    0.84
+   ]
+  }
+ }
+}

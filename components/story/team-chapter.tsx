@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, type CSSProperties } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useTransform } from 'framer-motion';
+import { useElementScrollProgress } from '@/components/scroll-progress';
 import { Parallax, SplitText, useReducedMotionSafe } from '@/components/cinematic';
 import { team, type TeamTile } from '@/lib/story';
 import { Reveal, StoryMedia } from './primitives';
@@ -28,7 +29,7 @@ function Tile({ tile, delay = 0 }: { tile: TeamTile; delay?: number }) {
 function FinalPortrait({ tile }: { tile: TeamTile }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotionSafe();
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] });
+  const scrollYProgress = useElementScrollProgress(ref, ['start end', 'center center']);
   const scale = useTransform(scrollYProgress, [0, 1], [1.16, 1]);
   return (
     <div ref={ref} className="team-final" style={{ '--col': tile.col, '--mcol': tile.mcol } as CSSProperties}>

@@ -191,3 +191,64 @@ Reasoning:
 It looks good, stays instant, and is accessible. The configuration is renderer-agnostic, so a future 3D view needs no data changes.
 
 Related: TRESOR-CAKE-PLAYGROUND.
+
+## DEC-014 · Keep Lenis (measured, not assumed)
+Date: 2026-10-04
+
+Decision:
+Lenis stays on for desktop fine pointers, unchanged. It remains off for touch, reduced motion and /admin.
+
+Reasoning:
+Measured A (Lenis on) against B (Lenis forced off, same build) on home, story, menu, product and Cake Playground at 1440 and 1024 (2x CPU throttle).
+- Lenis costs main-thread script: home 533 vs 412 ms per scroll, story 752 vs 680 ms. Most of it is its per-frame `window.scrollTo` (130–165 ms in a CPU profile).
+- Native scrolling was not smoother. Dropped frames: home 0.0% with Lenis vs 1.02% without; story 0.0% vs 1.19%; product 0.98% vs 0.0%. Every difference was within about 1%.
+- The brief's rule was "remove it if native is smoother", and it is not.
+- Idle cost of its always-on rAF loop measured about 4 ms of script per 4 s, so it was not worth changing.
+
+Related: TRESOR-PERF.
+
+## DEC-015 · One scroll source instead of per-element useScroll
+Date: 2026-10-04
+
+Decision:
+Every scroll-linked scene (ScrollScene, HorizontalTrack, Parallax, cake strip, story years/finale/team portrait) reads progress from `components/scroll-progress.ts`.
+- One passive scroll listener feeds one shared motion value.
+- Element positions are measured on mount and resize only, through a ResizeObserver on the body and on the element.
+- Offsets keep Framer's meaning and are measured the same way (offsetTop chain, clientHeight).
+
+Reasoning:
+- Framer's `useScroll({ target })` re-measures its target on every scroll frame, once per hook (`calcInset` offsetParent walk plus clientWidth/clientHeight).
+- The story page has about 15 such hooks. A CPU profile put this work as the largest scroll-time script cost.
+- After the change, script during one scroll fell from 752 to 319 ms (story at 1440) and from 985 to 382 ms (story at 390). Home went from 533 to 276 ms. CPU-profile busy time on story at 390 went from 835 to 208 ms.
+- Framer's ScrollTimeline acceleration was not in play here: it only applies to opacity/clipPath/filter/transform/backgroundColor keys, and every scroll-linked style here uses x/y/scale or a transformer.
+- Pixel diffs of home, story and product at 14 scroll positions, at 1440 and 390, are identical except DEC-016.
+
+Related: TRESOR-PERF.
+
+## DEC-016 · Story craft line reserves the tallest line (one intentional visual change)
+Date: 2026-10-04
+
+Decision:
+`.craft-line-wrap` stacks invisible copies of every craft line in one grid cell, so its height is always that of the tallest line.
+
+Reasoning:
+- The line swaps between sentences of different lengths, which resized the copy column and moved the frame beside it.
+- Measured CLS was 0.03 on phones, from two shifts with sources `craft-frame` and `craft-copy`.
+- With the reservation, nothing moves when the line changes.
+- The visible consequence: while a short line shows, the copy block sits about 15 px higher on desktop, and on phones the whole stage sits about 30 px higher. Visual diff frames: story-1440-022/030 and story-390-015/022.
+- This is the only frame-level difference in the visual regression.
+
+Related: TRESOR-PERF.
+
+## DEC-017 · StoreProvider not split; AnimatedNumber writes to the DOM
+Date: 2026-10-04
+
+Decision:
+StoreProvider stays one context. The count-up in `AnimatedNumber` writes in-between values to its own text node. React renders only the final value.
+
+Reasoning:
+- StoreProvider: the profiler counted 0–8 React commits during a full-page scroll on every page, and the store does not change while scrolling. localStorage writes happen only when cart/orders/inventory change, so splitting it was not justified by measurement.
+- AnimatedNumber: Cake Playground clicks were the outlier, with 142–164 commits for 8 option clicks. The cause was `AnimatedNumber` calling setState on every animation frame (about 27 re-renders of the studio per price change). After the change: 10–12 commits. Main-thread time for 6 clicks on a throttled phone fell from 485 to 338 ms.
+- Remaining click latency is 40–160 ms to next paint at 4x CPU throttle, within the INP "good" threshold. It is mostly Framer layout projection for the sliding selection indicators, which is part of the design, so it was left alone.
+
+Related: TRESOR-PERF.

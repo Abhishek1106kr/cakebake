@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { motion, useMotionTemplate, useScroll, useTransform } from 'framer-motion';
+import { motion, useMotionTemplate, useTransform } from 'framer-motion';
+import { useElementScrollProgress } from '@/components/scroll-progress';
 import { SplitText, useReducedMotionSafe } from '@/components/cinematic';
 import { finale } from '@/lib/story';
 import type { Route } from 'next';
@@ -12,7 +13,7 @@ import type { Route } from 'next';
 export function StoryFinale() {
   const reduce = useReducedMotionSafe();
   const markRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: markRef, offset: ['start end', 'center center'] });
+  const scrollYProgress = useElementScrollProgress(markRef, ['start end', 'center center']);
   const fill = useTransform(scrollYProgress, [0.25, 1], [0, 100]);
   // The wordmark fills like ink rising through outlined letters.
   const bg = useMotionTemplate`linear-gradient(0deg, var(--ink) ${fill}%, transparent ${fill}%)`;

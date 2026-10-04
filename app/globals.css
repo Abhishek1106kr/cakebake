@@ -198,6 +198,15 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .opening-meta { display: flex; flex-wrap: wrap; gap: 24px; align-items: center; margin-top: 28px; font-family: Inter, system-ui, sans-serif; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; }
 .scroll-cue { position: absolute; right: var(--gutter); bottom: 6vh; color: #fff; display: grid; justify-items: center; gap: 10px; font-size: 10px; letter-spacing: .3em; text-transform: uppercase; }
 .scroll-cue i { display: block; width: 1px; height: 56px; background: #fff; }
+/* Compositor-only loops (were Framer JS keyframes running every frame forever).
+   The cue grows from the top and leaves through the bottom: scaleY with origin top,
+   then translate + scale, which is the same as scaling from the bottom. */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-cue-line { transform-origin: 50% 0; animation: cue-line 2s cubic-bezier(.42, 0, .58, 1) infinite; }
+  .empty-bob { animation: empty-bob 2.4s cubic-bezier(.42, 0, .58, 1) infinite; }
+}
+@keyframes cue-line { 0% { transform: translateY(0) scaleY(0); } 50% { transform: translateY(0) scaleY(1); } 100% { transform: translateY(100%) scaleY(0); } }
+@keyframes empty-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 /* 02 craft */
 .craft { display: grid; grid-template-columns: .9fr 1.1fr; height: 100%; align-items: center; gap: 5vw; padding: 0 var(--gutter); background: var(--bg); }
@@ -630,10 +639,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .story-page { --film: #121615; --cream: #F1ECE3; --paper: #F7F5F0; background: var(--bg); }
 .film { position: relative; overflow: hidden; }
 .film video, .film img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.film-grain, .love-grain { position: absolute; inset: -50%; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+/* Grain: the layer is only as large as its jitter needs (was inset -50%, 4x the
+   blended area). Keyframes are scaled so the jitter moves the same distance.
+   It only animates while its film or section is near the viewport (.is-live). */
+.film-grain, .love-grain { position: absolute; inset: -8%; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  animation: story-grain 1.4s steps(6) infinite; }
-@keyframes story-grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); } 60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); } }
+  animation: story-grain 1.4s steps(6) infinite; animation-play-state: paused; }
+.is-live > .film-grain, .is-live > .love-grain { animation-play-state: running; }
+@keyframes story-grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-5.17%, 3.45%); } 40% { transform: translate(3.45%, -5.17%); } 60% { transform: translate(-3.45%, -1.72%); } 80% { transform: translate(5.17%, 5.17%); } 100% { transform: translate(0, 0); } }
 .story-img { position: relative; overflow: hidden; }
 
 /* 01 Opening */
@@ -679,7 +692,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .craft-steps li.is-done { color: var(--brand-dark); }
 .craft-track { height: 1px; background: var(--line); margin: 16px 0 44px; }
 .craft-track span { display: block; height: 100%; background: var(--ink); }
-.craft-line-wrap { min-height: 3.2em; font-size: clamp(36px, 4.4vw, 74px); }
+.craft-line-wrap { min-height: 3.2em; font-size: clamp(36px, 4.4vw, 74px); display: grid; align-items: start; }
+.craft-line-wrap > * { grid-area: 1 / 1; }
+.craft-line-sizer { visibility: hidden; pointer-events: none; }
 .craft-line { margin: 0; max-width: 13ch; font-family: var(--serif); font-weight: 500; font-size: inherit; line-height: 1.02; }
 .craft-frame { position: relative; justify-self: end; height: min(76vh, 760px); aspect-ratio: 4 / 5; max-width: 100%; overflow: hidden; border-radius: 3px; background: #DDE3E1; box-shadow: 0 40px 80px rgba(32, 38, 37, .18); }
 .craft-layer, .craft-layer-inner, .craft-media { position: absolute; inset: 0; }
