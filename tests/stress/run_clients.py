@@ -407,11 +407,17 @@ async def verify_order_automation(page, base, rec, order_id, faults, custom=Fals
         rows = await page.locator('.spec-row').count()
         rec.check('custom cake spec rows present', rows >= 10, 'P1', 'automation', detail=f'{rows} rows')
         if expect_print:
-            try:
-                await page.wait_for_selector('.cc-artwork img', timeout=5000)  # read back from IndexedDB
-            except Exception:
-                pass
-            rec.check('print artwork available to the bakery', await page.locator('.cc-artwork img').count() > 0, 'P1', 'automation', where='/admin/custom-cakes')
+            # An order can hold several cakes (two-cakes chaos); only the photo-print one has artwork.
+            found = False
+            items = page.locator(f'.cc-item:has-text("{order_id}")')
+            for i in range(await items.count()):
+                await items.nth(i).click(); await settle(page, 400)
+                try:
+                    await page.wait_for_selector('.cc-artwork img', timeout=4000)  # read back from IndexedDB
+                    found = True; break
+                except Exception:
+                    continue
+            rec.check('print artwork available to the bakery', found, 'P1', 'automation', where='/admin/custom-cakes')
     await go(page, base, f'/track-order?id={order_id}')
     await settle(page, 700)
     rec.check('tracking page shows the order', await page.locator(f'text={order_id}').count() > 0, 'P2', where='/track-order')
@@ -543,10 +549,16 @@ async def status_flow(page, base, rec, oid):
     rec.check('status history only moves forward', hist == order[:len(hist)], 'P1', detail=str(hist))
     await page.wait_for_timeout(2500)
     jobs = [j for j in (await ls(page, 'tresor-automation-jobs', []) or []) if j['orderId'] == oid and j['topic'].startswith('status:')]
-    expected = {f'status:{s}' for s in hist if s in ('READY', 'OUT_FOR_DELIVERY', 'DELIVERED')}
+    # Mirrors NOTIFY_STATUSES in lib/automation/automation.ts (PREPARING joined with live tracking).
+    expected = {f'status:{s}' for s in hist if s in ('PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED')}
     rec.check('status updates trigger one whatsapp each', {j['topic'] for j in jobs} == expected and len(jobs) == len(expected), 'P2', 'automation', detail=f"{sorted(j['topic'] for j in jobs)} vs {sorted(expected)}")
-    await go(page, base, f'/track-order?id={oid}'); await settle(page, 600)
-    rec.check('tracking reflects the latest status', await page.locator('.track-head').count() > 0, 'P2')
+    await go(page, base, f'/track/{oid}')
+    try: await page.wait_for_selector('.track-timeline li[aria-current="step"]', timeout=8000)
+    except Exception: pass
+    steps = page.locator('.track-timeline li.tl-step')
+    cur = order.index(o['status']) if o['status'] in order else -1
+    shown = await steps.nth(cur).get_attribute('aria-current') if cur >= 0 and await steps.count() > cur else None
+    rec.check('tracking reflects the latest status', shown == 'step', 'P2', where=f'/track/{oid}', detail=f"latest {o['status']}, current step marked: {shown}")
 
 async def j_custom(page, base, rec, r, c, with_print=False, upload=None):
     rec.events_expected |= {'customizer_opened', 'cake_started', 'option_selected', 'custom_cake_added_to_cart'}

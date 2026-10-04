@@ -1,0 +1,65 @@
+[
+ {
+  "issue": "controls clickable without being covered",
+  "severity": "P2",
+  "count": 2,
+  "clients": [
+   "CLIENT-016",
+   "CLIENT-060"
+  ],
+  "examples": [
+   {
+    "client": "CLIENT-016",
+    "device": "desktop 1280px",
+    "detail": "scrolling a control into view (or focusing it by keyboard) leaves it under the sticky cake preview"
+   },
+   {
+    "client": "CLIENT-060",
+    "device": "desktop 1440px",
+    "detail": "scrolling a control into view (or focusing it by keyboard) leaves it under the sticky cake preview"
+   }
+  ],
+  "likelyCause": "Same sticky preview: scrolling a control into view (or keyboard focus) leaves it under the preview (WCAG 2.4.11 focus not obscured).",
+  "replay": "python tests/stress/run_clients.py --client CLIENT-016 --client CLIENT-060"
+ },
+ {
+  "issue": "blur warning for a low-resolution photo",
+  "severity": "P2",
+  "count": 1,
+  "clients": [
+   "CLIENT-028"
+  ],
+  "examples": [
+   {
+    "client": "CLIENT-028",
+    "device": "tablet 768px",
+    "detail": ""
+   }
+  ],
+  "likelyCause": "",
+  "replay": "python tests/stress/run_clients.py --client CLIENT-028"
+ },
+ {
+  "issue": "checkout fits after resizing to mobile",
+  "severity": "P3",
+  "count": 2,
+  "clients": [
+   "CLIENT-047",
+   "CLIENT-053"
+  ],
+  "examples": [
+   {
+    "client": "CLIENT-047",
+    "device": "desktop 1024px",
+    "detail": ""
+   },
+   {
+    "client": "CLIENT-053",
+    "device": "tablet 768px",
+    "detail": ""
+   }
+  ],
+  "likelyCause": "",
+  "replay": "python tests/stress/run_clients.py --client CLIENT-047 --client CLIENT-053"
+ }
+]

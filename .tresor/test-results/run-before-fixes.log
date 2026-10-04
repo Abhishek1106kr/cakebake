@@ -1,0 +1,120 @@
+CLIENT-001 saved           desktop completed              fe 100 auto 100 fails 0 
+CLIENT-002 abandon         desktop abandoned              fe 100 auto  90 fails 1 
+CLIENT-003 invalid-upload  desktop completed              fe 100 auto 100 fails 0 
+CLIENT-004 standard        desktop completed              fe 100 auto  90 fails 1 
+CLIENT-005 custom          desktop completed              fe  80 auto 100 fails 2 
+CLIENT-006 print           desktop completed              fe 100 auto 100 fails 0 
+CLIENT-007 standard        tablet  crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-008 standard        mobile  completed              fe 100 auto  90 fails 1 
+CLIENT-009 custom          tablet  completed              fe  65 auto 100 fails 2 P1 bag keeps the full configuration: 
+CLIENT-010 standard        tablet  crashed                fe  75 auto 100 fails 1 P1 journey ran without a harness or app crash: TimeoutError: Timeout 8000ms exceeded.
+=========================== logs ===========================
+waiting for n
+CLIENT-011 share           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-012 abandon         desktop abandoned              fe 100 auto  90 fails 1 
+CLIENT-013 saved           desktop completed              fe  80 auto 100 fails 2 
+CLIENT-014 edit-reset      mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-015 share           desktop completed              fe  80 auto 100 fails 2 
+CLIENT-016 share           desktop completed              fe  90 auto 100 fails 1 
+CLIENT-017 standard        mobile  crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-018 standard        tablet  completed              fe 100 auto  90 fails 1 
+CLIENT-019 payment-failure mobile  completed-after-retry  fe 100 auto 100 fails 0 
+CLIENT-020 payment-failure tablet  completed-after-retry  fe 100 auto 100 fails 0 
+CLIENT-021 custom          desktop completed              fe  75 auto 100 fails 1 P1 bag keeps the full configuration: 
+CLIENT-022 abandon         desktop abandoned              fe 100 auto  90 fails 1 
+CLIENT-023 abandon         desktop abandoned              fe 100 auto  90 fails 1 
+CLIENT-024 share           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-025 saved           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-026 standard        mobile  completed              fe 100 auto  90 fails 1 
+CLIENT-027 print           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-028 print           tablet  completed              fe  80 auto 100 fails 2 
+CLIENT-029 custom          tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-030 abandon         desktop abandoned              fe 100 auto  90 fails 1 
+CLIENT-031 abandon         mobile  abandoned              fe 100 auto  90 fails 1 
+CLIENT-032 standard        tablet  crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-033 print           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-034 saved           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-035 invalid-custom  mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-036 share           tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-037 share           tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-038 print           desktop completed              fe 100 auto 100 fails 0 
+CLIENT-039 abandon         mobile  abandoned              fe 100 auto  90 fails 1 
+CLIENT-040 payment-failure desktop completed-after-retry  fe 100 auto 100 fails 0 
+CLIENT-041 standard        mobile  completed              fe 100 auto  90 fails 1 
+CLIENT-042 invalid-upload  desktop completed              fe 100 auto 100 fails 0 
+CLIENT-043 payment-failure mobile  completed-after-retry  fe 100 auto 100 fails 0 
+CLIENT-044 saved           desktop completed              fe  80 auto 100 fails 2 
+CLIENT-045 abandon         tablet  abandoned              fe  90 auto  90 fails 2 
+CLIENT-046 abandon         mobile  abandoned              fe 100 auto  90 fails 1 
+CLIENT-047 standard        desktop completed              fe  96 auto  90 fails 2 
+CLIENT-048 standard        desktop crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-049 custom          mobile  completed              fe  75 auto 100 fails 1 P1 bag keeps the full configuration: 
+CLIENT-050 custom          desktop completed              fe  80 auto 100 fails 2 
+CLIENT-051 custom          mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-052 saved           tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-053 standard        tablet  completed              fe  96 auto  90 fails 2 
+CLIENT-054 print           desktop completed              fe  80 auto 100 fails 2 
+CLIENT-055 custom          desktop completed              fe 100 auto 100 fails 0 
+CLIENT-056 edit-reset      mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-057 standard        tablet  crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-058 saved           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-059 invalid-custom  mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-060 share           desktop completed              fe  90 auto 100 fails 1 
+CLIENT-061 custom          desktop completed              fe  90 auto 100 fails 1 
+CLIENT-062 print           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-063 share           tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-064 print           mobile  completed              fe 100 auto  75 fails 1 P1 print artwork available to the bakery: 
+CLIENT-065 invalid-upload  desktop completed              fe  90 auto 100 fails 1 
+CLIENT-066 custom          desktop completed              fe 100 auto 100 fails 0 
+CLIENT-067 standard        desktop crashed                fe  75 auto 100 fails 1 P1 journey ran without a harness or app crash: TimeoutError: Timeout 8000ms exceeded.
+=========================== logs ===========================
+waiting for n
+CLIENT-068 print           desktop completed              fe 100 auto 100 fails 0 
+CLIENT-069 custom          desktop completed              fe 100 auto 100 fails 0 
+CLIENT-070 saved           desktop completed              fe 100 auto 100 fails 0 
+CLIENT-071 saved           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-072 invalid-custom  tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-073 standard        desktop completed              fe 100 auto  90 fails 1 
+CLIENT-074 payment-failure desktop completed-after-retry  fe 100 auto 100 fails 0 
+CLIENT-075 standard        desktop crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-076 invalid-upload  mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-077 custom          mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-078 invalid-custom  mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-079 custom          mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-080 edit-reset      mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-081 custom          desktop completed              fe 100 auto 100 fails 0 
+CLIENT-082 standard        desktop completed              fe 100 auto  90 fails 1 
+CLIENT-083 custom          mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-084 custom          tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-085 print           tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-086 abandon         tablet  abandoned              fe  90 auto  90 fails 2 
+CLIENT-087 edit-reset      desktop completed              fe 100 auto 100 fails 0 
+CLIENT-088 standard        mobile  crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-089 share           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-090 standard        mobile  completed              fe 100 auto  90 fails 1 
+CLIENT-091 invalid-custom  mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-092 invalid-upload  tablet  completed              fe  90 auto 100 fails 1 
+CLIENT-093 custom          mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-094 share           mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-095 custom          mobile  completed              fe 100 auto 100 fails 0 
+CLIENT-096 saved           desktop completed              fe 100 auto 100 fails 0 
+CLIENT-097 custom          desktop completed              fe  65 auto 100 fails 2 P1 bag keeps the full configuration: 
+CLIENT-098 edit-reset      desktop completed              fe 100 auto 100 fails 0 
+CLIENT-099 standard        mobile  crashed                fe  65 auto 100 fails 2 P1 journey ran without a harness or app crash: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("button[aria-label=\"
+CLIENT-100 custom          mobile  completed              fe  50 auto 100 fails 2 P1 displayed price equals independently computed price: shown ₹4360, expected ₹2560; P1 earliest ready slot respects lead time: shown "Tue, 6 Oct · 10:00–12:00"

@@ -1,0 +1,1481 @@
+[
+ {
+  "clientId": "CLIENT-001",
+  "seed": 20261004,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-002",
+  "seed": 20268923,
+  "journey": "abandon",
+  "persona": "abandons-customizer",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-003",
+  "seed": 20276842,
+  "journey": "invalid-upload",
+  "persona": "invalid-upload",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-004",
+  "seed": 20284761,
+  "journey": "standard",
+  "persona": "first-time",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "refresh-confirmation",
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-005",
+  "seed": 20292680,
+  "journey": "custom",
+  "persona": "unavailable-option",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-006",
+  "seed": 20300599,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "back-button",
+   "duplicate-trigger"
+  ]
+ },
+ {
+  "clientId": "CLIENT-007",
+  "seed": 20308518,
+  "journey": "standard",
+  "persona": "first-time",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "refresh-checkout",
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-008",
+  "seed": 20316437,
+  "journey": "standard",
+  "persona": "first-time",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-confirmation",
+   "resize"
+  ]
+ },
+ {
+  "clientId": "CLIENT-009",
+  "seed": 20324356,
+  "journey": "custom",
+  "persona": "surprise-me",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "double-click",
+   "refresh-confirmation",
+   "slow-payment",
+   "resize",
+   "duplicate-trigger"
+  ]
+ },
+ {
+  "clientId": "CLIENT-010",
+  "seed": 20332275,
+  "journey": "standard",
+  "persona": "impatient",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "slow-payment",
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-011",
+  "seed": 20340194,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-012",
+  "seed": 20348113,
+  "journey": "abandon",
+  "persona": "abandons-search",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-013",
+  "seed": 20356032,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-014",
+  "seed": 20363951,
+  "journey": "edit-reset",
+  "persona": "resets-repeatedly",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-015",
+  "seed": 20371870,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-016",
+  "seed": 20379789,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-017",
+  "seed": 20387708,
+  "journey": "standard",
+  "persona": "returning",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-018",
+  "seed": 20395627,
+  "journey": "standard",
+  "persona": "coffee-pastry",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-019",
+  "seed": 20403546,
+  "journey": "payment-failure",
+  "persona": "payment-failure",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {
+   "payment": "fail-once"
+  },
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-020",
+  "seed": 20411465,
+  "journey": "payment-failure",
+  "persona": "payment-failure",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {
+   "payment": "decline"
+  },
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-021",
+  "seed": 20419384,
+  "journey": "custom",
+  "persona": "surprise-me",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "duplicate-trigger"
+  ]
+ },
+ {
+  "clientId": "CLIENT-022",
+  "seed": 20427303,
+  "journey": "abandon",
+  "persona": "abandons-cart",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-023",
+  "seed": 20435222,
+  "journey": "abandon",
+  "persona": "abandons-cart",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-024",
+  "seed": 20443141,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-025",
+  "seed": 20451060,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-026",
+  "seed": 20458979,
+  "journey": "standard",
+  "persona": "first-time",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout"
+  ]
+ },
+ {
+  "clientId": "CLIENT-027",
+  "seed": 20466898,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-confirmation",
+   "slow-payment",
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-028",
+  "seed": 20474817,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "double-click"
+  ]
+ },
+ {
+  "clientId": "CLIENT-029",
+  "seed": 20482736,
+  "journey": "custom",
+  "persona": "unavailable-option",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-030",
+  "seed": 20490655,
+  "journey": "abandon",
+  "persona": "abandons-search",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-031",
+  "seed": 20498574,
+  "journey": "abandon",
+  "persona": "abandons-customizer",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-032",
+  "seed": 20506493,
+  "journey": "standard",
+  "persona": "first-time",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "double-click",
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-033",
+  "seed": 20514412,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {
+   "invoice": "fail-always",
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "refresh-checkout"
+  ]
+ },
+ {
+  "clientId": "CLIENT-034",
+  "seed": 20522331,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-035",
+  "seed": 20530250,
+  "journey": "invalid-custom",
+  "persona": "invalid-combination",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-036",
+  "seed": 20538169,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-037",
+  "seed": 20546088,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-038",
+  "seed": 20554007,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [
+   "double-click"
+  ]
+ },
+ {
+  "clientId": "CLIENT-039",
+  "seed": 20561926,
+  "journey": "abandon",
+  "persona": "abandons-cart",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-040",
+  "seed": 20569845,
+  "journey": "payment-failure",
+  "persona": "payment-failure",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {
+   "payment": "decline"
+  },
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-041",
+  "seed": 20577764,
+  "journey": "standard",
+  "persona": "coffee-pastry",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {
+   "whatsapp": "fail-always"
+  },
+  "chaos": [
+   "slow-payment"
+  ]
+ },
+ {
+  "clientId": "CLIENT-042",
+  "seed": 20585683,
+  "journey": "invalid-upload",
+  "persona": "invalid-upload",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-043",
+  "seed": 20593602,
+  "journey": "payment-failure",
+  "persona": "payment-failure",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {
+   "payment": "cancel"
+  },
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-044",
+  "seed": 20601521,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-045",
+  "seed": 20609440,
+  "journey": "abandon",
+  "persona": "abandons-customizer",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-046",
+  "seed": 20617359,
+  "journey": "abandon",
+  "persona": "abandons-cart",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-047",
+  "seed": 20625278,
+  "journey": "standard",
+  "persona": "high-value",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "resize",
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-048",
+  "seed": 20633197,
+  "journey": "standard",
+  "persona": "high-value",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-049",
+  "seed": 20641116,
+  "journey": "custom",
+  "persona": "surprise-me",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "double-click",
+   "refresh-checkout"
+  ]
+ },
+ {
+  "clientId": "CLIENT-050",
+  "seed": 20649035,
+  "journey": "custom",
+  "persona": "custom-cake",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": [
+   "back-button"
+  ]
+ },
+ {
+  "clientId": "CLIENT-051",
+  "seed": 20656954,
+  "journey": "custom",
+  "persona": "custom-cake",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": [
+   "back-button",
+   "resize",
+   "status-flow",
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-052",
+  "seed": 20664873,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-053",
+  "seed": 20672792,
+  "journey": "standard",
+  "persona": "impatient",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "resize"
+  ]
+ },
+ {
+  "clientId": "CLIENT-054",
+  "seed": 20680711,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-confirmation",
+   "slow-payment",
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-055",
+  "seed": 20688630,
+  "journey": "custom",
+  "persona": "edits-repeatedly",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "admin-realtime"
+  ]
+ },
+ {
+  "clientId": "CLIENT-056",
+  "seed": 20696549,
+  "journey": "edit-reset",
+  "persona": "resets-repeatedly",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-057",
+  "seed": 20704468,
+  "journey": "standard",
+  "persona": "returning",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "back-button"
+  ]
+ },
+ {
+  "clientId": "CLIENT-058",
+  "seed": 20712387,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-059",
+  "seed": 20720306,
+  "journey": "invalid-custom",
+  "persona": "invalid-combination",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-060",
+  "seed": 20728225,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-061",
+  "seed": 20736144,
+  "journey": "custom",
+  "persona": "unavailable-option",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "back-button"
+  ]
+ },
+ {
+  "clientId": "CLIENT-062",
+  "seed": 20744063,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": [
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-063",
+  "seed": 20751982,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-064",
+  "seed": 20759901,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "refresh-checkout",
+   "refresh-confirmation",
+   "admin-realtime",
+   "two-cakes",
+   "duplicate-trigger"
+  ]
+ },
+ {
+  "clientId": "CLIENT-065",
+  "seed": 20767820,
+  "journey": "invalid-upload",
+  "persona": "invalid-upload",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-066",
+  "seed": 20775739,
+  "journey": "custom",
+  "persona": "edits-repeatedly",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "double-click",
+   "refresh-confirmation",
+   "back-button",
+   "two-cakes",
+   "duplicate-trigger"
+  ]
+ },
+ {
+  "clientId": "CLIENT-067",
+  "seed": 20783658,
+  "journey": "standard",
+  "persona": "high-value",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-confirmation"
+  ]
+ },
+ {
+  "clientId": "CLIENT-068",
+  "seed": 20791577,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [
+   "resize"
+  ]
+ },
+ {
+  "clientId": "CLIENT-069",
+  "seed": 20799496,
+  "journey": "custom",
+  "persona": "celebration",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-confirmation",
+   "admin-realtime"
+  ]
+ },
+ {
+  "clientId": "CLIENT-070",
+  "seed": 20807415,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-071",
+  "seed": 20815334,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-072",
+  "seed": 20823253,
+  "journey": "invalid-custom",
+  "persona": "invalid-combination",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-073",
+  "seed": 20831172,
+  "journey": "standard",
+  "persona": "first-time",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "refresh-checkout",
+   "refresh-confirmation"
+  ]
+ },
+ {
+  "clientId": "CLIENT-074",
+  "seed": 20839091,
+  "journey": "payment-failure",
+  "persona": "payment-failure",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {
+   "payment": "fail-once"
+  },
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-075",
+  "seed": 20847010,
+  "journey": "standard",
+  "persona": "impatient",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout"
+  ]
+ },
+ {
+  "clientId": "CLIENT-076",
+  "seed": 20854929,
+  "journey": "invalid-upload",
+  "persona": "invalid-upload",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-077",
+  "seed": 20862848,
+  "journey": "custom",
+  "persona": "long-message",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "admin-realtime"
+  ]
+ },
+ {
+  "clientId": "CLIENT-078",
+  "seed": 20870767,
+  "journey": "invalid-custom",
+  "persona": "invalid-combination",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-079",
+  "seed": 20878686,
+  "journey": "custom",
+  "persona": "celebration",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout"
+  ]
+ },
+ {
+  "clientId": "CLIENT-080",
+  "seed": 20886605,
+  "journey": "edit-reset",
+  "persona": "resets-repeatedly",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-081",
+  "seed": 20894524,
+  "journey": "custom",
+  "persona": "long-message",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-082",
+  "seed": 20902443,
+  "journey": "standard",
+  "persona": "returning",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "admin-realtime",
+   "two-cakes"
+  ]
+ },
+ {
+  "clientId": "CLIENT-083",
+  "seed": 20910362,
+  "journey": "custom",
+  "persona": "custom-cake",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "double-click"
+  ]
+ },
+ {
+  "clientId": "CLIENT-084",
+  "seed": 20918281,
+  "journey": "custom",
+  "persona": "unavailable-option",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {
+   "invoice": "fail-always"
+  },
+  "chaos": [
+   "resize",
+   "admin-realtime"
+  ]
+ },
+ {
+  "clientId": "CLIENT-085",
+  "seed": 20926200,
+  "journey": "print",
+  "persona": "uploads-image",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "resize"
+  ]
+ },
+ {
+  "clientId": "CLIENT-086",
+  "seed": 20934119,
+  "journey": "abandon",
+  "persona": "abandons-customizer",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-087",
+  "seed": 20942038,
+  "journey": "edit-reset",
+  "persona": "resets-repeatedly",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-088",
+  "seed": 20949957,
+  "journey": "standard",
+  "persona": "cake-only",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "double-click",
+   "back-button",
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-089",
+  "seed": 20957876,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-090",
+  "seed": 20965795,
+  "journey": "standard",
+  "persona": "returning",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "back-button",
+   "status-flow",
+   "duplicate-trigger"
+  ]
+ },
+ {
+  "clientId": "CLIENT-091",
+  "seed": 20973714,
+  "journey": "invalid-custom",
+  "persona": "invalid-combination",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-092",
+  "seed": 20981633,
+  "journey": "invalid-upload",
+  "persona": "invalid-upload",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-093",
+  "seed": 20989552,
+  "journey": "custom",
+  "persona": "celebration",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "slow-payment",
+   "resize"
+  ]
+ },
+ {
+  "clientId": "CLIENT-094",
+  "seed": 20997471,
+  "journey": "share",
+  "persona": "share-link",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-095",
+  "seed": 21005390,
+  "journey": "custom",
+  "persona": "unavailable-option",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "refresh-confirmation"
+  ]
+ },
+ {
+  "clientId": "CLIENT-096",
+  "seed": 21013309,
+  "journey": "saved",
+  "persona": "saves-design",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-097",
+  "seed": 21021228,
+  "journey": "custom",
+  "persona": "surprise-me",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {
+   "whatsapp": "fail-always"
+  },
+  "chaos": [
+   "refresh-checkout"
+  ]
+ },
+ {
+  "clientId": "CLIENT-098",
+  "seed": 21029147,
+  "journey": "edit-reset",
+  "persona": "resets-repeatedly",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": []
+ },
+ {
+  "clientId": "CLIENT-099",
+  "seed": 21037066,
+  "journey": "standard",
+  "persona": "exploratory",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "status-flow"
+  ]
+ },
+ {
+  "clientId": "CLIENT-100",
+  "seed": 21044985,
+  "journey": "custom",
+  "persona": "edits-repeatedly",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "back-button"
+  ]
+ }
+]

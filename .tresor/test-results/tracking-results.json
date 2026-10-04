@@ -1,0 +1,202 @@
+[
+ {
+  "name": "opens /track/:orderId from the confirmation",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "initial state is confirmed",
+  "ok": true,
+  "detail": "Your order is confirmed."
+ },
+ {
+  "name": "order number shown",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "ETA shown",
+  "ok": true,
+  "detail": "Ready around6:02 pmDelivery slot: 18:00–20:00"
+ },
+ {
+  "name": "admin → PREPARING reaches the customer without refresh",
+  "ok": true,
+  "detail": "We’re baking it."
+ },
+ {
+  "name": "admin → READY reaches the customer without refresh",
+  "ok": true,
+  "detail": "Your order is ready."
+ },
+ {
+  "name": "admin → OUT_FOR_DELIVERY reaches the customer without refresh",
+  "ok": true,
+  "detail": "It’s on the way."
+ },
+ {
+  "name": "admin → DELIVERED reaches the customer without refresh",
+  "ok": true,
+  "detail": "It’s here."
+ },
+ {
+  "name": "timeline marks the current step",
+  "ok": true,
+  "detail": "Delivered"
+ },
+ {
+  "name": "timeline shows a time for each completed step",
+  "ok": true,
+  "detail": "['5:51 pm', '5:51 pm', '5:51 pm', '5:51 pm', '5:51 pm', '5:51 pm']"
+ },
+ {
+  "name": "one WhatsApp per status change, from the same events",
+  "ok": true,
+  "detail": "['confirmation', 'status:DELIVERED', 'status:OUT_FOR_DELIVERY', 'status:PREPARING', 'status:READY']"
+ },
+ {
+  "name": "WhatsApp uses the tracking copy",
+  "ok": true,
+  "detail": "TRESOR |  | ORDER: #TRS-1042 | STATUS: PREPARING |  | We’re preparing your Tresor order. |  | Track: /track/TRS-1042"
+ },
+ {
+  "name": "status events carry previous/current/source",
+  "ok": true,
+  "detail": "[(None, 'CONFIRMED', 'system'), ('CONFIRMED', 'PREPARING', 'admin'), ('PREPARING', 'READY', 'admin'), ('READY', 'OUT_FOR_DELIVERY', 'admin'), ('OUT_FOR_DELIVERY', 'DELIVERED', 'admin')]"
+ },
+ {
+  "name": "invalid DELIVERED → PREPARING is rejected",
+  "ok": true,
+  "detail": "It’s here."
+ },
+ {
+  "name": "dev control → NEW",
+  "ok": true,
+  "detail": "We’ve got your order."
+ },
+ {
+  "name": "NEW has its own scene",
+  "ok": true,
+  "detail": "track-scene scene-new"
+ },
+ {
+  "name": "dev control → CONFIRMED",
+  "ok": true,
+  "detail": "Your order is confirmed."
+ },
+ {
+  "name": "CONFIRMED has its own scene",
+  "ok": true,
+  "detail": "track-scene scene-confirmed"
+ },
+ {
+  "name": "dev control → PREPARING",
+  "ok": true,
+  "detail": "We’re baking it."
+ },
+ {
+  "name": "PREPARING has its own scene",
+  "ok": true,
+  "detail": "track-scene scene-preparing"
+ },
+ {
+  "name": "dev control → READY",
+  "ok": true,
+  "detail": "Your order is ready."
+ },
+ {
+  "name": "READY has its own scene",
+  "ok": true,
+  "detail": "track-scene scene-ready"
+ },
+ {
+  "name": "dev control → OUT_FOR_DELIVERY",
+  "ok": true,
+  "detail": "It’s on the way."
+ },
+ {
+  "name": "OUT_FOR_DELIVERY has its own scene",
+  "ok": true,
+  "detail": "track-scene scene-out_for_delivery"
+ },
+ {
+  "name": "dev control → DELIVERED",
+  "ok": true,
+  "detail": "It’s here."
+ },
+ {
+  "name": "DELIVERED has its own scene",
+  "ok": true,
+  "detail": "track-scene scene-delivered"
+ },
+ {
+  "name": "shows a gentle updating message while disconnected",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "missed events are not shown during the gap",
+  "ok": true,
+  "detail": "We’re baking it."
+ },
+ {
+  "name": "after reconnect, jumps straight to the latest state",
+  "ok": true,
+  "detail": "It’s on the way."
+ },
+ {
+  "name": "missed steps are not replayed",
+  "ok": true,
+  "detail": "{'It’s on the way.', 'We’re baking it.'}"
+ },
+ {
+  "name": "refresh keeps the current state",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "\"Play order journey\" runs NEW → DELIVERED",
+  "ok": true,
+  "detail": "It’s here."
+ },
+ {
+  "name": "unknown order explains itself with Try again",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "/track-order?id= redirects to /track/:id",
+  "ok": true,
+  "detail": "http://localhost:3002/track/TRS-1042"
+ },
+ {
+  "name": "custom cake headline",
+  "ok": true,
+  "detail": "Your cake is confirmed."
+ },
+ {
+  "name": "custom cake ETA is production-aware",
+  "ok": true,
+  "detail": "Earliest readyTomorrow · around 5:52 pmYour cake needs about 24 hours to bake and finish. Delivery slot: Mon, 5 Oct · 18:00–20:00."
+ },
+ {
+  "name": "custom cake details with its preview",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "no page errors",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "reduced motion: status, timeline and ETA still present",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "reduced motion: continuous loops off",
+  "ok": true,
+  "detail": "none"
+ }
+]
