@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+### Added (2026-10-04, admin command centre: `.tresor/admin/GAP_ANALYSIS.md`, `.tresor/admin/ADMIN_REPORT.md`)
+- **Bakery operating system admin**, 18 screens in its own shell:
+  - Command Centre, Orders (+ `/admin/orders/[id]`), Kitchen, Custom Cakes
+  - Products, Cake Builder, Inventory
+  - Customers, Campaigns, Content, Media
+  - Analytics, Intelligence
+  - Automations, Invoices, Staff, Audit Log, Settings
+- **Shell:**
+  - permission-aware grouped nav (phone drawer), breadcrumbs, Cmd+K global search, notification centre (unread/read/resolved)
+  - demo staff switcher, toasts with retry, live-region announcements
+- **One action path:** permission check, then the change, then an append-only audit record, then a toast. Destructive and financial actions confirm with their impact and a reason.
+- **Domain events** (`order.created`, `order.status.changed`, `inventory.changed`, `invoice.*`, `notification.*`, `customCake.*`, `campaign.published`, …) behind an `AdminEventSource`. Today it is browser-based; SSE or WebSocket later.
+- **Repositories** (Order, Product, Inventory, Customer, Invoice, Campaign, Media, Staff, Audit, Settings) with browser implementations.
+- **The shop follows the admin** without a redesign:
+  - product price, copy and sold-out flags; disabled and archived products leave the shop
+  - Cake Builder options, prices, rules and production times reach the Cake Playground
+  - delivery fee, free-delivery threshold, auto-confirm and invoice tax come from Settings
+  - an announcement bar appears only when one is live
+- **Operational intelligence:**
+  - custom cake start-by deadlines, automation failures, payment-failure trends, demand and search trends
+  - the copilot answers failed automations, cakes due tomorrow, orders at risk, revenue vs yesterday, what to feature, and how cakes are doing
+
+### Changed (2026-10-04)
+- **Orders are restored exactly as sold** (DEC-018). Custom cake lines snapshot their option names and price breakdown.
+- **Paid cancellations become refund pending** until someone with finance permission completes them (DEC-021).
+- **Inventory:** reserved stock (Reserve/Release), available = on hand − reserved, and four stock levels.
+- **Invoices** snapshot the customer and tax. Regenerating keeps the number and adds a revision.
+- **The admin no longer renders the shop header and footer** (DEC-023).
+
+
 ### Performance (2026-10-04, smoothness pass; measured: `.tresor/perf/PERFORMANCE_REPORT.md`)
 - **One scroll source** (`components/scroll-progress.ts`) replaces per-element `useScroll({ target })`. Framer re-measured each target on every scroll frame. Interleaved measurement of main-thread script during one scroll: home 482 → 242 ms (1440) and 604 → 233 ms (390); Our Story 730 → 326 ms and 962 → 383 ms. Pixel-identical frames.
 - **Cake Playground:** the price count-up no longer re-renders the studio on every animation frame. React commits for 8 option clicks fell from 135–155 to 10–11.
