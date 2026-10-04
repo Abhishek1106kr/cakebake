@@ -6,6 +6,8 @@ import { StoreProvider } from '@/components/store-provider';
 import { TransitionProvider } from '@/components/transitions';
 import { PageViewTracker } from '@/components/intelligence';
 import { cakeScript } from '@/lib/cake/font';
+import { SmoothScroll } from '@/components/smooth-scroll';
+import 'lenis/dist/lenis.css';
 
 export const metadata = {
   title: 'Tresor Bakery — pastry, cakes & slow rituals',
@@ -22,6 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <StoreProvider>
           <PageViewTracker />
+          <SmoothScroll />
           <TransitionProvider>
             <StoreHeader />
             {children}

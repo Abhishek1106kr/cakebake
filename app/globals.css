@@ -1088,3 +1088,5 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .plain-list { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
 .plain-list li { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px dashed var(--line); padding: 4px 0; }
 .cake-analytics { margin-bottom: 0; }
+/* Smooth scrolling (Lenis): anchor jumps glide too when JS is off or Lenis is disabled. */
+@media (prefers-reduced-motion: no-preference) { html:not(.lenis) { scroll-behavior: smooth; } }
