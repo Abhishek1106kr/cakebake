@@ -7,7 +7,7 @@ import { EASE, T } from '@/lib/motion';
 import { ProductCard } from '@/components/product-card';
 import { SplitText } from '@/components/cinematic';
 import { categories, products, semanticSuggestions } from '@/lib/data';
-import { semanticSearch } from '@/lib/search';
+import { track, useSearch, useTrackSearch } from '@/components/intelligence';
 import { useSearchParams } from 'next/navigation';
 
 const SORTS = [
@@ -27,7 +27,12 @@ function Shop() {
   // Re-rank shortly after typing stops, so the grid moves once rather than on every key.
   useEffect(() => { const t = setTimeout(() => setQuery(draft), 250); return () => clearTimeout(t); }, [draft]);
 
-  const base = useMemo(() => (query ? semanticSearch(products, query) : products), [query]);
+  const searched = useSearch(query);
+  useTrackSearch(query, searched, 'menu');
+  const { hits, interpretation, corrections, relaxed } = searched.result;
+  const noMatch = relaxed.includes('everything');
+  const reasons = useMemo(() => new Map(hits.map((h) => [h.product.id, h.reason])), [hits]);
+  const base = useMemo(() => (query.trim() ? hits.map((h) => h.product) : products), [query, hits]);
   const counts = useMemo(() => Object.fromEntries(categories.map((c) => [c, c === 'All' ? base.length : base.filter((p) => p.category === c).length])), [base]);
   const filtered = useMemo(() => {
     const cat = category === 'All' ? base : base.filter((p) => p.category === category);
@@ -36,6 +41,7 @@ function Shop() {
   }, [base, category, sort, query]);
 
   const choose = (s: string) => { setDraft(s); setQuery(s); };
+  const pickCategory = (c: string) => { setCategory(c); if (c !== 'All') track('category_view', { category: c }); };
 
   return <main className="page menu-page-v2">
     <section className="menu-hero">
@@ -47,6 +53,19 @@ function Shop() {
           <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="something warm, nutty and not too sweet" aria-label="What are you in the mood for?" />
           {draft && <button type="button" className="menu-search-clear" onClick={() => choose('')} aria-label="Clear search"><X size={16} /></button>}
         </form>
+        <AnimatePresence mode="wait" initial={false}>
+          {query.trim() && (
+            <motion.p key={`${interpretation}|${relaxed.join()}|${corrections.length}`} className="menu-understood" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25 }} aria-live="polite">
+              {noMatch
+                ? <>Nothing on the menu matches that yet. Here’s what people love instead.</>
+                : <>
+                    {interpretation ?? `Looking for “${query.trim()}”`}
+                    {corrections.length > 0 && !corrections.every((c) => interpretation?.includes(c.to)) && <span className="menu-understood-aside"> · read as “{corrections.map((c) => c.to).join(' ')}”</span>}
+                    {relaxed.length > 0 && <span className="menu-understood-aside"> · nothing {relaxed.join(', ')}, so here’s the closest</span>}
+                  </>}
+            </motion.p>
+          )}
+        </AnimatePresence>
         <motion.div className="menu-suggestions" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.05, delayChildren: 0.4 } } }}>
           <span>Try</span>
           {semanticSuggestions.slice(0, 5).map((s) => (
@@ -61,7 +80,7 @@ function Shop() {
         <LayoutGroup id="menu-tabs">
           <nav className="menu-tabs" aria-label="Categories">
             {categories.map((c) => (
-              <button key={c} className={category === c ? 'is-active' : ''} aria-pressed={category === c} onClick={() => setCategory(c)} disabled={counts[c] === 0 && category !== c}>
+              <button key={c} className={category === c ? 'is-active' : ''} aria-pressed={category === c} onClick={() => pickCategory(c)} disabled={counts[c] === 0 && category !== c}>
                 {c}<sup>{counts[c]}</sup>
                 {category === c && <motion.span className="menu-tab-line" layoutId="menu-tab-line" transition={T.ui} />}
               </button>
@@ -87,12 +106,12 @@ function Shop() {
 
     <section className="section shop-content"><div className="container">
       <LayoutGroup><motion.div layout className="product-grid shop-grid"><AnimatePresence mode="popLayout" initial={false}>
-        {filtered.map((p, i) => <motion.div key={p.id} layout initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4, ease: EASE, delay: Math.min(i, 8) * 0.03 }}><ProductCard product={p}/></motion.div>)}
+        {filtered.map((p, i) => <motion.div key={p.id} layout initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4, ease: EASE, delay: Math.min(i, 8) * 0.03 }}><ProductCard product={p} note={query.trim() && !noMatch ? reasons.get(p.id) : null}/></motion.div>)}
       </AnimatePresence></motion.div></LayoutGroup>
       {filtered.length === 0 && (
         <div className="menu-empty">
           <p className="display">Nothing quite fits that mood yet.</p>
-          <div><button className="btn btn-brand" onClick={() => { choose(''); setCategory('All'); }}>Browse the menu</button><button className="btn btn-secondary" onClick={() => choose(semanticSuggestions[(semanticSuggestions.indexOf(query) + 1) % semanticSuggestions.length])}>Try another mood</button></div>
+          <div><button className="btn btn-brand" onClick={() => { choose(''); pickCategory('All'); }}>Browse the menu</button><button className="btn btn-secondary" onClick={() => choose(semanticSuggestions[(semanticSuggestions.indexOf(query) + 1) % semanticSuggestions.length])}>Try another mood</button></div>
         </div>
       )}
     </div></section>

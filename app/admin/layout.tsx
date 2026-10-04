@@ -12,12 +12,12 @@ const nav: { href: Route; label: string; icon: typeof LayoutDashboard }[] = [
   { href: '/admin/kitchen', label: 'Kitchen', icon: ChefHat },
   { href: '/admin/products', label: 'Products', icon: PackageSearch },
   { href: '/admin/inventory', label: 'Inventory', icon: Boxes },
+  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ];
 
 // Not built yet: shown so the roadmap is visible, but not clickable.
 const later = [
   { label: 'Customers', icon: Users },
-  { label: 'Analytics', icon: BarChart3 },
   { label: 'Settings', icon: Settings },
 ];
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { track, useTrackOnce } from '@/components/intelligence';
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -18,6 +19,7 @@ function TrackOrder() {
   const [lookup, setLookup] = useState('');
   const requested = search.get('id');
   const order = requested ? findOrder(requested.toUpperCase()) : latestOrder;
+  useTrackOnce(mounted && Boolean(order), order?.id ?? '', () => track('tracking_viewed', { orderId: order!.id, status: order!.status }));
 
   const lookupForm = (
     <form className="track-lookup" onSubmit={(e) => { e.preventDefault(); if (lookup.trim()) router.push(`/track-order?id=${encodeURIComponent(lookup.trim().toUpperCase())}`); }}>

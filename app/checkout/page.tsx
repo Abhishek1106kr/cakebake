@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { track, useTrackOnce } from '@/components/intelligence';
 import { ArrowRight, Check, CreditCard, LockKeyhole, Smartphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,6 +11,7 @@ import { CheckoutErrors, CheckoutField, PaymentMethod, normalizePhone, validateC
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart, subtotal, deliveryFee, total, mounted, placeOrder } = useStore();
+  useTrackOnce(mounted && cart.length > 0, 'checkout', () => track('checkout_started', { itemCount: cart.reduce((n, l) => n + l.qty, 0), total }));
   const [payment, setPayment] = useState<PaymentMethod>('UPI');
   const [processing, setProcessing] = useState(false);
   const [placed, setPlaced] = useState(false);

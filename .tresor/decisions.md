@@ -106,3 +106,28 @@ Alternatives:
 - Higgsfield generation (needs credits).
 
 Related: TRESOR-MEDIA-ASSETS.
+
+
+## DEC-006 · Intelligence engine runs locally with deterministic-first rules
+Date: 2026-10-04
+
+Decision:
+Search, recommendations, insights and forecasts run in the browser on rules, a hashed local vector provider and exponential smoothing. Remote models can be registered behind the provider interfaces later.
+
+Reasoning:
+- The owner requires frontend-only business logic: no backend, database or API routes.
+- Rules are explainable: every result carries evidence and a confidence score.
+- Each pipeline still works with no provider at all (tested).
+
+Alternatives:
+- A hosted embedding or LLM API. Needs a server to keep keys secret, so it's not possible frontend-only.
+
+Related: TRESOR-INTEL-ENGINE.
+
+## DEC-007 · Search never bypasses availability or exclusions
+Date: 2026-10-04
+
+Decision:
+Search and recommendations never show something the kitchen can't make. They never break a stated exclusion ("no nuts", "no caffeine"), even in fallback. Budget, category, group size and "today" may be relaxed, and the UI says which one was.
+
+Related: TRESOR-INTEL-ENGINE.

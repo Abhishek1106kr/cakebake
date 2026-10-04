@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Product } from '@/lib/data';
+import { Product, products as menu } from '@/lib/data';
+import { track } from '@/engine/intelligence/events/track';
 import {
   CartLine, CheckoutDetails, CheckoutErrors, MAX_QTY_PER_LINE, Order, Size,
   advanceOrder, calcTotals, cancelOrder, cancelRestoresStock, canCancel, createOrder, lineIdFor,
@@ -134,6 +135,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const addToCart = (product: Product, qty = 1, size: Size = 'Regular') => {
     const allowed = Math.max(0, Math.min(qty, canAddMore(product, size)));
     if (allowed === 0) return 0;
+    track('product_added', { productId: product.id, qty: allowed, size });
     const id = lineIdFor(product.id, size);
     setCart((current) => {
       const existing = current.find((line) => line.lineId === id);
@@ -145,6 +147,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   };
 
   const updateQty = (lineId: string, qty: number) => {
+    const target = cart.find((l) => l.lineId === lineId);
+    if (target && qty <= 0) track('product_removed', { productId: target.product.id, qty: target.qty });
     setCart((current) => {
       const line = current.find((l) => l.lineId === lineId);
       if (!line) return current;
@@ -157,7 +161,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (lineId: string) => setCart((current) => current.filter((line) => line.lineId !== lineId));
+  const removeFromCart = (lineId: string) => {
+    const target = cart.find((l) => l.lineId === lineId);
+    if (target) track('product_removed', { productId: target.product.id, qty: target.qty });
+    setCart((current) => current.filter((line) => line.lineId !== lineId));
+  };
   const clearCart = () => setCart([]);
 
   // ---------- Orders ----------
@@ -170,14 +178,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return { ok: false, errors: { cart: `We've just run low on ${short.map((l) => l.product.name).join(', ')}. Please reduce the quantity.` } };
     }
     const order = createOrder(details, cart, orders, new Date());
+    const after = applyLines(inventory, order.items, -1);
     setOrders((current) => [order, ...current]);
     setInventory((current) => applyLines(current, order.items, -1));
+    // Events carry ids and amounts only, never the customer's details.
+    track('order_created', { orderId: order.id, total: order.total, items: order.items.map((l) => ({ productId: l.product.id, qty: l.qty, size: l.size })), paymentMethod: order.paymentMethod });
+    if (order.paymentMethod !== 'COD') track('payment_success', { method: order.paymentMethod, amount: order.total, simulated: true });
+    for (const p of menu) {
+      if (availableUnits(inventory, [], p.id, 'Regular') > 0 && availableUnits(after, [], p.id, 'Regular') === 0) track('product_out_of_stock', { productId: p.id });
+    }
     setLatestId(order.id);
     setCart([]);
     return { ok: true, order };
   };
 
   const advance = (orderId: string) => {
+    const order = orders.find((o) => o.id === orderId);
+    const next = order && nextStatus(order.status);
+    if (next) track('delivery_status_changed', { orderId, status: next });
     setOrders((current) => current.map((o) => (o.id === orderId && nextStatus(o.status) ? advanceOrder(o, new Date()) : o)));
   };
 
@@ -185,6 +203,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const order = orders.find((o) => o.id === orderId);
     if (!order || !canCancel(order)) return;
     if (cancelRestoresStock(order)) setInventory((current) => applyLines(current, order.items, 1));
+    track('order_cancelled', { orderId, stage: order.status, restoredStock: cancelRestoresStock(order) });
     setOrders((current) => current.map((o) => (o.id === orderId ? cancelOrder(o, new Date()) : o)));
   };
 
@@ -192,6 +211,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const recordMovement = (ingredientId: string, delta: number, reason: MovementReason) => {
     if (!delta) return;
+    track('inventory_updated', { ingredientId, delta, reason });
     setInventory((current) => applyMovement(current, ingredientId, delta));
     const movement: Movement = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at: new Date().toISOString(), ingredientId, delta, reason };
     setMovements((current) => [movement, ...current].slice(0, 50));

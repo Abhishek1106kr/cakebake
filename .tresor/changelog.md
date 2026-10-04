@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added (2026-10-04)
+- **Tests:** Vitest with 111 tests covering pricing, orders, checkout, inventory and every engine module. Run with `npm test`.
+- **Search engine:** understands moods ("warm, nutty, not too sweet"), negation, budget, group size and "today". It corrects typos and never shows unavailable items. Each result comes with a short reason, and relaxed matches say what was dropped.
+- **Recommendations:** "Goes well with" on product pages; cart add-ons with a free-delivery nudge.
+- **Event tracking:** across shop, product, cart, checkout, orders, kitchen and inventory. Events carry no personal data.
+- **Admin:** "What needs you" insights on the overview, and a new Analytics page (sales, journey, search, products, stock outlook with forecast error, engine health).
+- **Footer:** styling, which had been missing.
+
+### Removed
+- `lib/search.ts` (replaced by the engine) and the unused `lib/api.ts`.
+
 ### Changed (2026-10-04, f59f041)
 - Menu page: editorial mood-led header, underlined search, sticky text-tab filter bar with live counts and minimal sort. Prototype "mock catalogue" copy removed.
 - Homepage cake reveal rebuilt full-bleed with a push-in; title on a soft scrim beside the cake.

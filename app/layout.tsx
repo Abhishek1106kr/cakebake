@@ -4,6 +4,7 @@ import { StoreHeader } from '@/components/store-header';
 import { StoreFooter } from '@/components/store-footer';
 import { StoreProvider } from '@/components/store-provider';
 import { TransitionProvider } from '@/components/transitions';
+import { PageViewTracker } from '@/components/intelligence';
 
 export const metadata = {
   title: 'Tresor Bakery — pastry, cakes & slow rituals',
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <StoreProvider>
+          <PageViewTracker />
           <TransitionProvider>
             <StoreHeader />
             {children}

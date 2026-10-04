@@ -8,7 +8,7 @@ import { useStore } from './store-provider';
 import { useState } from 'react';
 import { EASE } from '@/lib/motion';
 
-export function ProductCard({ product, compact = false }: { product: Product; compact?: boolean }) {
+export function ProductCard({ product, compact = false, note }: { product: Product; compact?: boolean; /** Why it's here, e.g. "Nutty · served warm". */ note?: string | null }) {
   const reduce = useReducedMotion();
   const { addToCart, canAddMore, mounted } = useStore();
   const [added, setAdded] = useState(false);
@@ -39,7 +39,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
       </Link>
       <div className="product-copy">
         <div className="product-topline"><Link href={`/shop/${product.id}`} className="product-name">{product.name}</Link><span className="prep">{product.prepMinutes} min</span></div>
-        {!compact && <div className="small muted" style={{marginTop:5}}>{product.description}</div>}
+        {note ? <div className="product-note">{note}</div> : !compact && <div className="small muted" style={{marginTop:5}}>{product.description}</div>}
         <div className="price-row">
           <span className="price">₹{product.price}</span>
           <motion.button

@@ -9,6 +9,7 @@ import { AnimatedNumber } from '@/components/motion';
 import { StatusBadge, StockBadge, downloadCsv, rupees, todayStamp, useNow } from '@/components/admin/admin-utils';
 import { NEXT_ACTION, isActive, isSameDay, itemsSummary, orderStats, ordersToCsv } from '@/lib/orders';
 import { formatQty, stockState } from '@/lib/inventory';
+import { InsightsPanel } from '@/components/admin/insights';
 
 function greeting(now: Date) {
   const h = now.getHours();
@@ -47,6 +48,8 @@ export default function AdminPage() {
         <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Avg. order value</div><div className="kpi-value"><AnimatedNumber value={stats.averageValue} /></div><div className="kpi-meta">{stats.ready} ready · {stats.onTheWay} on the way</div></motion.div>
         <motion.div className="kpi" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}><div className="kpi-meta">Stock alerts</div><div className="kpi-value"><AnimatedNumber value={low.length} prefix="" /></div><div className="kpi-meta">{low.length ? 'Needs attention today' : 'All shelves healthy'}</div></motion.div>
       </motion.div>
+
+      <InsightsPanel now={now} />
 
       <div className="admin-grid">
         <section className="panel">

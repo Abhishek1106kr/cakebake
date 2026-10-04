@@ -7,6 +7,7 @@ import { useStore } from '@/components/store-provider';
 import { AnimatedNumber, Magnetic } from '@/components/motion';
 import { FREE_DELIVERY_FROM } from '@/lib/orders';
 import { EASE } from '@/lib/motion';
+import { CartSuggestions } from '@/components/recommendations';
 
 export default function CartPage() {
   const reduce = useReducedMotion();
@@ -88,6 +89,7 @@ export default function CartPage() {
           <Link className="btn btn-secondary full-btn" href="/shop">Continue shopping</Link>
         </motion.aside>
       </div>
+      <CartSuggestions />
     </main>
   );
 }
