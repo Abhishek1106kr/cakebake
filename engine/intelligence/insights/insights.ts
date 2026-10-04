@@ -16,7 +16,7 @@ export const INSIGHTS_VERSION = 'insights-v1';
 export type Severity = 'act' | 'watch' | 'info';
 export type Insight = {
   id: string;
-  kind: 'stock' | 'kitchen' | 'search' | 'sales' | 'product';
+  kind: 'stock' | 'kitchen' | 'search' | 'sales' | 'product' | 'custom' | 'automation' | 'payment' | 'demand';
   severity: Severity;
   title: string;
   detail: string;

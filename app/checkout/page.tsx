@@ -63,6 +63,7 @@ export default function CheckoutPage() {
       pin: form.pin,
       slot: form.slot,
       paymentMethod: payment,
+      paymentReference: paid.reference,
     });
     if (!result.ok) {
       setProcessing(false);

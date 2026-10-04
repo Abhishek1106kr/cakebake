@@ -18,3 +18,4 @@ public/our-story/
 /tests/stress/catalogue.json
 /tests/stress/__pycache__/
 /tests/perf/__pycache__/
+/tests/admin/__pycache__/

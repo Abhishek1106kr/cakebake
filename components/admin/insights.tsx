@@ -7,11 +7,12 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Check, ChevronDown, X } from 'lucide-react';
 import { products } from '@/lib/data';
 import {
-  approveAndApply, browserDecisionStore, confidenceLabel, eventBus, generateInsights, pending, proposeActions, reject, stockOutlook,
+  approveAndApply, browserDecisionStore, confidenceLabel, eventBus, generateInsights, generateOperationalInsights, pending, proposeActions, reject, stockOutlook,
   type Insight, type ProposedAction, type TresorEvent,
 } from '@/engine/intelligence';
 import { track } from '@/engine/intelligence/events/track';
 import { useStore } from '@/components/store-provider';
+import { useAutomation } from '@/components/use-automation';
 
 /** Events recorded in this browser, kept fresh as new ones arrive. */
 export function useEvents(): TresorEvent[] {
@@ -41,6 +42,7 @@ const announce = () => window.dispatchEvent(new Event(DECISION_EVENT));
 export function useInsights(now: Date) {
   const { orders, inventory, recordMovement } = useStore();
   const events = useEvents();
+  const { jobs } = useAutomation();
   const [logVersion, setLogVersion] = useState(0);
   useEffect(() => {
     const bump = () => setLogVersion((v) => v + 1);
@@ -52,11 +54,14 @@ export function useInsights(now: Date) {
   // Recompute when data changes or the minute ticks over, not on every render.
   const minute = Math.floor(now.getTime() / 60000);
   const computed = useMemo(() => {
-    const insights = generateInsights({ orders, inventory, events, products, now });
+    const core = generateInsights({ orders, inventory, events, products, now });
+    const ops = generateOperationalInsights({ orders, jobs, events, products, now });
+    const rank = { act: 0, watch: 1, info: 2 } as const;
+    const insights = { ...core, result: [...core.result, ...ops.result].sort((a, b) => rank[a.severity] - rank[b.severity] || b.confidence - a.confidence), warnings: [...core.warnings, ...ops.warnings] };
     const actions = proposeActions(insights.result, stockOutlook(inventory, orders, now).result);
     return { insights, actions };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orders, inventory, events, minute]);
+  }, [orders, inventory, events, jobs, minute]);
 
   const open = useMemo(() => (store ? pending(computed.actions, store, now) : computed.actions), [computed, logVersion, minute]); // eslint-disable-line react-hooks/exhaustive-deps
   const actionFor = useMemo(() => new Map(open.map((a) => [a.insightId, a])), [open]);

@@ -10,6 +10,8 @@ import type { AuditRecord } from './audit';
 
 const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 const DELIVERY_MIN = 35;
+const ASAP_BUFFER_MIN = 15;
+const isAsap = (o: Pick<Order, 'slot'>) => !/\d{1,2}:\d{2}/.test(o.slot);
 
 export const hasCustom = (o: Order) => o.items.some((l) => l.custom);
 export const customHours = (o: Order) => o.items.reduce((m, l) => Math.max(m, l.custom?.productionHours ?? 0), 0);
@@ -22,7 +24,8 @@ export const customHours = (o: Order) => o.items.reduce((m, l) => Math.max(m, l.
 export function requiredBy(order: Pick<Order, 'slot' | 'createdAt' | 'items'>): Date {
   const placed = new Date(order.createdAt);
   const time = order.slot.match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
-  if (!time) return new Date(placed.getTime() + (prepTarget(order as Order) + 5) * 60000);
+  // As soon as possible: the kitchen's prep target plus a short buffer to box it.
+  if (!time) return new Date(placed.getTime() + (prepTarget(order as Order) + ASAP_BUFFER_MIN) * 60000);
   const day = new Date(placed);
   const dated = order.slot.toLowerCase().match(/(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/);
   if (dated) {
@@ -66,7 +69,9 @@ export function dueState(o: Order, now: Date): DueState {
   const deadline = o.status === 'OUT_FOR_DELIVERY' || o.status === 'READY' ? deliverBy(o) : requiredBy(o);
   const slack = (deadline.getTime() - now.getTime()) / 60000 - workLeft(o);
   if (now > deadline) return 'late';
-  return slack < (hasCustom(o) ? 120 : 30) ? 'at-risk' : 'on-track';
+  // Slack needed before it counts as at risk: custom cakes can't be rushed; ASAP orders are always close to their target.
+  const needed = hasCustom(o) ? 120 : isAsap(o) ? 5 : 30;
+  return slack < needed ? 'at-risk' : 'on-track';
 }
 
 export function priorityOf(o: Order, now: Date): Priority {

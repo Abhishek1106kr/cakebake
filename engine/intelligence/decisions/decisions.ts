@@ -15,7 +15,7 @@ import type { StockOutlook } from '../forecast/forecast';
 export const DECISIONS_VERSION = 'decisions-v1';
 
 export type DecisionLevel = 'OBSERVE' | 'RECOMMEND' | 'DRAFT' | 'APPROVAL_REQUIRED' | 'EXECUTE';
-export type ActionKind = 'restock' | 'check_order' | 'review_search_gap' | 'review_product' | 'note';
+export type ActionKind = 'restock' | 'check_order' | 'review_search_gap' | 'review_product' | 'note' | 'adjust_preparation' | 'investigate' | 'feature';
 
 export const POLICY: Record<ActionKind, { level: DecisionLevel; why: string }> = {
   restock: { level: 'APPROVAL_REQUIRED', why: 'Changes stock records, so a person approves the amount first.' },
@@ -23,6 +23,9 @@ export const POLICY: Record<ActionKind, { level: DecisionLevel; why: string }> =
   review_search_gap: { level: 'RECOMMEND', why: 'Menu changes are the owner’s call.' },
   review_product: { level: 'RECOMMEND', why: 'Price and copy changes are the owner’s call.' },
   note: { level: 'OBSERVE', why: 'Information only.' },
+  adjust_preparation: { level: 'RECOMMEND', why: 'Production order is the kitchen’s call; the engine only shows the deadlines.' },
+  investigate: { level: 'RECOMMEND', why: 'Someone should look at the failure; retries and messages to customers stay manual.' },
+  feature: { level: 'DRAFT', why: 'Featuring or launching a campaign changes what customers see, so it is drafted for approval, never published automatically.' },
 };
 
 /** What applying an action would do. The UI performs it through the store; the engine never mutates state. */
@@ -56,6 +59,9 @@ export function proposeActions(insights: Insight[], outlook: StockOutlook[]): Pr
     }
     if (insight.kind === 'kitchen') return { ...base, id: `check:${insight.id}`, kind: 'check_order', level: POLICY.check_order.level, title: 'Check on this order', why: POLICY.check_order.why, plan: { type: 'none' }, reversible: true };
     if (insight.kind === 'search') return { ...base, id: `gap:${insight.id}`, kind: 'review_search_gap', level: POLICY.review_search_gap.level, title: 'Review this menu gap', why: POLICY.review_search_gap.why, plan: { type: 'none' }, reversible: true };
+    if (insight.kind === 'custom') return { ...base, id: `prep:${insight.id}`, kind: 'adjust_preparation', level: POLICY.adjust_preparation.level, title: 'Plan the production order', why: POLICY.adjust_preparation.why, plan: { type: 'none' }, reversible: true };
+    if (insight.kind === 'automation' || insight.kind === 'payment') return { ...base, id: `investigate:${insight.id}`, kind: 'investigate', level: POLICY.investigate.level, title: insight.kind === 'automation' ? 'Look at the failure and retry' : 'Check the payment provider', why: POLICY.investigate.why, plan: { type: 'none' }, reversible: true };
+    if (insight.kind === 'demand') return { ...base, id: `feature:${insight.id}`, kind: 'feature', level: POLICY.feature.level, title: 'Draft a feature for it', why: POLICY.feature.why, plan: { type: 'none' }, reversible: true };
     if (insight.kind === 'product' && insight.severity !== 'info') return { ...base, id: `review:${insight.id}`, kind: 'review_product', level: POLICY.review_product.level, title: 'Review this product', why: POLICY.review_product.why, plan: { type: 'none' }, reversible: true };
     return { ...base, id: `note:${insight.id}`, kind: 'note', level: 'OBSERVE', title: 'Noted', why: POLICY.note.why, plan: { type: 'none' }, reversible: true };
   });

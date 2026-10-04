@@ -142,7 +142,7 @@ export function validateSettings(v: SettingsValues): Record<string, string> {
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) e['business.email'] = 'This email looks incomplete.';
   for (const d of (v['holidays.dates'] as string[]) ?? []) if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) e['holidays.dates'] = `“${d}” isn’t YYYY-MM-DD.`;
   // Anything shaped like an API key or access token is refused outright.
-  const secretLike = /(sk|pk|rk)_(live|test)_\w+|EAA[A-Za-z0-9]{20,}|[A-Za-z0-9_-]{40,}/;
+  const secretLike = /\b(sk|pk|rk)_(live|test)_\w+|\bEAA[A-Za-z0-9]{20,}|\b[A-Za-z0-9_-]{40,}\b/;
   for (const [k, val] of Object.entries(v)) if (typeof val === 'string' && secretLike.test(val)) e[k] = 'This looks like a key or token. Secrets belong on the server, never in settings.';
   return e;
 }
