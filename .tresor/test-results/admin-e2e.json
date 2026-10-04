@@ -1,0 +1,323 @@
+{
+ "base": "http://localhost:3004",
+ "seconds": 170,
+ "passed": 63,
+ "total": 63,
+ "checks": [
+  {
+   "name": "order placed in the shop",
+   "ok": true,
+   "detail": "TRS-1042"
+  },
+  {
+   "name": "new order appears in the admin without refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new order is announced (toast)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "live region announces the new order",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "placing the order consumed stock",
+   "ok": true,
+   "detail": "12 -> 11.94"
+  },
+  {
+   "name": "order carries the simulated payment reference",
+   "ok": true,
+   "detail": "SIM-MUU4K31I-260"
+  },
+  {
+   "name": "admin moves the order to PREPARING",
+   "ok": true,
+   "detail": "PREPARING"
+  },
+  {
+   "name": "customer tracking shows PREPARING without refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "admin moves the order to READY",
+   "ok": true,
+   "detail": "READY"
+  },
+  {
+   "name": "customer tracking shows READY without refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "admin moves the order to OUT_FOR_DELIVERY",
+   "ok": true,
+   "detail": "OUT_FOR_DELIVERY"
+  },
+  {
+   "name": "customer tracking shows OUT_FOR_DELIVERY without refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "admin moves the order to DELIVERED",
+   "ok": true,
+   "detail": "DELIVERED"
+  },
+  {
+   "name": "customer tracking shows DELIVERED without refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "automations ran for the order (invoice + confirmation + 4 updates)",
+   "ok": true,
+   "detail": "[('confirmation', 'succeeded'), ('confirmation', 'succeeded'), ('status:PREPARING', 'succeeded'), ('status:READY', 'succeeded'), ('status:OUT_FOR_DELIVERY', 'succeeded'), ('status:DELIVERED', 'succeeded')]"
+  },
+  {
+   "name": "automations monitor lists the order",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order timeline shows created, payment, invoice, WhatsApp, every status",
+   "ok": true,
+   "detail": "Order created4 Oct, 11:28 pmConfirmed4 Oct, 11:28 pmPaid by UPI (simulated)Ref SIM-MUU4K31I-2604 Oct, 11:28 pmInvoice generatedINV-10424 Oct, 11:28 pmWhatsApp sentconfirmation4 Oct, 11:28 pmPreparing4"
+  },
+  {
+   "name": "second order consumed butter",
+   "ok": true,
+   "detail": "2.77 -> 2.74"
+  },
+  {
+   "name": "cancel confirmation shows the stock impact",
+   "ok": true,
+   "detail": "Cancel order TRS-1043?Asha Rao \u00b7 \u20b9245 \u00b7 ConfirmedWhat happensStock goes back on the shelf: 0.06 kg bread flour, 0.03 kg butter, 0.02 kg dark chocolate.Paid \u20b9245"
+  },
+  {
+   "name": "cancel requires a reason",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order cancelled, payment refund pending",
+   "ok": true,
+   "detail": "('CANCELLED', 'REFUND_PENDING')"
+  },
+  {
+   "name": "cancel before production restored the stock",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "refund recorded",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "manual restock adds to stock",
+   "ok": true,
+   "detail": "11.94 -> 13.94"
+  },
+  {
+   "name": "wastage without a reason is refused",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "reserve sets stock aside",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "inventory movements are audited",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "custom cake ordered",
+   "ok": true,
+   "detail": "TRS-1044"
+  },
+  {
+   "name": "custom cake appears in production",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "production sheet has the full spec",
+   "ok": true,
+   "detail": "19"
+  },
+  {
+   "name": "internal note saved and shown to staff",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "internal note never reaches the invoice",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "internal note never reaches the order record",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "internal note never reaches the tracking page",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "custom cake moved to production and ready",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kitchen board shows the custom ticket distinctly",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "price change confirmation explains past orders keep their price",
+   "ok": true,
+   "detail": "Change Almond Croissant\u2019s price?What happens\u20b9190 \u2192 \u20b9210 for new bags from now on.2 past orders keep the price they were "
+  },
+  {
+   "name": "shop shows the new price",
+   "ok": true,
+   "detail": "\u20b9210"
+  },
+  {
+   "name": "existing order keeps the price it was sold at",
+   "ok": true,
+   "detail": "190"
+  },
+  {
+   "name": "archived product leaves the shop",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "restore brings it back (disabled until activated)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "product validation shows errors",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Cake Builder price change reaches the playground",
+   "ok": true,
+   "detail": "1450 -> 1550"
+  },
+  {
+   "name": "placed custom cake keeps its price",
+   "ok": true,
+   "detail": "(1450, 1450)"
+  },
+  {
+   "name": "cart uses the new delivery fee",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kitchen staff cannot open products",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kitchen staff do not see restricted nav",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kitchen staff see masked customer contact",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "search by order number finds order, customer and invoice",
+   "ok": true,
+   "detail": "['Order', 'Invoice', 'Audit', 'Audit', 'Audit', 'Audit', 'Customer']"
+  },
+  {
+   "name": "with auto-confirm off, orders arrive NEW",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "bulk confirm moved both orders",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "CSV export contains exactly the filtered orders",
+   "ok": true,
+   "detail": "1 vs 1"
+  },
+  {
+   "name": "WhatsApp failure leaves the job failed, order safe",
+   "ok": true,
+   "detail": "failed"
+  },
+  {
+   "name": "failure appears in needs-attention",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "retry succeeds once the provider recovers",
+   "ok": true,
+   "detail": "succeeded"
+  },
+  {
+   "name": "regenerated invoice keeps its number and adds a revision",
+   "ok": true,
+   "detail": "('INV-1042', 2)"
+  },
+  {
+   "name": "regenerated invoice still matches the order (snapshot, not new prices)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "campaign published after approval",
+   "ok": true,
+   "detail": "SCHEDULED"
+  },
+  {
+   "name": "announcement shows on the shop",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "analytics order count matches the records",
+   "ok": true,
+   "detail": "11 vs 11"
+  },
+  {
+   "name": "every management action is in the audit log",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "name": "audit log page lists the records",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "no uncaught page errors during the run",
+   "ok": true,
+   "detail": "[]"
+  }
+ ]
+}

@@ -106,11 +106,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // Load once, migrate data from the earlier version, then follow other tabs.
   useEffect(() => {
     // The bakery's catalogue first, so the stored bag is priced against today's menu.
-    const stopCatalog = startLiveCatalog();
+    // Subscribe before starting: the first application must bump the revision too,
+    // or memoised menus (product page, search) keep the code defaults.
     const offCatalog = onCatalog(() => {
       setCatalogRevision((r) => r + 1);
       setCart((current) => normalizeCart(current));
     });
+    const stopCatalog = startLiveCatalog();
     const storedOrders = read<unknown[]>(KEYS.orders);
     let loaded = storedOrders ? parseOrders(storedOrders) : seedOrders(new Date());
     let latest = read<string>(KEYS.latestId);
