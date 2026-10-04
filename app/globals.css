@@ -821,3 +821,63 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 @media (prefers-reduced-motion: reduce) {
   .film-grain, .love-grain { animation: none; }
 }
+
+/* ---------- 10 · The people behind the cake (final chapter, above the footer) ---------- */
+.story-team { background: var(--paper, #F7F5F0); padding: 16vh 0 14vh; overflow: hidden; }
+.team-spread { width: min(1320px, calc(100% - 2 * var(--gutter))); margin: 0 auto; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 2vw; align-items: start; }
+.team-tile, .team-final { grid-column: var(--col); grid-row: var(--row, auto); margin-top: var(--mt, 0); margin-right: var(--mr, 0); position: relative; z-index: var(--z, 1); }
+.team-figure { margin: 0; }
+.team-frame { position: relative; overflow: hidden; background: #E6E2DA; box-shadow: 0 30px 70px rgba(32, 38, 37, .16); }
+.team-frame > *, .team-final-crop { position: absolute; inset: 0; }
+.team-frame img { transition: transform 1.4s cubic-bezier(.2, .8, .2, 1); }
+.team-tile:hover .team-frame img { transform: scale(1.03); }
+.team-figure figcaption { margin-top: 10px; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+
+.team-head { grid-column: 1 / 7; grid-row: 1; padding-top: 4vh; }
+.team-title { margin: 16px 0 26px; display: grid; font-family: var(--serif); font-weight: 500; font-size: clamp(56px, 7.6vw, 128px); line-height: .9; }
+.team-title-line { display: block; }
+.team-title-line-1 { padding-left: 8vw; font-style: italic; color: var(--brand-dark); }
+.team-support { margin: 0; max-width: 30ch; font-size: 17px; line-height: 1.7; color: var(--muted); }
+
+.team-interlude { width: min(1320px, calc(100% - 2 * var(--gutter))); margin: 16vh auto 12vh; display: grid; gap: 0; }
+.team-word { margin: 0; font-family: var(--serif); font-style: italic; font-size: clamp(48px, 7vw, 118px); line-height: 1; }
+.team-word-1 { padding-left: 22%; }
+.team-word-2 { padding-left: 44%; color: var(--brand-dark); }
+
+.team-years { grid-column: 9 / 13; grid-row: 2; margin-top: 10vh; }
+.team-years-line, .team-word, .team-closing-line { display: block; }
+.team-years-line { margin: 0; font-family: var(--serif); font-size: clamp(30px, 3vw, 50px); line-height: 1.05; }
+.team-years-line-1 { font-style: italic; color: var(--brand-dark); }
+
+.team-end { margin-top: 18vh; }
+.team-final-frame { box-shadow: 0 50px 100px rgba(32, 38, 37, .22); }
+
+.team-closing { margin: 14vh auto 0; text-align: center; padding: 0 var(--gutter); }
+.team-closing-line { margin: 0; font-family: var(--serif); font-weight: 500; font-size: clamp(36px, 4.6vw, 78px); line-height: 1.02; }
+.team-signature { margin: 26px 0 0; font-family: var(--serif); font-size: 26px; letter-spacing: .01em; color: var(--ink); }
+.team-signature span { color: var(--brand); margin-left: 2px; }
+
+@media (max-width: 1040px) {
+  .team-head { grid-column: 1 / 13; }
+  .team-tm-loaves { grid-column: 4 / 13; grid-row: 2 / 4; }
+  .team-tm-layering { grid-column: 1 / 6; grid-row: 3; }
+  .team-tm-sift { grid-column: 1 / 4; grid-row: 4; margin-top: 4vh; margin-right: 0; }
+  .team-years { grid-column: 1 / 13; grid-row: 3; }
+}
+
+/* Mobile: its own sequence on six columns, offsets alternating. */
+@media (max-width: 760px) {
+  .story-team { padding: 11vh 0 10vh; }
+  .team-spread { grid-template-columns: repeat(6, minmax(0, 1fr)); column-gap: 12px; row-gap: 34px; }
+  .team-spread .team-tile, .team-spread .team-final, .team-spread .team-head, .team-spread .team-years { grid-column: var(--mcol, 1 / 7) !important; grid-row: auto !important; margin-top: 0 !important; margin-right: 0 !important; }
+  .team-spread .team-head, .team-spread .team-years { --mcol: 1 / 7; }
+  .team-title-line-1 { padding-left: 14vw; }
+  .team-tm-sift { margin-top: -16vh !important; }
+  .team-interlude { margin: 10vh auto 8vh; }
+  .team-word-1 { padding-left: 16%; }
+  .team-word-2 { padding-left: 30%; }
+  .team-tm-duo { margin-top: -6vh !important; }
+  .team-end { margin-top: 10vh; }
+  .team-final-frame { aspect-ratio: 4 / 5 !important; }
+  .team-closing { margin-top: 10vh; }
+}

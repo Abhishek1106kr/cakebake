@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-04T13:30:00Z",
-  "current_task_id": "TRESOR-STORY",
+  "updated_at": "2026-10-04T15:00:00Z",
+  "current_task_id": "TRESOR-STORY-TEAM",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -438,6 +438,31 @@
         "desktop + mobile walkthrough in Chrome (videos play in view, pause out)",
         "reduced motion: static layouts, no video, no hydration error",
         "footer unchanged; love section directly above it on home and story"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-STORY-TEAM",
+      "title": "Our Story chapter 10: the people behind the cake",
+      "description": "Final editorial collage of team and cake-making photos from public/our-story/chefPics, inserted after the CTA and before the footer. Existing page untouched.",
+      "status": "completed",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-STORY"
+      ],
+      "files": [
+        "components/story/team-chapter.tsx",
+        "lib/story.ts",
+        "assets/manifest/images.json",
+        "components/story/primitives.tsx",
+        "components/story/story-page.tsx"
+      ],
+      "started_at": "2026-10-04T14:10:00Z",
+      "completed_at": "2026-10-04T15:00:00Z",
+      "validation": [
+        "135 tests passing",
+        "no horizontal overflow at 1440/1280/1024/768/430/390/375",
+        "no broken images; video loads; chapter is last before footer"
       ],
       "blockers": []
     }

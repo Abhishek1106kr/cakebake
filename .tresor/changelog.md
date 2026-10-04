@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Added (2026-10-04, Our Story chapter 10)
+- **"The people behind the cake":** an editorial collage of the team and cake-making photos, placed just above the footer. The rest of the page is unchanged.
+
 ### Added (2026-10-04, Our Story)
 - **/about rebuilt as a cinematic editorial archive:**
   - opening film behind the TRESOR wordmark

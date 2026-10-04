@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import images from '@/assets/manifest/images.json';
 import videos from '@/assets/manifest/videos.json';
-import { craft, love, memoryWall, opening, people, reviews, today, visibleReviews, years } from './story';
+import { craft, love, memoryWall, opening, people, reviews, team, today, visibleReviews, years } from './story';
 import { storyAsset, storyAssetIds } from './story-media';
 
 describe('story content', () => {
@@ -9,6 +9,7 @@ describe('story content', () => {
     const used = [
       opening.film, years.maskImage, ...years.orbit.map((o) => o.asset), ...craft.steps.map((s) => s.media), people.media,
       ...memoryWall.items.flatMap((i) => (i.kind === 'media' ? [i.asset] : [])), today.film, ...love.photos.map((p) => p.asset),
+      ...team.opening.map((t) => t.asset), ...team.middle.map((t) => t.asset), team.final.asset,
     ];
     for (const id of used) expect(storyAssetIds, id).toContain(id);
   });
@@ -37,6 +38,13 @@ describe('story content', () => {
 
   it('attributes no quote to a named person', () => {
     for (const r of reviews) expect(r.author).toBe('Customer');
+  });
+
+  it('uses each team photograph once, with no names or roles', () => {
+    const ids = [...team.opening, ...team.middle, team.final].map((t) => t.asset).filter((a) => a.startsWith('story.team.'));
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toHaveLength(6);
+    expect(JSON.stringify(team)).not.toMatch(/(Chef|Head|Pastry chef|Founder)/);
   });
 
   it('keeps wall pieces on the canvas', () => {

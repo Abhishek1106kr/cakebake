@@ -21,7 +21,9 @@ All files are Pinterest downloads via Klickpin. **Rights unknown: local prototyp
 | story.celebration.gold-candles | dark cake, gold candles | 736×981 | wall, love |
 | story.celebration.sparkler | sparkler, a hand lighting candles | 736×1159 | craft: serve, love |
 
-Gaps: no baker, hands-at-work or kitchen-team photography, and no real reviews. Nothing has been invented to fill them.
+Team chapter (`public/our-story/chefPics/`): six photos used once each (`story.team.*`); `download (5).jpg` (cat-in-a-chef-hat meme) is excluded. **Identifiable people wearing another organisation’s uniforms (ICE): reference only, never in production.** No names or roles are given.
+
+Gaps: no Tresor-owned baker, and no real reviews. Nothing has been invented to fill them.
 
 ## Scene map
 
@@ -36,6 +38,7 @@ Gaps: no baker, hands-at-work or kitchen-team photography, and no real reviews. 
 | 07 | Customer love | Dark, candlelit; quotes interleaved with photos on an irregular 12-col grid | Pieces accumulate one by one with varied reveals; slower rhythm |
 | 08 | Final statement | Three stepped lines; outlined TRESOR fills like ink with scroll | |
 | 09 | CTA | “Ready for something sweet?” Explore the menu / Order a cake | |
+| 10 | The people behind the cake | Headline beside a large portrait; cake-making, a flour film fragment; “The hands. The heat. The wait.”; portrait, the team huddle, a tilted team moment; “8+ years. Still baking by hand.”; one large final portrait; “The people make the place.” | Every tile reveals differently (clip, horizontal wipe, scale, rise, slide) at its own depth; the final portrait’s crop settles with scroll |
 | — | Footer | Unchanged | |
 
 The homepage closes with a compact Customer Love (3 photos, 3 quotes, link to the story) directly above the footer.

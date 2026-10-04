@@ -122,3 +122,49 @@ export const finale = {
   wordmark: 'Tresor',
   cta: { title: 'Ready for something sweet?', primary: { label: 'Explore the menu', href: '/shop' }, secondary: { label: 'Order a cake', href: '/shop?q=cake' } },
 };
+
+/**
+ * 10 · The people behind the cake: the final chapter, just above the footer.
+ * Person → process → product, twice, then one strong portrait. No names or roles
+ * are given: none were supplied, and the photographs are reference material.
+ * Desktop placement is a 12-column grid (col / row / offsets); mobile follows the
+ * array order on a 6-column grid with its own columns.
+ */
+export type TeamTile = {
+  id: string;
+  asset: string;
+  ratio: string;
+  col: string;
+  row?: string;
+  mt?: string;
+  mr?: string;
+  mcol: string;
+  rotate?: number;
+  depth?: number;
+  z?: number;
+  reveal: 'rise' | 'slide' | 'scale' | 'clip' | 'wipe' | 'still';
+  caption?: string;
+  focus?: string;
+};
+
+export const team = {
+  eyebrow: 'The people behind the cake',
+  headline: ['The people', 'behind', 'the cake.'],
+  support: 'Made by people who care about every layer.',
+  opening: [
+    { id: 'tm-loaves', asset: 'story.team.loaves', ratio: '3 / 4', col: '7 / 12', row: '1 / 3', mcol: '1 / 6', depth: 40, reveal: 'clip' },
+    { id: 'tm-layering', asset: 'story.team.layering', ratio: '4 / 5', col: '1 / 5', row: '2', mt: '6vh', mcol: '3 / 7', depth: 20, reveal: 'wipe', caption: 'Every layer, by hand' },
+    { id: 'tm-sift', asset: 'story.video.flour-sift', ratio: '9 / 14', col: '5 / 7', row: '2', mt: '22vh', mr: '-3vw', mcol: '1 / 4', depth: -60, z: 3, reveal: 'scale' },
+  ] as TeamTile[],
+  interlude: ['The hands.', 'The heat.', 'The wait.'],
+  middle: [
+    { id: 'tm-opera', asset: 'story.team.opera-tray', ratio: '4 / 5', col: '2 / 6', row: '1', mcol: '2 / 7', depth: 30, reveal: 'rise' },
+    { id: 'tm-huddle', asset: 'story.team.huddle', ratio: '4 / 3', col: '7 / 13', row: '1', mt: '14vh', mcol: '1 / 7', depth: -40, reveal: 'clip', caption: 'All hands' },
+    { id: 'tm-duo', asset: 'story.team.rolls-duo', ratio: '4 / 5', col: '6 / 9', row: '2', mt: '-12vh', mcol: '3 / 6', rotate: 1.5, depth: 70, z: 3, reveal: 'slide' },
+  ] as TeamTile[],
+  years: ['8+ years.', 'Still baking by hand.'],
+  // Square on desktop so face and cake fit one screen; portrait on phones (see CSS).
+  final: { id: 'tm-final', asset: 'story.team.strawberry-cake', ratio: '1 / 1', col: '4 / 10', mcol: '1 / 7', reveal: 'scale', focus: '50% 30%' } as TeamTile,
+  closing: 'The people make the place.',
+  signature: 'Tresor',
+};

@@ -64,13 +64,14 @@ export function StoryMedia({ id, className = '', focus, eager, sizes }: { id: st
   return <Media asset={asset} className={`story-img ${className}`} eager={eager} sizes={sizes} imgStyle={{ objectPosition: focus ?? asset.focus } as MotionStyle} />;
 }
 
-export type RevealKind = 'rise' | 'slide' | 'scale' | 'clip' | 'still';
+export type RevealKind = 'rise' | 'slide' | 'scale' | 'clip' | 'wipe' | 'still';
 
 const REVEALS: Record<RevealKind, { initial: TargetAndTransition; animate: TargetAndTransition; duration: number }> = {
   rise: { initial: { opacity: 0, y: 70 }, animate: { opacity: 1, y: 0 }, duration: 1.1 },
   slide: { initial: { opacity: 0, x: -60 }, animate: { opacity: 1, x: 0 }, duration: 1.0 },
   scale: { initial: { opacity: 0, scale: 0.94 }, animate: { opacity: 1, scale: 1 }, duration: 1.2 },
   clip: { initial: { clipPath: 'inset(100% 0% 0% 0%)' }, animate: { clipPath: 'inset(0% 0% 0% 0%)' }, duration: 1.3 },
+  wipe: { initial: { clipPath: 'inset(0% 100% 0% 0%)' }, animate: { clipPath: 'inset(0% 0% 0% 0%)' }, duration: 1.3 },
   still: { initial: { opacity: 0 }, animate: { opacity: 1 }, duration: 1.4 },
 };
 
@@ -87,7 +88,7 @@ export function Reveal({ kind = 'rise', delay = 0, className = '', style, childr
     <motion.div className={className} style={style} initial="hidden" whileInView="show" viewport={{ once: true, amount }}>
       <motion.div className="reveal-inner" variants={{
         hidden: r.initial,
-        show: { ...r.animate, transition: { duration: r.duration, ease: kind === 'clip' || kind === 'scale' ? EASE_IMAGE : EASE, delay } },
+        show: { ...r.animate, transition: { duration: r.duration, ease: kind === 'clip' || kind === 'wipe' || kind === 'scale' ? EASE_IMAGE : EASE, delay } },
       }}>
         {children}
       </motion.div>

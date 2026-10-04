@@ -7,11 +7,13 @@ import { StoryCraft, StoryOpening, StoryPeople, StoryToday, StoryYears } from '.
 const MemoryWall = dynamic(() => import('./memory-wall').then((m) => m.MemoryWall));
 const CustomerLove = dynamic(() => import('./customer-love').then((m) => m.CustomerLove));
 const StoryFinale = dynamic(() => import('./finale').then((m) => m.StoryFinale));
+const TeamChapter = dynamic(() => import('./team-chapter').then((m) => m.TeamChapter));
 
 /**
  * Our Story, as a film in chapters:
  * 01 opening · 02 8+ years · 03 craft · 04 people · 05 memory wall ·
- * 06 the bakery today · 07 customer love · 08 final statement · 09 CTA → footer.
+ * 06 the bakery today · 07 customer love · 08 final statement · 09 CTA ·
+ * 10 the people behind the cake → footer.
  * Peaks: opening, the numeral, the wall, the craft film, customer love, the wordmark.
  */
 export function StoryPage() {
@@ -25,6 +27,7 @@ export function StoryPage() {
       <StoryToday />
       <CustomerLove />
       <StoryFinale />
+      <TeamChapter />
     </main>
   );
 }

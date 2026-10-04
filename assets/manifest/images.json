@@ -6,14 +6,21 @@
       "id": "story.cake.drip-tiered",
       "type": "image",
       "source": "public/our-story/download (3).jpg",
-      "role": ["hero", "number-mask", "craft-finish"],
+      "role": [
+        "hero",
+        "number-mask",
+        "craft-finish"
+      ],
       "product": null,
       "aspectRatio": "0.563",
       "desktop": "drip-cake-tiered.webp",
       "mobile": "drip-cake-tiered-sm.webp",
       "focus": "50% 45%",
       "alt": "A two-tier cake with chocolate drip, finished with chocolates and wafers",
-      "tone": ["#EDE6DC", "#4E3426"],
+      "tone": [
+        "#EDE6DC",
+        "#4E3426"
+      ],
       "priority": "normal",
       "licenseStatus": "unknown: reference only",
       "notes": "Strongest finished-cake image, light background. Used inside the 8+ numeral and as the craft finish."
@@ -22,14 +29,20 @@
       "id": "story.cake.box-strawberry",
       "type": "image",
       "source": "public/our-story/0fa968d373b1965f91e20d6caa92746f.jpg",
-      "role": ["collage", "detail"],
+      "role": [
+        "collage",
+        "detail"
+      ],
       "product": null,
       "aspectRatio": "0.563",
       "desktop": "cake-box-strawberry.webp",
       "mobile": "cake-box-strawberry-sm.webp",
       "focus": "50% 35%",
       "alt": "A chocolate cake topped with strawberries and cookies, seen from above in its box",
-      "tone": ["#EFE8DD", "#5A3A2A"],
+      "tone": [
+        "#EFE8DD",
+        "#5A3A2A"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only",
       "notes": "Top-down; works as a square detail crop."
@@ -38,14 +51,21 @@
       "id": "story.celebration.heart-cake",
       "type": "image",
       "source": "public/our-story/My fav day of the year.jpg",
-      "role": ["customer", "collage", "hero-candidate"],
+      "role": [
+        "customer",
+        "collage",
+        "hero-candidate"
+      ],
       "product": null,
       "aspectRatio": "0.750",
       "desktop": "heart-cake-candle.webp",
       "mobile": "heart-cake-candle-sm.webp",
       "focus": "50% 62%",
       "alt": "A heart-shaped cake with piped chocolate roses and a single candle, held close",
-      "tone": ["#2A2220", "#120E0D"],
+      "tone": [
+        "#2A2220",
+        "#120E0D"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only",
       "notes": "Person partly in frame (face cropped out). Low-key, candlelit."
@@ -54,14 +74,20 @@
       "id": "story.celebration.bento-birthday",
       "type": "image",
       "source": "public/our-story/download (1).jpg",
-      "role": ["customer", "collage"],
+      "role": [
+        "customer",
+        "collage"
+      ],
       "product": null,
       "aspectRatio": "0.563",
       "desktop": "bento-happy-birthday.webp",
       "mobile": "bento-happy-birthday-sm.webp",
       "focus": "50% 55%",
       "alt": "A small cream cake piped with “Happy Birthday” and a lit candle, in its open box",
-      "tone": ["#E9E2D2", "#3B3328"],
+      "tone": [
+        "#E9E2D2",
+        "#3B3328"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only",
       "notes": ""
@@ -70,14 +96,19 @@
       "id": "story.celebration.birthday-to-me",
       "type": "image",
       "source": "public/our-story/download (2).jpg",
-      "role": ["customer"],
+      "role": [
+        "customer"
+      ],
       "product": null,
       "aspectRatio": "0.563",
       "desktop": "birthday-to-me.webp",
       "mobile": "birthday-to-me-sm.webp",
       "focus": "50% 40%",
       "alt": "A cake piped with “Happy birthday to me”, one candle burning, in its box",
-      "tone": ["#3A2E28", "#151110"],
+      "tone": [
+        "#3A2E28",
+        "#151110"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only",
       "notes": ""
@@ -86,14 +117,19 @@
       "id": "story.celebration.candles-wish",
       "type": "image",
       "source": "public/our-story/download (4).jpg",
-      "role": ["customer"],
+      "role": [
+        "customer"
+      ],
       "product": null,
       "aspectRatio": "0.926",
       "desktop": "candles-wish.webp",
       "mobile": "candles-wish-sm.webp",
       "focus": "50% 40%",
       "alt": "A child making a wish, eyes closed, over a cake with candles",
-      "tone": ["#3A2A22", "#120D0B"],
+      "tone": [
+        "#3A2A22",
+        "#120D0B"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only. Identifiable child: never use in production without consent.",
       "notes": "Low resolution (463×500): use small only."
@@ -102,14 +138,20 @@
       "id": "story.celebration.gold-candles",
       "type": "image",
       "source": "public/our-story/download.jpg",
-      "role": ["collage", "atmosphere"],
+      "role": [
+        "collage",
+        "atmosphere"
+      ],
       "product": null,
       "aspectRatio": "0.750",
       "desktop": "gold-candles.webp",
       "mobile": "gold-candles-sm.webp",
       "focus": "50% 55%",
       "alt": "A dark chocolate cake scattered with gold stars, ringed by tall gold candles",
-      "tone": ["#1E1A16", "#0B0908"],
+      "tone": [
+        "#1E1A16",
+        "#0B0908"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only",
       "notes": ""
@@ -118,17 +160,166 @@
       "id": "story.celebration.sparkler",
       "type": "image",
       "source": "public/our-story/hbd.jpg",
-      "role": ["customer", "collage"],
+      "role": [
+        "customer",
+        "collage"
+      ],
       "product": null,
       "aspectRatio": "0.635",
       "desktop": "sparkler-cake.webp",
       "mobile": "sparkler-cake-sm.webp",
       "focus": "50% 40%",
       "alt": "A sparkler fizzing over a birthday cake as a hand lights the candles",
-      "tone": ["#2B201A", "#0E0A08"],
+      "tone": [
+        "#2B201A",
+        "#0E0A08"
+      ],
       "priority": "lazy",
       "licenseStatus": "unknown: reference only",
       "notes": "The only image with hands in frame."
+    },
+    {
+      "id": "story.team.loaves",
+      "source": "public/our-story/chefPics/download (9).jpg",
+      "category": "team",
+      "role": [
+        "portrait",
+        "opening-anchor"
+      ],
+      "aspectRatio": "0.600",
+      "desktop": "team-loaves.webp",
+      "mobile": "team-loaves-sm.webp",
+      "focus": "50% 28%",
+      "alt": "A baker in chef’s whites holding two braided loaves, smiling at the camera",
+      "tone": [
+        "#ECE8E1",
+        "#5E5248"
+      ],
+      "type": "image",
+      "product": null,
+      "priority": "lazy",
+      "licenseStatus": "unknown: reference only. Identifiable people; uniforms show another organisation's logo (ICE). Never use in production. Replace with Tresor's own team photography, taken with consent.",
+      "notes": "Team chapter (THE PEOPLE BEHIND THE CAKE)."
+    },
+    {
+      "id": "story.team.strawberry-cake",
+      "source": "public/our-story/chefPics/download (8).jpg",
+      "category": "team",
+      "role": [
+        "portrait",
+        "final-anchor",
+        "product"
+      ],
+      "aspectRatio": "0.704",
+      "desktop": "team-strawberry-cake.webp",
+      "mobile": "team-strawberry-cake-sm.webp",
+      "focus": "50% 38%",
+      "alt": "A baker looking down at the strawberry cream cake she is holding",
+      "tone": [
+        "#EDE6DA",
+        "#6A5444"
+      ],
+      "type": "image",
+      "product": null,
+      "priority": "lazy",
+      "licenseStatus": "unknown: reference only. Identifiable people; uniforms show another organisation's logo (ICE). Never use in production. Replace with Tresor's own team photography, taken with consent.",
+      "notes": "Team chapter (THE PEOPLE BEHIND THE CAKE)."
+    },
+    {
+      "id": "story.team.layering",
+      "source": "public/our-story/chefPics/download (7).jpg",
+      "category": "craft",
+      "role": [
+        "process",
+        "cake-making"
+      ],
+      "aspectRatio": "0.563",
+      "desktop": "team-layering.webp",
+      "mobile": "team-layering-sm.webp",
+      "focus": "50% 40%",
+      "alt": "Layered chocolate sponges being assembled on cake turntables, bakers working alongside",
+      "tone": [
+        "#E9E4DC",
+        "#3E2C22"
+      ],
+      "type": "image",
+      "product": null,
+      "priority": "lazy",
+      "licenseStatus": "unknown: reference only. Identifiable people; uniforms show another organisation's logo (ICE). Never use in production. Replace with Tresor's own team photography, taken with consent.",
+      "notes": "Team chapter (THE PEOPLE BEHIND THE CAKE)."
+    },
+    {
+      "id": "story.team.opera-tray",
+      "source": "public/our-story/chefPics/download (11).jpg",
+      "category": "team",
+      "role": [
+        "portrait",
+        "process"
+      ],
+      "aspectRatio": "0.750",
+      "desktop": "team-opera-tray.webp",
+      "mobile": "team-opera-tray-sm.webp",
+      "focus": "45% 30%",
+      "alt": "A baker with a palette knife beside a tray of glazed opera cake slices",
+      "tone": [
+        "#E3E3E1",
+        "#4A4A48"
+      ],
+      "type": "image",
+      "product": null,
+      "priority": "lazy",
+      "licenseStatus": "unknown: reference only. Identifiable people; uniforms show another organisation's logo (ICE). Never use in production. Replace with Tresor's own team photography, taken with consent.",
+      "notes": "Team chapter (THE PEOPLE BEHIND THE CAKE)."
+    },
+    {
+      "id": "story.team.rolls-duo",
+      "source": "public/our-story/chefPics/download (10).jpg",
+      "category": "team",
+      "role": [
+        "team-moment"
+      ],
+      "aspectRatio": "0.667",
+      "desktop": "team-rolls-duo.webp",
+      "mobile": "team-rolls-duo-sm.webp",
+      "focus": "50% 26%",
+      "alt": "Two bakers grinning over a fresh tray of cinnamon rolls",
+      "tone": [
+        "#E6E3DE",
+        "#6B4A2E"
+      ],
+      "type": "image",
+      "product": null,
+      "priority": "lazy",
+      "licenseStatus": "unknown: reference only. Identifiable people; uniforms show another organisation's logo (ICE). Never use in production. Replace with Tresor's own team photography, taken with consent.",
+      "notes": "Team chapter (THE PEOPLE BEHIND THE CAKE)."
+    },
+    {
+      "id": "story.team.huddle",
+      "source": "public/our-story/chefPics/download (6).jpg",
+      "category": "team",
+      "role": [
+        "team-detail"
+      ],
+      "aspectRatio": "0.750",
+      "desktop": "team-huddle.webp",
+      "mobile": "team-huddle-sm.webp",
+      "focus": "50% 52%",
+      "alt": "Seen from above: a circle of bakers’ feet in checked trousers and chef’s whites",
+      "tone": [
+        "#D9D4CC",
+        "#3A3632"
+      ],
+      "type": "image",
+      "product": null,
+      "priority": "lazy",
+      "licenseStatus": "unknown: reference only. Identifiable people; uniforms show another organisation's logo (ICE). Never use in production. Replace with Tresor's own team photography, taken with consent.",
+      "notes": "Team chapter (THE PEOPLE BEHIND THE CAKE)."
+    }
+  ],
+  "excluded": [
+    {
+      "source": "public/our-story/chefPics/download (5).jpg",
+      "reason": "AI-style meme (cat in a chef hat, kitchen fire). Off-brand for a premium bakery and signals a kitchen accident."
     }
   ]
 }
