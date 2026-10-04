@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Changed (2026-10-04, f59f041)
+- Menu page: editorial mood-led header, underlined search, sticky text-tab filter bar with live counts and minimal sort. Prototype "mock catalogue" copy removed.
+- Homepage cake reveal rebuilt full-bleed with a push-in; title on a soft scrim beside the cake.
+
+### Fixed (2026-10-04)
+- Scroll-driven opacity faded text back in past the end of its range (Framer's ScrollTimeline acceleration ignored the clamp). ScrollScene now passes a function-derived progress value.
+
 ### Added
 - **Frontend business logic** (browser-only, synced across tabs):
   - order model and status flow
