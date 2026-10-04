@@ -24,23 +24,25 @@ export function SceneCakeReveal() {
 
 function CakeRevealInner({ progress }: { progress: MotionValue<number> }) {
   const reduce = useReducedMotion();
-  const whole = cakeImage('rose-truffle', 'product');
-  // One continuous push from the whole cake into the rose; no cross-fade, so no double exposure.
-  const cakeScale = useTransform(progress, [0, 0.6, 1], [1, 2.9, 3.2]);
-  const dim = useTransform(progress, [0.5, 0.72], [0, 0.5]);
+  // Full-bleed: the cake fills the frame on its own backdrop (16:9, or the 9:16 crop on phones),
+  // then one continuous push carries the camera into the rose.
+  const hero = cakeImage('rose-truffle', 'hero');
+  const push = useTransform(progress, [0, 0.62, 1], [1, 2.35, 2.6]);
+  const titleOpacity = useTransform(progress, [0, 0.22], [1, 0]);
+  const titleY = useTransform(progress, [0, 0.22], [0, -40]);
+  const dim = useTransform(progress, [0.5, 0.72], [0, 0.55]);
   const lineA = useTransform(progress, [0.6, 0.76], ['110%', '0%']);
   const lineB = useTransform(progress, [0.66, 0.82], ['110%', '0%']);
-  const captionOpacity = useTransform(progress, [0, 0.1, 0.3], [0, 1, 0]);
   const ctaOpacity = useTransform(progress, [0.8, 0.92], [0, 1]);
   return (
     <div className="cake-reveal">
-      <motion.div className="cake-reveal-whole" style={reduce ? undefined : { scale: cakeScale }}>
-        <Media asset={whole} eager />
+      <motion.div className="cake-reveal-frame" style={reduce ? undefined : { scale: push }} initial={reduce ? false : { opacity: 0, scale: 1.06 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }}>
+        <Media asset={hero} eager />
       </motion.div>
       <motion.div className="cake-reveal-dim" style={{ opacity: reduce ? 0.45 : dim }} />
-      <motion.div className="cake-reveal-caption" style={reduce ? { opacity: 0 } : { opacity: captionOpacity }}>
-        <span className="eyebrow">Our signature</span>
-        <span>Rose Chocolate Truffle</span>
+      <motion.div className="cake-reveal-title" style={reduce ? { opacity: 0 } : { opacity: titleOpacity, y: titleY }}>
+        <span className="eyebrow">The signature</span>
+        <SplitText as="h2" text="Rose Chocolate Truffle" by="word" className="cake-reveal-name" />
       </motion.div>
       <div className="cake-reveal-type" aria-label="Layer by layer, by hand.">
         <span className="line-mask" aria-hidden="true"><motion.span className="line-inner" style={reduce ? undefined : { y: lineA }}>Layer by layer,</motion.span></span>

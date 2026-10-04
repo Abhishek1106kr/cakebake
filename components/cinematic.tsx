@@ -61,10 +61,14 @@ export function ScrollScene({ height = '300vh', className = '', children }: { he
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
+  // A function-derived value keeps transforms on the JS path. Handing scrollYProgress straight
+  // to useTransform lets Framer accelerate opacity via ScrollTimeline, which ignores the clamp
+  // and fades text back in past the end of its range.
+  const progress = useTransform(scrollYProgress, (v) => v);
   const settled = useMotionValue(1);
   return (
     <section ref={ref} className={`scroll-scene ${className}`} style={{ height: reduce ? 'auto' : height }}>
-      <div className={reduce ? 'scene-static' : 'scene-sticky'}>{children(reduce ? settled : scrollYProgress)}</div>
+      <div className={reduce ? 'scene-static' : 'scene-sticky'}>{children(reduce ? settled : progress)}</div>
     </section>
   );
 }
