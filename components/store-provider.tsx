@@ -270,6 +270,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setOrders(next);
     publishStatus(makeStatusEvent(updated, order.status, to, source, now));
     emitDomain('order.status.changed', orderId, { from: order.status, to, source });
+    if (order.items.some((l) => l.custom)) emitDomain('customCake.updated', orderId, { status: to });
     if (to === 'CANCELLED' && cancelRestoresStock(order)) emitDomain('inventory.changed', orderId, { reason: 'cancellation' });
     onStatusChanged(updated, to);
     return true;

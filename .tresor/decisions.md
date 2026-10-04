@@ -252,3 +252,75 @@ Reasoning:
 - Remaining click latency is 40–160 ms to next paint at 4x CPU throttle, within the INP "good" threshold. It is mostly Framer layout projection for the sliding selection indicators, which is part of the design, so it was left alone.
 
 Related: TRESOR-PERF.
+
+## DEC-018 · Orders are restored exactly as sold (snapshots)
+Date: 2026-10-04
+
+Decision:
+`normalizeOrder` restores each stored line as sold: product name, unit price and the custom cake spec are the order's own. Custom cake lines also freeze the option names and price breakdown (`custom.snapshot`). Only lines saved before unit prices existed fall back to the menu.
+
+Reasoning:
+- Before, every stored order went through `normalizeCart`, which re-priced lines from the live menu and rebuilt custom cakes from the current cake config. That was harmless while prices were code constants. Once the admin can edit prices, it would have rewritten history and made invoices disagree with what was charged.
+- Current price = configuration (admin). Historical price = order snapshot. Invoices are rebuilt from the snapshot, so a regenerated invoice still matches the order.
+
+Related: TRESOR-ADMIN.
+
+## DEC-019 · Live catalogue through module bindings, applied after hydration
+Date: 2026-10-04
+
+Decision:
+`lib/data.ts` `products` and the `lib/cake/config.ts` option lists are `export let` bindings. `lib/catalog/live.ts` replaces them with admin overrides from browser storage after hydration, and again when another tab saves. The store exposes `catalogRevision` so memoised menus re-read.
+
+Reasoning:
+- Every consumer (shop, search index, studio, pricing, rules, production sheet) already imports these lists. Live bindings let them follow admin changes without rewriting the customer site around a new context, which the brief ruled out.
+- The engine's product index caches by array identity, so replacing the array (not mutating it) invalidates the cache correctly.
+- Applying after hydration keeps the server-rendered first paint identical to the client's first render. The cost: an overridden price can show its default for one frame on a hard load. A backend serving the catalogue removes that gap.
+- Archived options stay in the lists (hidden from customers, refused on new designs) so old designs and orders still resolve.
+
+Related: TRESOR-ADMIN.
+
+## DEC-020 · One admin action path; permissions in three layers
+Date: 2026-10-04
+
+Decision:
+Every management mutation goes through `AdminProvider.act()`: authorize (business permission) → run → append the audit record → toast. Destructive or financial actions confirm first, showing their impact and asking for a reason. Permissions are an explicit matrix (`lib/admin/permissions.ts`), checked in three places: UI (what's shown), business (`authorize`, before any change) and future server authorization (same permission names).
+
+Reasoning:
+- One path means no silent failures and no change without an audit entry, and it is the seam where an API repository slots in later.
+- Hidden links are not security. In this frontend-only phase `authorize()` is the guard, documented as such; it is not a security boundary against someone editing browser storage.
+
+Related: TRESOR-ADMIN.
+
+## DEC-021 · Paid cancellations wait for a person to complete the refund
+Date: 2026-10-04
+
+Decision:
+Cancelling a paid order sets payment to `REFUND_PENDING`. A person with `finance.refund` marks it `REFUNDED` after confirming, with a reason. Cash-on-delivery cancellations become `VOID`.
+
+Reasoning:
+The brief requires approval for refunds and financial actions. Setting `REFUNDED` automatically claimed money had moved when nothing had.
+
+Related: TRESOR-ADMIN.
+
+## DEC-022 · Auto-confirm stays the default, as a setting
+Date: 2026-10-04
+
+Decision:
+Orders still arrive `CONFIRMED` by default; Settings → Ordering → "Auto-confirm new orders" turns that off so orders wait in `NEW` for staff (bulk confirm supported).
+
+Reasoning:
+The customer tracking flow and its tests start at "confirmed". Changing the default would change the customer experience. The kitchen board's New column therefore stays empty unless the bakery turns auto-confirm off, and the board says so.
+
+Related: TRESOR-ADMIN.
+
+## DEC-023 · Admin has its own shell; content slots modelled, one wired
+Date: 2026-10-04
+
+Decision:
+The shop header and footer no longer render under `/admin`. The admin has its own dense shell: Cormorant Garamond + Inter loaded for the admin only, no Lenis, no cinematic scenes, functional motion of 120–250 ms, CSS scoped to `.ad-shell`. Content slots (hero, featured cakes and products, story, customer love, seasonal) are stored and resolvable. Only the announcement bar is wired to the storefront. It renders nothing unless an announcement is live.
+
+Reasoning:
+- The brief: operational, not cinematic; don't redesign the customer site. Wiring every slot into the cinematic home would change designed pages, so that is a deliberate next step, labelled as such on the Content page.
+- Internal production notes are stored apart from orders (`tresor-internal-notes`) so they can never reach invoices, tracking or any customer page.
+
+Related: TRESOR-ADMIN.

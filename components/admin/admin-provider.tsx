@@ -24,6 +24,7 @@ import { deriveAttention, withStates, type AttentionItem, type AttentionState } 
 import type { Announcement, Campaign, ContentSlot } from '@/lib/admin/marketing';
 import type { MediaOverlay } from '@/lib/admin/media-library';
 import { announceCatalogChange } from '@/lib/catalog/live';
+import { retryJob } from '@/lib/automation/runner';
 import type { CakeCatalog } from '@/lib/cake/config';
 
 export type Toast = { id: number; tone: 'success' | 'warning' | 'error' | 'info'; title: string; detail?: string; action?: { label: string; run: () => void } };
@@ -250,6 +251,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   // ---------- Live domain events ----------
   const [lastDomainEvent, setLastDomainEvent] = useState<DomainEvent | null>(null);
   const thresholdsRef = useRef(thresholds); thresholdsRef.current = thresholds;
+  // Retry from a toast goes through the same audited path as the Automations page.
+  const retryRef = useRef((jobId: string, orderId: string) => { void jobId; void orderId; });
+  retryRef.current = (jobId, orderId) => act({
+    permission: 'automations.retry', action: 'automation.retried', entity: { type: 'automation', id: jobId, label: orderId }, before: { status: 'failed' }, after: { status: 'retrying' },
+    run: () => { retryJob(jobId, () => store.findOrder(orderId)); }, success: 'Retrying…',
+  });
   useEffect(() => {
     const source = new BrowserAdminEventSource();
     source.connect();
@@ -261,7 +268,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         toast({ tone: 'info', title: `New order ${e.entityId}`, detail: msg });
       }
       if (e.type === 'invoice.failed' || e.type === 'notification.failed') {
-        toast({ tone: 'warning', title: `${e.type === 'invoice.failed' ? 'Invoice' : 'WhatsApp'} failed for ${e.entityId}`, detail: 'The order is safe. Retry it from Automations.' });
+        const jobId = String(e.data.jobId ?? '');
+        toast({
+          tone: 'warning', title: `${e.type === 'invoice.failed' ? 'Invoice' : 'WhatsApp'} failed for ${e.entityId}`, detail: 'The order is safe. Retry now?',
+          action: jobId ? { label: 'Retry', run: () => retryRef.current(jobId, e.entityId) } : undefined,
+        });
       }
     });
     return () => { off(); source.disconnect(); };
