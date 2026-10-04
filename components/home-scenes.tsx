@@ -12,6 +12,7 @@ import { Magnetic } from './motion';
 import { useStore } from './store-provider';
 import { useTransitions } from './transitions';
 import { media, productMedia } from '@/lib/media';
+import { cakeScenes } from '@/lib/cake-assets';
 import { products, type Product } from '@/lib/data';
 import { EASE, EASE_IMAGE, HERO, T } from '@/lib/motion';
 
@@ -245,7 +246,7 @@ export function SceneStory() {
   return (
     <section className="scene-story container">
       <div className="story-layers">
-        <Parallax distance={160} className="story-back"><MaskedReveal><Media asset={media.story} /></MaskedReveal></Parallax>
+        <Parallax distance={160} className="story-back"><MaskedReveal><Media asset={cakeScenes.lifestyle} /></MaskedReveal></Parallax>
         <Parallax distance={-90} className="story-front"><MaskedReveal from="center"><Media asset={media.brunch} /></MaskedReveal></Parallax>
         <Parallax distance={40} className="story-caption"><span>Baked in waves,<br />all day long.</span></Parallax>
       </div>

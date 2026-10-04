@@ -10,24 +10,28 @@ import { EASE, EASE_IMAGE } from '@/lib/motion';
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-/** Image from the media registry over its tone gradient; falls back silently if the file is missing. */
+/**
+ * Image from the media registry over its tone gradient. Uses a mobile-specific
+ * crop when the asset has one, and falls back silently if the file is missing.
+ */
 export function Media({ asset, className = '', imgStyle, eager = false, sizes = '100vw' }: { asset: MediaAsset; className?: string; imgStyle?: MotionStyle; eager?: boolean; sizes?: string }) {
   const [failed, setFailed] = useState(!asset.src);
+  const img = (
+    <motion.img
+      src={asset.src}
+      alt={asset.alt}
+      sizes={sizes}
+      loading={eager || asset.priority === 'high' ? 'eager' : 'lazy'}
+      fetchPriority={asset.priority === 'high' ? 'high' : 'auto'}
+      decoding="async"
+      onError={() => setFailed(true)}
+      style={imgStyle}
+      draggable={false}
+    />
+  );
   return (
     <div className={`media ${className}`} style={{ background: `linear-gradient(145deg, ${asset.tone[0]}, ${asset.tone[1]})` }}>
-      {!failed && (
-        <motion.img
-          src={asset.src}
-          alt={asset.alt}
-          sizes={sizes}
-          loading={eager || asset.priority === 'high' ? 'eager' : 'lazy'}
-          fetchPriority={asset.priority === 'high' ? 'high' : 'auto'}
-          decoding="async"
-          onError={() => setFailed(true)}
-          style={imgStyle}
-          draggable={false}
-        />
-      )}
+      {!failed && (asset.mobile ? <picture><source media="(max-width: 760px)" srcSet={asset.mobile} />{img}</picture> : img)}
     </div>
   );
 }

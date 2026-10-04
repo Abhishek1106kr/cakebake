@@ -328,3 +328,134 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 @media (prefers-reduced-motion: reduce) {
   .scene-static .opening, .scene-static .craft, .scene-static .signatures, .scene-static .glaze-scene, .scene-static .finale { min-height: 100vh; }
 }
+
+/* ==========================================================================
+   Cake image system: reveal, signature, collection, cut, campaign
+   ========================================================================== */
+.sweetness { display: inline-flex; gap: 5px; vertical-align: middle; }
+.sweetness i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--brand-dark); display: block; }
+.sweetness i.on { background: var(--brand-dark); }
+
+/* cake reveal */
+.cake-reveal { position: relative; height: 100%; overflow: hidden; background: #ECEBE7; display: grid; place-items: center; }
+.cake-reveal-whole { position: relative; height: 74vh; aspect-ratio: 4 / 5; transform-origin: 50% 43%; }
+.cake-reveal-whole .media { position: absolute; inset: 0; }
+.cake-reveal-macro { position: absolute; inset: 0; }
+.cake-reveal-macro .media { position: absolute; inset: 0; }
+.cake-reveal-dim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,26,25,.1), rgba(20,26,25,.85)); }
+.cake-reveal-caption { position: absolute; left: var(--gutter); bottom: 9vh; display: grid; gap: 6px; font-family: var(--serif); font-size: clamp(22px, 2vw, 30px); color: var(--ink); }
+.cake-reveal-type { position: absolute; left: var(--gutter); bottom: 10vh; color: #fff; font-family: var(--serif); font-size: clamp(52px, 8vw, 128px); line-height: .92; display: grid; gap: 4px; }
+.cake-reveal-type .line-mask { display: block; overflow: hidden; }
+.cake-reveal-type .line-inner { display: block; }
+.cake-reveal-type .btn { margin-top: 26px; font-family: Inter, system-ui, sans-serif; }
+
+/* signature cake */
+.scene-signature-cake { display: grid; grid-template-columns: 1.15fr .85fr; gap: 6vw; align-items: center; padding: 150px var(--gutter); background: var(--bg); }
+.sig-cake-media { position: relative; height: 92vh; }
+.sig-cake-main { position: absolute; left: 0; top: 0; width: 80%; height: 88%; }
+.sig-cake-inset { position: absolute; right: 0; bottom: 0; width: 38%; aspect-ratio: 1; }
+.sig-cake-main div, .sig-cake-inset div { height: 100%; }
+.sig-cake-inset .media { box-shadow: 0 30px 70px rgba(32,38,37,.25); border-radius: 24px; }
+.sig-cake-title { display: block; font-family: var(--serif); font-size: clamp(52px, 6vw, 104px); line-height: .92; margin: 14px 0 22px; }
+.sig-cake-story { color: var(--muted); font-size: 17px; line-height: 1.7; max-width: 46ch; }
+.sig-cake-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; margin: 32px 0; }
+.sig-cake-facts dt { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.sig-cake-facts dd { margin: 4px 0 0; font-family: var(--serif); font-size: 21px; line-height: 1.2; }
+.sig-cake-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.sig-cake-price { font-family: var(--serif); font-size: 44px; line-height: 1; }
+.sig-cake-actions .text-link { background: none; border: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+/* collection */
+.scene-cake-collection { padding: 130px var(--gutter) 150px; background: #FBFAF7; }
+.collection-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 30px; flex-wrap: wrap; margin-bottom: 70px; }
+.collection-title { display: block; font-family: var(--serif); font-size: clamp(44px, 5.4vw, 92px); line-height: .95; margin-top: 12px; max-width: 13ch; }
+.occasion-filter { display: flex; flex-wrap: wrap; gap: 4px 22px; }
+.occasion-filter button { position: relative; background: none; border: 0; padding: 10px 0; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.occasion-filter button.is-active { color: var(--ink); }
+.occasion-underline { position: absolute; left: 0; right: 0; bottom: 4px; height: 1px; background: var(--ink); }
+.collection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 90px 7vw; }
+.cake-entry { display: grid; gap: 22px; }
+.cake-entry.is-offset { margin-top: 140px; }
+.cake-entry-media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 6px; cursor: pointer; background: #EDEBE6; }
+.cake-entry-img, .cake-entry-img .media { position: absolute; inset: 0; }
+.cake-entry-num { position: absolute; left: 18px; top: 16px; font-size: 11px; letter-spacing: .2em; color: rgba(32,38,37,.6); }
+.cake-entry-copy { display: grid; gap: 8px; max-width: 460px; }
+.cake-entry-name { margin: 0; font-family: var(--serif); font-weight: 500; font-size: clamp(30px, 3.2vw, 52px); line-height: .95; letter-spacing: .02em; text-transform: uppercase; }
+.cake-entry-desc { color: var(--muted); margin: 0; line-height: 1.6; }
+.cake-entry-detail { margin: 0; font-size: 12px; letter-spacing: .06em; color: var(--brand-dark); }
+.cake-entry-foot { display: flex; align-items: baseline; gap: 22px; margin-top: 6px; }
+.cake-entry-price { font-family: var(--serif); font-size: 28px; }
+.cake-add { background: none; border: 0; border-bottom: 1px solid var(--ink); padding: 4px 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; cursor: pointer; color: var(--ink); }
+.cake-add.is-added { color: var(--brand-dark); border-color: var(--brand-dark); }
+.collection-foot { margin-top: 80px; text-align: center; }
+
+/* the cut */
+.cut { position: relative; height: 100%; background: #1E1614; overflow: hidden; }
+.cut-media { position: absolute; inset: 0; }
+.cut-media .media { position: absolute; inset: 0; }
+.cut-knife { position: absolute; top: -10%; bottom: -10%; width: 2px; background: linear-gradient(180deg, transparent, rgba(255,255,255,.95), transparent); transform: rotate(22deg); transform-origin: center; box-shadow: 0 0 18px rgba(255,255,255,.6); }
+.cut-copy { position: absolute; right: var(--gutter); bottom: 10vh; max-width: 420px; color: #fff; }
+.cut-copy .line-mask { display: block; overflow: hidden; font-family: var(--serif); font-size: clamp(52px, 7vw, 112px); line-height: .95; }
+.cut-copy .line-inner { display: block; }
+.cut-copy p { color: rgba(255,255,255,.82); line-height: 1.6; margin: 14px 0 22px; }
+
+/* cake campaign (product detail) */
+.cake-campaign { background: var(--bg); padding-bottom: 60px; }
+.campaign-hero { position: relative; height: calc(100vh - 78px); min-height: 520px; overflow: hidden; }
+.campaign-hero-media, .campaign-hero-inner { position: absolute; inset: 0; }
+.campaign-hero-inner .media { position: absolute; inset: 0; }
+.campaign-hero-copy { position: absolute; left: var(--gutter); bottom: 8vh; color: var(--ink); }
+.campaign-back { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; margin-bottom: 18px; color: var(--ink); }
+.campaign-title { display: block; font-family: var(--serif); font-size: clamp(56px, 9vw, 150px); line-height: .9; margin-top: 10px; max-width: 12ch; }
+.campaign-body { display: grid; grid-template-columns: 1fr 1fr; gap: 6vw; padding: 110px var(--gutter); align-items: start; }
+.campaign-sticky { position: sticky; top: 100px; }
+.campaign-product { aspect-ratio: 4 / 5; }
+.campaign-product .media { height: 100%; }
+.campaign-story { font-family: var(--serif); font-size: clamp(26px, 2.4vw, 36px); line-height: 1.25; margin: 0 0 40px; }
+.campaign-facts { display: grid; gap: 0; margin: 0 0 36px; border-top: 1px solid var(--line); }
+.campaign-facts > div { display: grid; grid-template-columns: 140px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.campaign-facts dt { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); padding-top: 3px; }
+.campaign-facts dd { margin: 0; }
+.campaign-ingredients ul { list-style: none; padding: 0; margin: 12px 0 40px; display: flex; flex-wrap: wrap; gap: 8px; }
+.campaign-ingredients li { border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+.campaign-order { display: grid; gap: 16px; padding: 28px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); }
+.campaign-price { font-family: var(--serif); font-size: 52px; line-height: 1; }
+.campaign-note { font-size: 13px; color: var(--brand-dark); margin: 0; }
+.campaign-note a { text-decoration: underline; }
+.campaign-small { font-size: 12px; color: var(--muted); margin: 0; }
+.campaign-strip { overflow: hidden; padding: 40px 0 100px; }
+.campaign-strip-row { display: flex; gap: 28px; align-items: flex-end; padding-left: var(--gutter); width: max-content; }
+.campaign-strip figure { margin: 0; display: grid; gap: 10px; }
+.campaign-strip figcaption { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+.campaign-strip .media { border-radius: 16px; }
+.strip-macro .media { width: 34vw; aspect-ratio: 1; }
+.strip-tall .media { width: 26vw; aspect-ratio: 3 / 4; }
+.strip-wide .media { width: 46vw; aspect-ratio: 16 / 10; }
+
+@media (max-width: 900px) {
+  .cake-reveal-whole { height: 56vh; }
+  .scene-signature-cake { grid-template-columns: 1fr; padding: 100px var(--gutter); }
+  .sig-cake-media { height: 70vh; }
+  .collection-grid { grid-template-columns: 1fr; gap: 64px; }
+  .cake-entry.is-offset { margin-top: 0; }
+  .campaign-hero { height: 82vh; }
+  .campaign-body { grid-template-columns: 1fr; padding: 60px var(--gutter); }
+  .campaign-sticky { position: relative; top: auto; }
+  .campaign-facts > div { grid-template-columns: 110px 1fr; }
+  .strip-macro .media { width: 70vw; }
+  .strip-tall .media { width: 56vw; }
+  .strip-wide .media { width: 86vw; }
+  .cut-copy { left: var(--gutter); right: var(--gutter); }
+}
+
+/* campaign hero: image on the right, title on a plain plinth-coloured field */
+.campaign-hero { background: #ECEBE7; }
+.campaign-hero-media { left: 32%; -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%); mask-image: linear-gradient(90deg, transparent 0%, #000 22%); }
+.campaign-hero-copy { max-width: 46%; }
+@media (max-width: 900px) {
+  .campaign-hero { height: auto; min-height: 0; display: flex; flex-direction: column; }
+  .campaign-hero-media { position: relative; left: 0; height: 58vh; -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent 100%); mask-image: linear-gradient(180deg, #000 78%, transparent 100%); }
+  .campaign-hero-copy { position: relative; left: 0; bottom: 0; max-width: none; padding: 8px var(--gutter) 40px; }
+}
+
+.cake-reveal-whole { -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 46%, #000 58%, transparent 100%); mask-image: radial-gradient(ellipse 72% 70% at 50% 46%, #000 58%, transparent 100%); }

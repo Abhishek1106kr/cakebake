@@ -10,6 +10,20 @@ export type Product = {
   dietary?: string[];
   prepMinutes?: number;
   featured?: boolean;
+  /** Whole cakes carry campaign details; their imagery lives in lib/cake-assets.ts. */
+  cake?: CakeDetails;
+};
+
+export type CakeDetails = {
+  slug: string;              // asset folder in the cake registry
+  story: string;
+  flavorProfile: string[];
+  texture: string;
+  sweetness: 1 | 2 | 3 | 4 | 5;
+  occasion: string[];
+  availability: 'Daily' | 'Order 24 h ahead';
+  size: string;
+  ingredients: string[];
 };
 
 export const products: Product[] = [
@@ -25,6 +39,25 @@ export const products: Product[] = [
   { id:'truffle-fries', name:'Truffle Parmesan Fries', category:'Savoury', description:'Crisp fries, parmesan, truffle oil and cracked pepper.', price:280, image:'c10', tag:'Sharing', searchTerms:['fries','truffle','parmesan','snack','sharing','savoury'], dietary:['Vegetarian'], prepMinutes:10 },
   { id:'berry-parfait', name:'Berry Yogurt Parfait', category:'Dessert', description:'Greek yogurt, berry compote, toasted granola and honey.', price:260, image:'c11', tag:'Fresh', searchTerms:['berry','yogurt','parfait','fruit','light','breakfast','honey'], dietary:['Vegetarian'], prepMinutes:5 },
   { id:'matcha-cloud', name:'Matcha Cloud', category:'Drinks', description:'Ceremonial matcha, cold milk and a soft vanilla foam.', price:260, image:'c12', tag:'Trending', searchTerms:['matcha','green','latte','cold','milk','tea','calm'], dietary:['Vegetarian'], prepMinutes:6 },
+  // ---- Whole cakes (draft copy and prices: confirm with the bakery) ----
+  { id:'rose-chocolate-truffle', name:'Rose Chocolate Truffle', category:'Cake', description:'Dark chocolate mousse, almond sponge and a sculpted chocolate rose.', price:2450, image:'cake:rose-truffle', tag:'Signature', searchTerms:['chocolate','chocolatey','rose','celebration','anniversary','rich','cake','dessert'], dietary:['Vegetarian'], prepMinutes:20, featured:true,
+    cake:{ slug:'rose-truffle', story:'Our signature. Three layers of dark chocolate mousse and almond sponge, finished with a rose shaped petal by petal from tempered chocolate.', flavorProfile:['Dark chocolate','Almond','Cocoa butter'], texture:'Silky mousse, tender sponge, crisp petals', sweetness:3, occasion:['Anniversary','Celebration'], availability:'Order 24 h ahead', size:'800 g · serves 8–10', ingredients:['70% dark chocolate','Almond sponge','Fresh cream','Cocoa butter','Free-range eggs'] } },
+  { id:'chocolate-truffle', name:'Chocolate Truffle', category:'Cake', description:'Deep chocolate sponge, ganache and a chocolate ribbon bow.', price:1950, image:'cake:chocolate-truffle', tag:'Bestseller', searchTerms:['chocolate','chocolatey','truffle','birthday','rich','ganache','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
+    cake:{ slug:'chocolate-truffle', story:'The cake people come back for: moist chocolate sponge layered with ganache, glazed to a mirror and tied with a chocolate bow.', flavorProfile:['Chocolate','Ganache','Sea salt'], texture:'Fudgy sponge, glossy glaze', sweetness:4, occasion:['Birthday','Everyday'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Belgian chocolate','Cocoa sponge','Fresh cream','Sea salt'] } },
+  { id:'pistachio-cake', name:'Pistachio', category:'Cake', description:'Pistachio praline, milk chocolate mousse and a crisp green base.', price:2250, image:'cake:pistachio', searchTerms:['pistachio','nutty','green','not too sweet','cake','dessert'], dietary:['Vegetarian','Contains nuts'], prepMinutes:15,
+    cake:{ slug:'pistachio', story:'Roasted pistachio praline folded into milk chocolate mousse, on a crisp pistachio sablé. Nutty first, chocolate after.', flavorProfile:['Pistachio','Milk chocolate','Praline'], texture:'Airy mousse, crunchy base', sweetness:2, occasion:['Dinner party','Everyday'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Roasted pistachio','Milk chocolate','Fresh cream','Sablé'] } },
+  { id:'black-forest-cherry', name:'Black Forest Cherry', category:'Cake', description:'Chocolate sponge, sour cherry compote and whipped cream.', price:1850, image:'cake:black-forest', searchTerms:['cherry','chocolate','cream','classic','fruity','birthday','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
+    cake:{ slug:'black-forest', story:'A classic, made lighter: chocolate sponge, sour cherry compote and soft whipped cream under a cherry-red glaze.', flavorProfile:['Sour cherry','Chocolate','Cream'], texture:'Light sponge, soft cream', sweetness:3, occasion:['Birthday','Celebration'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Sour cherries','Cocoa sponge','Fresh cream','Dark chocolate'] } },
+  { id:'hazelnut-crunch', name:'Hazelnut Crunch', category:'Cake', description:'Hazelnut praline crunch, milk chocolate and piped hazelnut cream.', price:2050, image:'cake:hazelnut-crunch', searchTerms:['hazelnut','nutty','crunch','praline','warm','cake','dessert'], dietary:['Vegetarian','Contains nuts'], prepMinutes:15,
+    cake:{ slug:'hazelnut-crunch', story:'Caramelised hazelnuts ground into praline, layered with a feuilletine crunch and finished with a ring of piped hazelnut cream.', flavorProfile:['Hazelnut','Caramel','Milk chocolate'], texture:'Crunchy layers, smooth cream', sweetness:3, occasion:['Everyday','Gift'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Hazelnut praline','Milk chocolate','Feuilletine','Fresh cream'] } },
+  { id:'strawberry-cream', name:'Strawberry Cream', category:'Cake', description:'Vanilla sponge, strawberry compote and light cream.', price:1900, image:'cake:strawberry-cream', searchTerms:['strawberry','berry','cream','light','fresh','fruity','birthday','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
+    cake:{ slug:'strawberry-cream', story:'Soft vanilla sponge with fresh strawberry compote and a cloud of light cream, finished with chocolate tulips.', flavorProfile:['Strawberry','Vanilla','Cream'], texture:'Cloud-light cream, soft sponge', sweetness:3, occasion:['Birthday','Celebration'], availability:'Order 24 h ahead', size:'500 g · serves 6–8', ingredients:['Fresh strawberries','Vanilla sponge','Fresh cream','White chocolate'] } },
+  { id:'vanilla-berry', name:'Vanilla Berry', category:'Cake', description:'Vanilla bean mousse with a blueberry and blackcurrant heart.', price:2100, image:'cake:vanilla-berry', searchTerms:['vanilla','berry','blueberry','light','fruity','not too sweet','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
+    cake:{ slug:'vanilla-berry', story:'Madagascar vanilla mousse around a sharp heart of blueberry and blackcurrant, under a spiral of berry glaze.', flavorProfile:['Vanilla bean','Blueberry','Blackcurrant'], texture:'Silky mousse, jammy centre', sweetness:2, occasion:['Dinner party','Celebration'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Vanilla bean','Blueberries','Blackcurrant','Fresh cream'] } },
+  { id:'mango-passion', name:'Mango Passion', category:'Cake', description:'Alphonso mango mousse, passion fruit curd and coconut sponge.', price:2150, image:'cake:mango-passion', searchTerms:['mango','passion fruit','tropical','fruity','fresh','light','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
+    cake:{ slug:'mango-passion', story:'Alphonso mango mousse with a bright passion fruit curd and a soft coconut sponge. Summer, cut into slices.', flavorProfile:['Mango','Passion fruit','Coconut'], texture:'Light mousse, tangy curd', sweetness:3, occasion:['Celebration','Everyday'], availability:'Order 24 h ahead', size:'500 g · serves 6–8', ingredients:['Alphonso mango','Passion fruit','Coconut sponge','Fresh cream'] } },
+  { id:'salted-caramel', name:'Salted Caramel', category:'Cake', description:'Caramel mousse, salted caramel centre and white chocolate.', price:2000, image:'cake:salted-caramel', searchTerms:['caramel','salted','sweet','warm','white chocolate','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
+    cake:{ slug:'salted-caramel', story:'Burnt-sugar caramel mousse around a soft salted caramel centre, crowned with a white chocolate disc.', flavorProfile:['Caramel','Sea salt','White chocolate'], texture:'Creamy mousse, molten centre', sweetness:4, occasion:['Birthday','Gift'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Caramelised sugar','Sea salt','White chocolate','Fresh cream'] } },
 ];
 
 export const categories = ['All', 'Coffee', 'Pastry', 'Cake', 'Dessert', 'Drinks', 'Savoury'];

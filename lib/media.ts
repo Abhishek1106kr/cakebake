@@ -1,3 +1,5 @@
+import { cakeImage } from './cake-assets';
+
 // Single media registry (MOTION.md "Media"). Components ask for an asset by id;
 // paths live only here. Until Tresor photography exists, sources point at the
 // git-ignored local mock folder. If a file is missing (production, other
@@ -46,6 +48,7 @@ const productTones: Record<string, [string, string]> = {
 };
 
 export function productMedia(imageKey: string, name: string): MediaAsset {
+  if (imageKey.startsWith('cake:')) return cakeImage(imageKey.slice(5), 'product');
   return {
     id: `product-${imageKey}`,
     type: 'image',

@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T22:00:14Z",
+  "updated_at": "2026-10-04T04:57:56Z",
   "current_task_id": "TRESOR-TESTING-VISUAL",
   "tasks": [
     {
@@ -289,6 +289,31 @@
       "blockers": [
         "Waiting for owner review of the homepage (MOTION.md step 9: validate the language first)"
       ]
+    },
+    {
+      "id": "TRESOR-MEDIA-CAKES",
+      "title": "Cake image system",
+      "description": "9 cakes with campaign data; cake asset registry (lib/cake-assets.ts) with hero 16:9 / product 4:5 / macro 1:1 / mobile 9:16 WebP per cake plus cut and lifestyle scenes; homepage cake reveal, signature cake, editorial collection with occasion filter, the cut; cake campaign product pages. Imagery is local-only mock (git-ignored) from one consistent reference photoshoot until Tresor photography exists.",
+      "status": "completed",
+      "priority": "critical",
+      "dependencies": [],
+      "files": [
+        "lib/data.ts",
+        "lib/cake-assets.ts",
+        "lib/media.ts",
+        "components/cake.tsx",
+        "components/cake-scenes.tsx",
+        "components/cinematic.tsx",
+        "app/page.tsx",
+        "app/shop/[id]/page.tsx"
+      ],
+      "started_at": "2026-10-04T04:57:56Z",
+      "completed_at": "2026-10-04T04:57:56Z",
+      "validation": [
+        "tsc 0 errors",
+        "Headless screenshots desktop + mobile: fixed reveal double exposure (removed cross-fade) and campaign title over the cake"
+      ],
+      "blockers": []
     }
   ]
 }
