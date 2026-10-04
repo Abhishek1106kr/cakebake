@@ -7,7 +7,8 @@
 
 import type { Product } from '@/lib/data';
 import { availableUnits, stockState, type Ingredient } from '@/lib/inventory';
-import { isSameDay, orderStats, type Order } from '@/lib/orders';
+import { isActive, isSameDay, orderStats, type Order } from '@/lib/orders';
+import { dueState, hasCustom, requiredBy } from '@/lib/admin/order-ops';
 import { runOperation, type Evidence, type IntelligenceResult } from '../core/contract';
 import type { TresorEvent } from '../events/schema';
 import { productPerformance, searchAnalytics } from '../analytics/metrics';
@@ -19,16 +20,24 @@ import { correct } from '../search/fuzzy';
 
 export const COPILOT_VERSION = 'copilot-v1';
 
-export type CopilotTopic = 'priorities' | 'sales' | 'orders' | 'stock' | 'ingredient' | 'forecast' | 'best_sellers' | 'product' | 'search_gaps' | 'help';
+export type CopilotTopic = 'priorities' | 'sales' | 'orders' | 'stock' | 'ingredient' | 'forecast' | 'best_sellers' | 'product' | 'search_gaps' | 'help'
+  | 'automations' | 'custom_cakes' | 'at_risk' | 'revenue_compare' | 'feature' | 'cakes';
 export type CopilotAnswer = { topic: CopilotTopic; answer: string; facts: { label: string; value: string }[]; actions: ProposedAction[]; followUps: string[] };
-export type CopilotData = { orders: Order[]; inventory: Ingredient[]; events: TresorEvent[]; products: Product[]; now: Date };
+export type JobSummary = { id: string; kind: 'invoice' | 'whatsapp'; orderId: string; topic: string; status: string; attempts: number; lastError: string | null };
+export type CopilotData = { orders: Order[]; inventory: Ingredient[]; events: TresorEvent[]; products: Product[]; now: Date; jobs?: JobSummary[] };
 
 const rupees = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 const list = (xs: string[]) => (xs.length <= 1 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
 
 const TOPIC_WORDS: [CopilotTopic, RegExp][] = [
+  ['revenue_compare', /\b(than|vs|versus|compared (to|with)) yesterday\b|\bwhy\b.*\b(revenue|sales)\b.*\b(lower|higher|down|up|less|more)\b/],
+  ['at_risk', /\b(at risk|miss(ing)? (their|the|its) slots?|running late|late orders?|behind schedule)\b/],
+  ['custom_cakes', /\bcustom\b.*\b(due|tomorrow|today|this week|pending|how many)\b|\b(due|tomorrow)\b.*\bcustom\b/],
+  ['automations', /\b(automations?|failed (jobs?|messages?|whatsapp|invoices?)|whatsapp|invoices? failed|messages? failed)\b/],
+  ['feature', /\b(feature|promote|highlight|put on the (home|front))\b/],
+  ['cakes', /\bhow are (the )?cakes\b|\bcakes? (doing|selling)\b/],
   ['search_gaps', /\b(search|searched|searching|looking for|can'?t find|not find|couldn'?t find|missing from the menu)\b/],
-  ['forecast', /\b(forecast|tomorrow|how long|last us|run out|days of cover|predict)\b/],
+  ['forecast', /\b(forecast|tomorrow|how long|last us|run out|stock out|days of cover|predict)\b/],
   ['best_sellers', /\b(best|top|popular|selling|seller|sellers|most sold)\b/],
   ['sales', /\b(sales|revenue|earn|earned|made|money|takings|turnover|aov|average order)\b/],
   ['orders', /\b(orders?|kitchen|pending|preparing|ready|on the way|delivery|deliveries|late|waiting)\b/],
@@ -163,6 +172,100 @@ export function askCopilot(question: string, data: CopilotData): IntelligenceRes
             followUps: ['What’s selling best?', 'What’s running low?'],
           };
         }
+        case 'automations': {
+          const jobs = data.jobs ?? [];
+          const failed = jobs.filter((j) => j.status === 'failed');
+          const retrying = jobs.filter((j) => j.status === 'retrying' || j.status === 'requested');
+          const label = (j: JobSummary) => `${j.kind === 'invoice' ? 'invoice' : `WhatsApp ${j.topic === 'confirmation' ? 'confirmation' : j.topic.replace('status:', '').toLowerCase().replace(/_/g, ' ')}`} for ${j.orderId}`;
+          return {
+            topic,
+            answer: !jobs.length ? 'No automation jobs recorded yet.' : failed.length ? `${failed.length} failed: ${list(failed.slice(0, 4).map(label))}${failed.length > 4 ? ' and more' : ''}. Orders are unaffected; retry them from Automations.` : `All ${jobs.length} jobs went through${retrying.length ? `; ${retrying.length} still running` : ''}.`,
+            facts: [{ label: 'Jobs', value: String(jobs.length) }, { label: 'Failed', value: String(failed.length) }, { label: 'Running or retrying', value: String(retrying.length) }, ...failed.slice(0, 4).map((j) => ({ label: j.id, value: j.lastError ?? 'error' }))],
+            actions: actions.filter((a) => a.kind === 'investigate'),
+            followUps: ['What needs my attention?', 'Which orders are at risk of missing their slot?'],
+          };
+        }
+        case 'custom_cakes': {
+          const day = new Date(now);
+          if (/\btomorrow\b/.test(q)) day.setDate(day.getDate() + 1);
+          const cakes = orders.filter((o) => hasCustom(o) && o.status !== 'CANCELLED' && requiredBy(o).toDateString() === day.toDateString());
+          const notStarted = cakes.filter((o) => o.status === 'NEW' || o.status === 'CONFIRMED');
+          const when = /\btomorrow\b/.test(q) ? 'tomorrow' : 'today';
+          return {
+            topic,
+            answer: cakes.length ? `${cakes.length} custom cake order${cakes.length === 1 ? '' : 's'} due ${when}: ${list(cakes.map((o) => o.id))}. ${notStarted.length} not started yet.` : `No custom cake orders due ${when}.`,
+            facts: cakes.map((o) => ({ label: o.id, value: `${o.status.toLowerCase().replace(/_/g, ' ')} · slot ${o.slot}` })),
+            actions: actions.filter((a) => a.kind === 'adjust_preparation'),
+            followUps: ['Which orders are at risk of missing their slot?', 'What’s running low?'],
+          };
+        }
+        case 'at_risk': {
+          const risky = orders.filter((o) => isActive(o) && ['late', 'at-risk'].includes(dueState(o, now))).sort((a, b) => requiredBy(a).getTime() - requiredBy(b).getTime());
+          return {
+            topic,
+            answer: risky.length ? `${risky.length} order${risky.length === 1 ? ' is' : 's are'} late or close to missing the slot: ${list(risky.slice(0, 5).map((o) => `${o.id} (${dueState(o, now) === 'late' ? 'late' : 'at risk'}, ${o.status.toLowerCase().replace(/_/g, ' ')})`))}.` : 'Every active order is on track for its slot.',
+            facts: risky.slice(0, 8).map((o) => ({ label: o.id, value: `${dueState(o, now)} · due ${requiredBy(o).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} · ${o.status.toLowerCase()}` })),
+            actions: actions.filter((a) => a.kind === 'check_order' || a.kind === 'adjust_preparation'),
+            followUps: ['Which orders are in the kitchen?', 'How many custom cake orders are due tomorrow?'],
+          };
+        }
+        case 'revenue_compare': {
+          const startToday = new Date(now); startToday.setHours(0, 0, 0, 0);
+          const sinceMidnight = now.getTime() - startToday.getTime();
+          const window = (from: number, to: number) => orders.filter((o) => o.status !== 'CANCELLED' && Date.parse(o.createdAt) >= from && Date.parse(o.createdAt) < to);
+          const today = window(startToday.getTime(), now.getTime() + 1);
+          const ySame = window(startToday.getTime() - 86400000, startToday.getTime() - 86400000 + sinceMidnight);
+          const yAll = window(startToday.getTime() - 86400000, startToday.getTime());
+          const sum = (xs: Order[]) => xs.reduce((s, o) => s + o.total, 0);
+          const aov = (xs: Order[]) => (xs.length ? Math.round(sum(xs) / xs.length) : 0);
+          const diff = sum(today) - sum(ySame);
+          const why: string[] = [];
+          if (today.length !== ySame.length) why.push(`${Math.abs(today.length - ySame.length)} ${today.length < ySame.length ? 'fewer' : 'more'} orders (${today.length} vs ${ySame.length})`);
+          if (today.length && ySame.length && Math.abs(aov(today) - aov(ySame)) >= 50) why.push(`average order ${rupees(aov(today))} vs ${rupees(aov(ySame))}`);
+          const cakesToday = today.filter(hasCustom).length; const cakesY = ySame.filter(hasCustom).length;
+          if (cakesToday !== cakesY) why.push(`${cakesToday} custom cake orders vs ${cakesY}`);
+          return {
+            topic,
+            answer: !yAll.length ? 'There are no orders from yesterday to compare with.' : `${rupees(sum(today))} so far today against ${rupees(sum(ySame))} by this time yesterday (${diff >= 0 ? 'up' : 'down'} ${rupees(Math.abs(diff))}). ${why.length ? `The difference: ${list(why)}.` : 'Order count and size are about the same.'} Yesterday finished at ${rupees(sum(yAll))}.`,
+            facts: [{ label: 'Today so far', value: `${rupees(sum(today))} · ${today.length} orders` }, { label: 'Yesterday, same time', value: `${rupees(sum(ySame))} · ${ySame.length} orders` }, { label: 'Yesterday, full day', value: `${rupees(sum(yAll))} · ${yAll.length} orders` }],
+            actions: [],
+            followUps: ['What’s selling best?', 'What needs my attention?'],
+          };
+        }
+        case 'feature': {
+          const week = orders.filter((o) => o.status !== 'CANCELLED' && now.getTime() - Date.parse(o.createdAt) <= 7 * 86400000);
+          const perf = productPerformance(week, events);
+          const candidates = products.filter((p) => p.cake && p.available !== false).map((p) => {
+            const s = perf.find((x) => x.productId === p.id);
+            return { p, units: s?.units ?? 0, views: s?.views ?? 0, score: (s?.units ?? 0) * 3 + (s?.views ?? 0) * 0.5 + (p.featured ? 0.5 : 0) };
+          }).sort((a, b) => b.score - a.score);
+          const pick = candidates[0];
+          return {
+            topic,
+            answer: !pick ? 'No whole cakes are available to feature.' : pick.units + pick.views === 0 ? `There isn’t enough sales or view history to choose on evidence yet. ${pick.p.name} is your signature; start there and let the numbers decide next week.` : `${pick.p.name}: ${pick.units} sold and ${pick.views} views in the last 7 days, the strongest whole cake. Featuring is a draft for you to approve in Content or Campaigns; nothing changes on the site by itself.`,
+            facts: candidates.slice(0, 4).map((c) => ({ label: c.p.name, value: `${c.units} sold · ${c.views} views` })),
+            actions: actions.filter((a) => a.kind === 'feature'),
+            followUps: ['How are cakes doing today?', 'What’s selling best?'],
+          };
+        }
+        case 'cakes': {
+          const today = orders.filter((o) => o.status !== 'CANCELLED' && isSameDay(o.createdAt, now));
+          let units = 0; let revenue = 0; let custom = 0;
+          const by = new Map<string, number>();
+          for (const o of today) for (const l of o.items) {
+            if (l.custom) { custom += l.qty; revenue += l.unitPrice * l.qty; continue; }
+            const p = products.find((x) => x.id === l.product.id);
+            if (l.product.category === 'Cake' || p?.cake) { units += l.qty; revenue += l.unitPrice * l.qty; by.set(l.product.name, (by.get(l.product.name) ?? 0) + l.qty); }
+          }
+          const top = [...by.entries()].sort((a, b) => b[1] - a[1])[0];
+          return {
+            topic,
+            answer: units + custom === 0 ? 'No cakes sold yet today.' : `${units} cake${units === 1 ? '' : 's'} from the menu and ${custom} custom cake${custom === 1 ? '' : 's'} today, ${rupees(revenue)} in all.${top ? ` ${top[0]} leads with ${top[1]}.` : ''}`,
+            facts: [{ label: 'Menu cakes', value: String(units) }, { label: 'Custom cakes', value: String(custom) }, { label: 'Cake revenue', value: rupees(revenue) }, ...[...by.entries()].slice(0, 3).map(([n, c]) => ({ label: n, value: String(c) }))],
+            actions: [],
+            followUps: ['Which cake should we feature?', 'How many custom cake orders are due tomorrow?'],
+          };
+        }
         case 'search_gaps': {
           const s = searchAnalytics(events);
           return {
@@ -176,7 +279,7 @@ export function askCopilot(question: string, data: CopilotData): IntelligenceRes
         default:
           return {
             topic: 'help',
-            answer: 'I can answer questions about today’s sales, orders in the kitchen, stock and how long it will last, best sellers, a specific product, and what customers searched for.',
+            answer: 'I can answer from today’s records: sales and how they compare with yesterday, orders in the kitchen and which are at risk, custom cakes due, stock and how long it lasts, failed automations, best sellers and cakes, a specific product, what to feature, and what customers searched for.',
             facts: [],
             actions: [],
             followUps: ['What needs my attention?', 'How are sales today?', 'What’s running low?', 'How long will the milk last?'],
