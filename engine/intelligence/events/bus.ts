@@ -10,22 +10,49 @@ export function memoryStore(initial: TresorEvent[] = []): EventStore {
   return { load: () => events, save: (next) => { events = next; } };
 }
 
-export function browserStore(key = 'tresor-events'): EventStore {
+/**
+ * localStorage-backed store. Writes are debounced, but:
+ * - pending writes are flushed when the page hides or unloads (events fired on the way
+ *   out, like custom_cake_abandoned, used to be lost);
+ * - saving merges with what other tabs stored (by event id) instead of overwriting it;
+ * - another tab's writes are merged into this tab's view as they happen.
+ */
+export function browserStore(key = 'tresor-events', limit = 1000): EventStore {
   let cache: TresorEvent[] | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
+  const readStored = (): TresorEvent[] => { try { return JSON.parse(window.localStorage.getItem(key) || '[]'); } catch { return []; } };
+  const merge = (a: TresorEvent[], b: TresorEvent[]) => {
+    const byId = new Map<string, TresorEvent>();
+    for (const e of [...a, ...b]) byId.set(e.id, e);
+    return [...byId.values()].sort((x, y) => x.timestamp.localeCompare(y.timestamp)).slice(-limit);
+  };
+  const flush = () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (!cache) return;
+    cache = merge(readStored(), cache);
+    try { window.localStorage.setItem(key, JSON.stringify(cache)); } catch { /* storage full or blocked */ }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('pagehide', flush);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+    window.addEventListener('storage', (e) => { if (e.key === key && cache) cache = merge(cache, readStored()); });
+  }
   return {
     load() {
-      if (cache) return cache;
-      try { cache = JSON.parse(window.localStorage.getItem(key) || '[]'); } catch { cache = []; }
-      return cache!;
+      if (!cache) cache = readStored();
+      return cache;
     },
     save(next) {
+      if (next.length === 0) {
+        // An explicit clear: write it through instead of merging the old events back.
+        cache = [];
+        if (timer) { clearTimeout(timer); timer = null; }
+        try { window.localStorage.setItem(key, '[]'); } catch { /* ignore */ }
+        return;
+      }
       cache = next;
       if (timer) return;
-      timer = setTimeout(() => {
-        timer = null;
-        try { window.localStorage.setItem(key, JSON.stringify(cache)); } catch {}
-      }, 400);
+      timer = setTimeout(flush, 400);
     },
   };
 }

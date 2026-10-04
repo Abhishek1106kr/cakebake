@@ -10,3 +10,10 @@ npm-debug.log*
 public/mock-assets/
 # Owner-supplied reference media (third-party downloads, personal photos): local only, never published.
 public/our-story/
+
+# Stress-test build and outputs that may contain reference imagery
+/.next-test/
+/.tresor/test-results/screenshots/
+/tests/stress/fixtures/
+/tests/stress/catalogue.json
+/tests/stress/__pycache__/

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useStore } from '@/components/store-provider';
 import { CheckoutErrors, CheckoutField, PaymentMethod, leadHours, normalizePhone, validateCheckout } from '@/lib/orders';
 import { slotsAfter } from '@/lib/cake/engine';
+import { mockPay } from '@/lib/automation/payment';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -46,8 +47,15 @@ export default function CheckoutPage() {
     const firstError = (['name', 'phone', 'email', 'address', 'pin'] as CheckoutField[]).find((field) => errors[field]);
     if (firstError) { document.getElementById(`f-${firstError}`)?.focus(); return; }
     setProcessing(true);
-    // Simulated payment: no money moves (see README). Replace with a real gateway later.
-    await new Promise((resolve) => setTimeout(resolve, 950));
+    // Simulated payment: no money moves. A failed payment never creates an order.
+    track('payment_started', { method: payment, amount: total });
+    const paid = await mockPay(total, payment);
+    if (!paid.ok) {
+      track('payment_failure', { method: payment, reason: paid.reason });
+      setProcessing(false);
+      setOrderError(paid.message);
+      return;
+    }
     const result = placeOrder({
       customer: { name: form.name.trim(), phone: normalizePhone(form.phone), email: form.email.trim() },
       address: form.address.trim(),

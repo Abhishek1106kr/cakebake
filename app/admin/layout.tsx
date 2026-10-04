@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
-import { BarChart3, Boxes, CakeSlice, ClipboardList, ChefHat, LayoutDashboard, PackageSearch, Settings, Users } from 'lucide-react';
+import { BarChart3, Bot, Boxes, CakeSlice, ClipboardList, ChefHat, LayoutDashboard, PackageSearch, Settings, Users } from 'lucide-react';
 
 const nav: { href: Route; label: string; icon: typeof LayoutDashboard }[] = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard },
@@ -14,6 +14,7 @@ const nav: { href: Route; label: string; icon: typeof LayoutDashboard }[] = [
   { href: '/admin/products', label: 'Products', icon: PackageSearch },
   { href: '/admin/inventory', label: 'Inventory', icon: Boxes },
   { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/admin/automations', label: 'Automations', icon: Bot },
 ];
 
 // Not built yet: shown so the roadmap is visible, but not clickable.

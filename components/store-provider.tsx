@@ -1,10 +1,13 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import { makeStatusEvent, publishStatus } from '@/lib/tracking/events';
+import { canTransition, type TrackingStatus } from '@/lib/tracking/status';
+import { onOrderCreated, onStatusChanged, resumePending } from '@/lib/automation/runner';
 import { Product, products as menu } from '@/lib/data';
 import { track } from '@/engine/intelligence/events/track';
 import {
-  CartLine, CheckoutDetails, CheckoutErrors, MAX_QTY_PER_LINE, Order, Size,
+  CartLine, CheckoutDetails, CheckoutErrors, MAX_QTY_PER_LINE, Order, OrderStatus, Size,
   advanceOrder, calcTotals, cancelOrder, cancelRestoresStock, canCancel, createOrder, lineIdFor,
   makeLine, nextStatus, normalizeCart, normalizeOrder, seedOrders, validateCheckout, makeCustomLine,
 } from '@/lib/orders';
@@ -71,6 +74,8 @@ type StoreContextValue = {
   placeOrder: (details: CheckoutDetails) => PlaceOrderResult;
   advance: (orderId: string) => void;
   cancel: (orderId: string) => void;
+  /** Development/testing only: put an order into any state (step by step, so every event fires). */
+  devSetStatus: (orderId: string, status: OrderStatus) => void;
   // Inventory
   inventory: Ingredient[];
   movements: Movement[];
@@ -106,6 +111,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setMovements(read<Movement[]>(KEYS.movements) ?? []);
     setLatestId(latest);
     setMounted(true);
+    // Pick up automation jobs a closed tab left unfinished.
+    resumePending((id) => loaded.find((o) => o.id === id));
 
     const onStorage = (event: StorageEvent) => {
       if (!event.key || !event.newValue) return;
@@ -195,6 +202,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return { ok: false, errors: { cart: `We've just run low on ${short.map((l) => l.product.name).join(', ')}. Please reduce the quantity.` } };
     }
     const order = createOrder(details, cart, orders, new Date());
+    onOrderCreated(order);
+    publishStatus(makeStatusEvent(order, null, order.status, 'system'));
     const after = applyLines(inventory, order.items, -1);
     setOrders((current) => [order, ...current]);
     setInventory((current) => applyLines(current, order.items, -1));
@@ -210,19 +219,68 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return { ok: true, order };
   };
 
+  // The latest orders, readable synchronously: rapid transitions (double clicks, test
+  // controls) must each start from the state the previous one produced, not a stale render.
+  const ordersRef = useRef<Order[]>(orders);
+  ordersRef.current = orders;
+
+  /**
+   * The one way an order changes status. Validates the step against the state machine,
+   * updates the order, publishes the status event (tracking pages in every tab) and
+   * triggers the WhatsApp automation, all from the same transition.
+   */
+  const applyTransition = (orderId: string, to: TrackingStatus, source: 'admin' | 'system' | 'dev' = 'admin'): boolean => {
+    const order = ordersRef.current.find((o) => o.id === orderId);
+    if (!order || !canTransition(order.status, to) || to === 'PAYMENT_FAILED') return false;
+    const now = new Date();
+    const updated = to === 'CANCELLED' ? cancelOrder(order, now) : advanceOrder(order, now);
+    if (updated.status !== to) return false;
+    if (to === 'CANCELLED') {
+      if (cancelRestoresStock(order)) setInventory((current) => applyLines(current, order.items, 1));
+      track('order_cancelled', { orderId, stage: order.status, restoredStock: cancelRestoresStock(order) });
+    } else {
+      track('delivery_status_changed', { orderId, status: to });
+    }
+    const next = ordersRef.current.map((o) => (o.id === orderId ? updated : o));
+    ordersRef.current = next;
+    setOrders(next);
+    publishStatus(makeStatusEvent(updated, order.status, to, source, now));
+    onStatusChanged(updated, to);
+    return true;
+  };
+
   const advance = (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId);
+    const order = ordersRef.current.find((o) => o.id === orderId);
     const next = order && nextStatus(order.status);
-    if (next) track('delivery_status_changed', { orderId, status: next });
-    setOrders((current) => current.map((o) => (o.id === orderId && nextStatus(o.status) ? advanceOrder(o, new Date()) : o)));
+    if (next) applyTransition(orderId, next, 'admin');
   };
 
   const cancel = (orderId: string) => {
-    const order = orders.find((o) => o.id === orderId);
-    if (!order || !canCancel(order)) return;
-    if (cancelRestoresStock(order)) setInventory((current) => applyLines(current, order.items, 1));
-    track('order_cancelled', { orderId, stage: order.status, restoredStock: cancelRestoresStock(order) });
-    setOrders((current) => current.map((o) => (o.id === orderId ? cancelOrder(o, new Date()) : o)));
+    const order = ordersRef.current.find((o) => o.id === orderId);
+    if (order && canCancel(order)) applyTransition(orderId, 'CANCELLED', 'admin');
+  };
+
+  const devSetStatus = (orderId: string, status: OrderStatus) => {
+    if (process.env.NODE_ENV === 'production') return;
+    const order = ordersRef.current.find((o) => o.id === orderId);
+    if (!order) return;
+    const flow: OrderStatus[] = ['NEW', 'CONFIRMED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+    // Going backwards (or out of a terminal state) resets to NEW first, then steps forward.
+    if (status === 'NEW' || order.status === 'CANCELLED' || flow.indexOf(status) < flow.indexOf(order.status)) {
+      const now = new Date();
+      const reset: Order = { ...order, status: 'NEW', history: [{ status: 'NEW', at: now.toISOString() }], paymentStatus: order.paymentMethod === 'COD' ? 'DUE' : 'PAID' };
+      const next = ordersRef.current.map((o) => (o.id === orderId ? reset : o));
+      ordersRef.current = next;
+      setOrders(next);
+      publishStatus(makeStatusEvent(reset, order.status, 'NEW', 'dev', now));
+    }
+    if (status === 'CANCELLED') { applyTransition(orderId, 'CANCELLED', 'dev'); return; }
+    for (let guard = 0; guard < 6; guard += 1) {
+      const cur = ordersRef.current.find((o) => o.id === orderId)!;
+      if (cur.status === status) break;
+      const step = nextStatus(cur.status);
+      if (!step || !applyTransition(orderId, step, 'dev')) break;
+    }
   };
 
   // ---------- Inventory ----------
@@ -249,7 +307,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     mounted, cart, addToCart, updateQty, removeFromCart, clearCart, canAddMore, addCustomCake,
     cartCount: totals.itemCount, subtotal: totals.subtotal, deliveryFee: totals.delivery, total: totals.total, toFreeDelivery: totals.toFreeDelivery,
     orders, myOrders, latestOrder: orders.find((o) => o.id === latestId) ?? null, findOrder: (id) => orders.find((o) => o.id === id),
-    placeOrder, advance, cancel, inventory, movements, recordMovement, resetDemo,
+    placeOrder, advance, cancel, devSetStatus, inventory, movements, recordMovement, resetDemo,
   };
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

@@ -1090,3 +1090,127 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .cake-analytics { margin-bottom: 0; }
 /* Smooth scrolling (Lenis): anchor jumps glide too when JS is off or Lenis is disabled. */
 @media (prefers-reduced-motion: no-preference) { html:not(.lenis) { scroll-behavior: smooth; } }
+
+
+/* ---------- Admin: mock automations ---------- */
+.job { font-weight: 600; }
+.job-succeeded { color: #3E7A55; }
+.job-retrying, .job-requested { color: #9A6B12; }
+.job-failed { color: #A4442E; }
+.job-retry { margin-left: 6px; padding: 3px 8px; }
+.invoice { display: grid; gap: 4px; font-size: 13px; }
+.invoice-line { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px dashed var(--line); padding: 5px 0; }
+.invoice-line small { display: block; color: var(--muted); font-size: 11px; }
+.invoice-total { font-weight: 700; border-bottom: 0; }
+.wa-message { white-space: pre-wrap; font-family: inherit; font-size: 13px; background: #E7F3E9; border-radius: 12px 12px 12px 2px; padding: 10px 12px; margin: 0 0 8px; max-width: 360px; }
+.wa-message small { display: block; margin-top: 6px; color: var(--muted); font-size: 10px; }
+
+/* Stress-test fix: at ≤1040 px the cake preview is sticky; keep scrolled-to and keyboard-focused
+   controls below it (WCAG 2.4.11 focus not obscured). */
+@media (max-width: 1040px) { html:has(.studio-page) { scroll-padding-top: calc(78px + 44vh + 16px); } }
+@media (max-width: 760px) { html:has(.studio-page) { scroll-padding-top: calc(78px + 40vh + 16px); } }
+
+/* =====================================================================
+   LIVE ORDER TRACKING (/track/[orderId])
+   ===================================================================== */
+.track-v2 { min-height: 100vh; background: var(--bg); padding: 28px 0 90px; }
+.track-wrap { max-width: 1080px; }
+.track-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.track-number { font-family: var(--serif); font-size: 22px; letter-spacing: .01em; }
+.track-hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 4vw; align-items: center; padding: 6vh 0 4vh; }
+.track-headline { margin: 0; font-family: var(--serif); font-weight: 500; font-size: clamp(44px, 6vw, 88px); line-height: .95; letter-spacing: -.01em; max-width: 11ch; }
+.track-line { margin: 16px 0 0; font-family: var(--serif); font-style: italic; font-size: clamp(19px, 1.9vw, 26px); color: var(--brand-dark); }
+.track-eta { margin-top: 34px; display: grid; gap: 4px; padding-top: 18px; border-top: 1px solid var(--line); max-width: 420px; }
+.track-eta span { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.track-eta strong { font-family: var(--serif); font-weight: 500; font-size: 30px; line-height: 1.1; }
+.track-eta small { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.track-whisper { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
+.track-stage { position: relative; aspect-ratio: 36 / 26; display: grid; place-items: center; }
+.track-stage::before { content: ''; position: absolute; inset: 8% 6%; border-radius: 50%; background: radial-gradient(closest-side, #FFFFFF, rgba(246, 248, 247, 0)); }
+.track-scene { position: relative; width: 100%; height: 100%; overflow: visible; }
+
+/* Quiet, continuous motion (transform/opacity only). */
+.ts-steam { animation: ts-steam 3.2s ease-in-out infinite; transform-box: fill-box; }
+.ts-glow { animation: ts-glow 2.8s ease-in-out infinite; }
+.ts-dial { animation: ts-dial 14s linear infinite; transform-box: view-box; }
+.ts-breathe { animation: ts-breathe 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ts-bob { animation: ts-bob 1.4s ease-in-out infinite; }
+.ts-spark { animation: ts-spark 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ts-steam { 0% { transform: translateY(8px); opacity: 0; } 35% { opacity: .9; } 100% { transform: translateY(-14px); opacity: 0; } }
+@keyframes ts-glow { 0%, 100% { opacity: .22; } 50% { opacity: .5; } }
+@keyframes ts-dial { to { transform: rotate(360deg); } }
+@keyframes ts-breathe { 0%, 100% { transform: scale(1); opacity: .3; } 50% { transform: scale(1.06); opacity: .5; } }
+@keyframes ts-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes ts-spark { 0%, 100% { transform: scale(.7); opacity: .3; } 50% { transform: scale(1); opacity: 1; } }
+
+/* Timeline */
+.track-progress { padding: 3vh 0 5vh; border-top: 1px solid var(--line); }
+.track-timeline { list-style: none; margin: 0; padding: 0; display: grid; }
+.tl-step { display: grid; grid-template-columns: 28px 1fr; gap: 16px; }
+.tl-rail { position: relative; display: flex; flex-direction: column; align-items: center; }
+.tl-dot { position: relative; z-index: 1; width: 18px; height: 18px; margin-top: 3px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--bg); color: #fff; display: grid; place-items: center; transition: background .5s, border-color .5s; }
+.tl-dot svg { width: 11px; height: 11px; }
+.is-done .tl-dot { background: var(--brand); border-color: var(--brand); }
+.is-current .tl-dot { width: 22px; height: 22px; margin-top: 1px; background: var(--ink); border-color: var(--ink); box-shadow: 0 0 0 5px rgba(126, 146, 145, .18); }
+.status-cancelled .is-current .tl-dot, .status-payment_failed .is-current .tl-dot { background: #8E9997; border-color: #8E9997; }
+.tl-pulse { position: absolute; top: 1px; left: 3px; width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--brand); animation: tl-pulse 2.4s ease-out infinite; }
+@keyframes tl-pulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(2.1); opacity: 0; } }
+.tl-line { flex: 1; width: 2px; min-height: 34px; margin: 4px 0; background: var(--line); border-radius: 2px; overflow: hidden; }
+.tl-line-fill { display: block; width: 100%; height: 100%; background: var(--brand); transform-origin: top; }
+.tl-body { padding-bottom: 18px; }
+.tl-head { display: flex; align-items: baseline; gap: 12px; }
+.tl-head strong { font-size: 15px; font-weight: 600; color: var(--muted); letter-spacing: .01em; }
+.is-done .tl-head strong { color: var(--ink); font-weight: 500; }
+.is-current .tl-head strong { color: var(--ink); font-family: var(--serif); font-weight: 500; font-size: 24px; }
+.is-upcoming .tl-head strong { color: #A3ABA9; font-weight: 500; }
+.tl-head time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tl-doing { margin: 4px 0 0; font-size: 14px; color: var(--brand-dark); overflow: hidden; }
+
+/* Summary */
+.track-summary { padding: 4vh 0; border-top: 1px solid var(--line); }
+.track-summary-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.track-summary-head h2 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 26px; }
+.track-summary-head span { font-size: 13px; color: var(--muted); }
+.track-items { list-style: none; margin: 0; padding: 0; display: grid; max-width: 620px; }
+.track-items li { display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px dashed var(--line); font-size: 15px; }
+.track-items .track-total { border-bottom: 0; font-weight: 600; }
+.track-items .track-total span:last-child { font-weight: 500; }
+.track-cake { margin-top: 18px; max-width: 760px; border-top: 1px solid var(--line); }
+.track-cake summary { display: flex; align-items: center; gap: 6px; padding: 14px 0; cursor: pointer; list-style: none; font-family: var(--serif); font-size: 20px; }
+.track-cake summary::-webkit-details-marker { display: none; }
+.track-cake[open] summary svg { transform: rotate(180deg); }
+.track-cake-body { display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: center; padding-bottom: 12px; }
+.track-cake-preview { aspect-ratio: 1; border-radius: 50%; background: radial-gradient(closest-side, #fff, rgba(246, 248, 247, 0)); }
+.track-cake dl { margin: 0; display: grid; gap: 6px; font-size: 14px; }
+.track-cake dl div { display: grid; grid-template-columns: 100px 1fr; gap: 10px; }
+.track-cake dt { color: var(--muted); }
+.track-cake dd { margin: 0; }
+.track-help { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 22px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.track-help a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.track-loading, .track-error { padding: 14vh 0; display: grid; gap: 14px; }
+.track-error .track-headline { max-width: 16ch; font-size: clamp(36px, 5vw, 64px); }
+.track-error-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Development-only controls */
+.track-dev { position: fixed; left: 12px; bottom: 12px; z-index: 60; display: grid; gap: 6px; max-width: min(560px, calc(100vw - 24px)); padding: 10px; border-radius: 12px; background: rgba(32, 38, 37, .92); color: #fff; font-size: 11px; }
+.track-dev strong { letter-spacing: .14em; text-transform: uppercase; font-size: 10px; color: #A9B7B6; }
+.track-dev div { display: flex; flex-wrap: wrap; gap: 4px; }
+.track-dev button { border: 1px solid rgba(255, 255, 255, .2); background: transparent; color: #fff; border-radius: 8px; padding: 5px 8px; font-size: 11px; cursor: pointer; }
+.track-dev button.is-active { background: #fff; color: var(--ink); }
+.track-dev button:disabled { opacity: .5; }
+
+@media (max-width: 860px) {
+  .track-hero { grid-template-columns: 1fr; gap: 10px; padding-top: 3vh; }
+  .track-stage { order: -1; max-width: 420px; width: 100%; justify-self: center; }
+  .track-headline { font-size: clamp(42px, 12vw, 64px); }
+  .track-cake-body { grid-template-columns: 1fr; }
+  .track-cake-preview { max-width: 220px; }
+}
+@media (max-width: 480px) {
+  .track-v2 { padding-top: 16px; }
+  .track-number { font-size: 18px; }
+  .track-eta strong { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ts-steam, .ts-glow, .ts-dial, .ts-breathe, .ts-bob, .ts-spark, .tl-pulse { animation: none; }
+}
