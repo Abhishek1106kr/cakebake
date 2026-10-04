@@ -1,5 +1,7 @@
 // Cake Playground catalogue: every option, price, rule and production time.
-// Components never hardcode options; admin tooling can later edit this data.
+// Components never hardcode options. These are the defaults; admin → Cake Builder
+// can replace them at runtime (setCakeCatalog), and every consumer reads the live
+// bindings, so the studio, pricing, rules and production sheet follow.
 //
 // ⚠ SAMPLE VALUES. Prices, servings, production times and availability below are
 // placeholders in line with the menu's existing draft cake prices. Confirm every
@@ -7,16 +9,16 @@
 
 import type {
   CandleOption, ColorOption, CompatibilityRule, DecorationOption, FillingOption, FinishOption, FontOption, FrostingOption,
-  MessageColorOption, PackagingOption, ShapeOption, SizeOption, SpongeOption, ToppingOption, TopperOption,
+  MessageColorOption, PackagingOption, PrintRules, ShapeOption, SizeOption, SpongeOption, ToppingOption, TopperOption,
 } from './types';
 
-export const CAKE_CONFIG_VERSION = 'cake-config-sample-v1';
+export let CAKE_CONFIG_VERSION = 'cake-config-sample-v1';
 
 /** Base production time for any custom cake, in hours. */
-export const BASE_PRODUCTION_HOURS = 24;
+export let BASE_PRODUCTION_HOURS = 24;
 export const MAX_CUSTOM_CAKES_PER_ORDER = 3;
 
-export const sizes: SizeOption[] = [
+export let sizes: SizeOption[] = [
   { id: '4in', name: '4 inch', inches: 4, servings: '2–4', diameterCm: 10, layers: 2, price: 950, available: true },
   { id: '6in', name: '6 inch', inches: 6, servings: '6–8', diameterCm: 15, layers: 3, price: 1450, available: true },
   { id: '8in', name: '8 inch', inches: 8, servings: '10–12', diameterCm: 20, layers: 3, price: 2150, available: true },
@@ -24,14 +26,14 @@ export const sizes: SizeOption[] = [
   { id: '12in', name: '12 inch', inches: 12, servings: '24–30', diameterCm: 30, layers: 4, price: 3950, available: true, productionHours: 12 },
 ];
 
-export const shapes: ShapeOption[] = [
+export let shapes: ShapeOption[] = [
   { id: 'round', name: 'Round', kind: 'round', price: 0, available: true },
   { id: 'square', name: 'Square', kind: 'square', price: 150, available: true },
   { id: 'heart', name: 'Heart', kind: 'heart', price: 250, available: true },
   { id: 'rectangle', name: 'Rectangle', kind: 'rectangle', price: 200, available: true },
 ];
 
-export const sponges: SpongeOption[] = [
+export let sponges: SpongeOption[] = [
   { id: 'vanilla', name: 'Vanilla bean', flavor: 'Vanilla', color: '#F2DFAE', crumb: 'Light, buttery', price: 0, available: true, allergens: ['gluten', 'egg', 'dairy'], ingredients: { flour: 0.25, eggs: 4, butter: 0.15 } },
   { id: 'chocolate', name: 'Dark chocolate', flavor: 'Chocolate', color: '#5A3626', crumb: 'Moist, deep', price: 0, available: true, allergens: ['gluten', 'egg', 'dairy'], ingredients: { flour: 0.2, eggs: 4, chocolate: 0.15 } },
   { id: 'red-velvet', name: 'Red velvet', flavor: 'Cocoa & buttermilk', color: '#9E2B2F', crumb: 'Soft, tender', price: 150, available: true, allergens: ['gluten', 'egg', 'dairy'], ingredients: { flour: 0.25, eggs: 4 } },
@@ -39,7 +41,7 @@ export const sponges: SpongeOption[] = [
   { id: 'pistachio', name: 'Pistachio', flavor: 'Roasted pistachio', color: '#B9C27C', crumb: 'Dense, nutty', price: 300, available: true, productionHours: 12, allergens: ['gluten', 'egg', 'dairy', 'nuts'], ingredients: { flour: 0.2, eggs: 4, pistachio: 0.15 } },
 ];
 
-export const fillings: FillingOption[] = [
+export let fillings: FillingOption[] = [
   { id: 'vanilla-cream', name: 'Vanilla cream', color: '#F6EEDA', price: 0, available: true, allergens: ['dairy'] },
   { id: 'ganache', name: 'Chocolate ganache', color: '#3B2218', price: 100, available: true, allergens: ['dairy'], ingredients: { chocolate: 0.12 } },
   { id: 'hazelnut', name: 'Hazelnut praline', color: '#9A6B42', price: 200, available: true, allergens: ['dairy', 'nuts'] },
@@ -48,14 +50,14 @@ export const fillings: FillingOption[] = [
   { id: 'mango', name: 'Alphonso mango', color: '#F0A93B', price: 200, available: true, seasonMonths: [3, 4, 5, 6], note: 'In season March to June' },
 ];
 
-export const frostings: FrostingOption[] = [
+export let frostings: FrostingOption[] = [
   { id: 'buttercream', name: 'Swiss buttercream', sheen: 0.35, soft: false, price: 0, available: true, allergens: ['dairy', 'egg'], ingredients: { butter: 0.25 } },
   { id: 'whipped', name: 'Whipped cream', sheen: 0.15, soft: true, price: 0, available: true, allergens: ['dairy'] },
   { id: 'ganache', name: 'Chocolate ganache', sheen: 0.7, soft: false, price: 200, available: true, allergens: ['dairy'], ingredients: { chocolate: 0.2 } },
   { id: 'cream-cheese', name: 'Cream cheese', sheen: 0.25, soft: false, price: 150, available: true, allergens: ['dairy'], ingredients: { 'cream-cheese': 0.2 } },
 ];
 
-export const finishes: FinishOption[] = [
+export let finishes: FinishOption[] = [
   { id: 'smooth', name: 'Smooth', kind: 'smooth', price: 0, available: true },
   { id: 'ruffled', name: 'Ruffled', kind: 'ruffled', price: 250, available: true, productionHours: 6 },
   { id: 'textured', name: 'Palette-textured', kind: 'textured', price: 100, available: true },
@@ -63,7 +65,7 @@ export const finishes: FinishOption[] = [
 ];
 
 /** Tresor-approved frosting colours. Every one maps to a natural colouring the kitchen uses. */
-export const colors: ColorOption[] = [
+export let colors: ColorOption[] = [
   { id: 'cream', name: 'Cream', hex: '#F4EBDD', shade: '#D9CBB4', price: 0, available: true },
   { id: 'vanilla', name: 'Vanilla', hex: '#F3E3B8', shade: '#D8C38E', price: 0, available: true },
   { id: 'sage', name: 'Sage', hex: '#A9B7B6', shade: '#7E9291', price: 50, available: true },
@@ -74,7 +76,7 @@ export const colors: ColorOption[] = [
   { id: 'chocolate', name: 'Chocolate', hex: '#5B3A2A', shade: '#3B2318', price: 0, available: true },
 ];
 
-export const toppings: ToppingOption[] = [
+export let toppings: ToppingOption[] = [
   { id: 'berries', name: 'Fresh berries', kind: 'berry', color: '#A3233A', perUnit: 60, maxQuantity: 12, price: 0, available: true, ingredients: { berries: 0.015 } },
   { id: 'curls', name: 'Chocolate curls', kind: 'curl', color: '#4A2C1F', perUnit: 40, maxQuantity: 12, price: 0, available: true, allergens: ['dairy'] },
   { id: 'pistachios', name: 'Crushed pistachio', kind: 'nut', color: '#8FA35A', perUnit: 30, maxQuantity: 10, price: 0, available: true, allergens: ['nuts'], ingredients: { pistachio: 0.01 } },
@@ -86,7 +88,7 @@ export const toppings: ToppingOption[] = [
   { id: 'mango-cubes', name: 'Mango cubes', kind: 'fruit', color: '#F0A93B', perUnit: 50, maxQuantity: 10, price: 0, available: true, seasonMonths: [3, 4, 5, 6], note: 'In season March to June' },
 ];
 
-export const decorations: DecorationOption[] = [
+export let decorations: DecorationOption[] = [
   { id: 'drip', name: 'Ganache drip', kind: 'drip', price: 200, available: true, allergens: ['dairy'] },
   { id: 'gold-leaf', name: 'Gold leaf', kind: 'gold-leaf', price: 350, available: true },
   { id: 'pearls', name: 'Sugar pearls', kind: 'pearls', price: 120, available: true },
@@ -95,34 +97,34 @@ export const decorations: DecorationOption[] = [
   { id: 'shards', name: 'Chocolate shards', kind: 'shards', price: 180, available: true, allergens: ['dairy'] },
 ];
 
-export const toppers: TopperOption[] = [
+export let toppers: TopperOption[] = [
   { id: 'none', name: 'No topper', kind: 'none', price: 0, available: true },
   { id: 'birthday', name: '“Happy Birthday” script', kind: 'birthday', price: 250, available: true },
   { id: 'number', name: 'Number', kind: 'number', price: 200, available: true, needsText: true, maxChars: 3 },
   { id: 'name', name: 'Custom name', kind: 'name', price: 400, available: true, needsText: true, maxChars: 10, productionHours: 24 },
 ];
 
-export const candles: CandleOption[] = [
+export let candles: CandleOption[] = [
   { id: 'none', name: 'No candles', kind: 'none', price: 0, available: true },
   { id: 'thin', name: 'Six tall candles', kind: 'thin', price: 60, available: true },
   { id: 'number', name: 'Number candles', kind: 'number', price: 80, available: true, needsText: true },
   { id: 'sparkler', name: 'Sparkler', kind: 'sparkler', price: 120, available: true },
 ];
 
-export const packaging: PackagingOption[] = [
+export let packaging: PackagingOption[] = [
   { id: 'standard', name: 'Tresor box', price: 0, available: true },
   { id: 'window', name: 'Window box', price: 80, available: true },
   { id: 'gift', name: 'Gift box with ribbon', price: 150, available: true },
 ];
 
 /** Approved message fonts: piped or printed in these styles only. */
-export const fonts: FontOption[] = [
+export let fonts: FontOption[] = [
   { id: 'serif', name: 'Classic serif', family: 'Georgia, "Times New Roman", serif', note: 'Piped or printed', lineHeight: 1.1, widthFactor: 0.52 },
   { id: 'script', name: 'Script', family: 'var(--font-cake-script), "Brush Script MT", cursive', note: 'Piped by hand', lineHeight: 1.15, widthFactor: 0.44 },
   { id: 'sans', name: 'Modern sans', family: 'Inter, system-ui, sans-serif', note: 'Printed', lineHeight: 1.1, widthFactor: 0.56 },
 ];
 
-export const messageColors: MessageColorOption[] = [
+export let messageColors: MessageColorOption[] = [
   { id: 'ink', name: 'Dark chocolate', hex: '#2B1D16' },
   { id: 'white', name: 'White chocolate', hex: '#FBF7EF' },
   { id: 'gold', name: 'Gold', hex: '#B8913F' },
@@ -140,10 +142,10 @@ export const messageLimits: Record<string, { maxChars: number; maxLines: number 
 };
 
 /** Edible print: price, extra production time, and the minimum source resolution (dots per cm). */
-export const printRules = { price: 350, productionHours: 12, minDotsPerCm: 45, maxUploadBytes: 8 * 1024 * 1024, minSourcePx: 600, acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'], printableInset: 0.12 };
+export let printRules: PrintRules = { price: 350, productionHours: 12, minDotsPerCm: 45, maxUploadBytes: 8 * 1024 * 1024, minSourcePx: 600, acceptedTypes: ['image/jpeg', 'image/png', 'image/webp'], printableInset: 0.12 };
 
 /** Compatibility rules, as data. `block` lists what the `when` condition rules out. */
-export const rules: CompatibilityRule[] = [
+export let rules: CompatibilityRule[] = [
   { id: 'whipped-no-ruffles', when: { frosting: ['whipped'] }, block: { finish: ['ruffled'] }, reason: 'Whipped cream is too soft to hold ruffles.' },
   { id: 'heart-sizes', when: { shape: ['heart'] }, block: { size: ['4in', '12in'] }, reason: 'Heart tins come in 6 to 10 inch.' },
   { id: 'rectangle-sizes', when: { shape: ['rectangle'] }, block: { size: ['4in', '6in'] }, reason: 'Rectangles start at 8 inch.' },
@@ -154,3 +156,40 @@ export const rules: CompatibilityRule[] = [
   { id: 'ganache-drip-dark', when: { frosting: ['ganache'] }, block: { decoration: ['drip'] }, reason: 'A ganache cake already has the drip’s finish.' },
   { id: 'semi-naked-no-ribbon', when: { finish: ['semi-naked'] }, block: { decoration: ['ribbon'] }, reason: 'Ribbon needs a frosted side to sit against.' },
 ];
+
+// ---------- Live catalogue ----------
+
+/** Everything the Cake Playground reads, as one replaceable unit. */
+export type CakeCatalog = {
+  version: string;
+  baseProductionHours: number;
+  sizes: SizeOption[]; shapes: ShapeOption[]; sponges: SpongeOption[]; fillings: FillingOption[]; frostings: FrostingOption[];
+  finishes: FinishOption[]; colors: ColorOption[]; toppings: ToppingOption[]; decorations: DecorationOption[]; toppers: TopperOption[];
+  candles: CandleOption[]; packaging: PackagingOption[]; fonts: FontOption[]; messageColors: MessageColorOption[];
+  printRules: PrintRules; rules: CompatibilityRule[];
+};
+
+/** The catalogue as shipped in code. Admin overrides are applied on top of this, never to it. */
+export const DEFAULT_CAKE_CATALOG: Readonly<CakeCatalog> = Object.freeze({
+  version: CAKE_CONFIG_VERSION, baseProductionHours: BASE_PRODUCTION_HOURS,
+  sizes, shapes, sponges, fillings, frostings, finishes, colors, toppings, decorations, toppers, candles, packaging, fonts, messageColors, printRules, rules,
+});
+
+/** Swap the live catalogue (admin overrides, or back to the defaults). Pure data in, no side effects beyond the bindings. */
+export function setCakeCatalog(next: CakeCatalog) {
+  CAKE_CONFIG_VERSION = next.version; BASE_PRODUCTION_HOURS = next.baseProductionHours;
+  sizes = next.sizes; shapes = next.shapes; sponges = next.sponges; fillings = next.fillings; frostings = next.frostings; finishes = next.finishes;
+  colors = next.colors; toppings = next.toppings; decorations = next.decorations; toppers = next.toppers; candles = next.candles; packaging = next.packaging;
+  fonts = next.fonts; messageColors = next.messageColors; printRules = next.printRules; rules = next.rules;
+}
+
+export function currentCakeCatalog(): CakeCatalog {
+  return { version: CAKE_CONFIG_VERSION, baseProductionHours: BASE_PRODUCTION_HOURS, sizes, shapes, sponges, fillings, frostings, finishes, colors, toppings, decorations, toppers, candles, packaging, fonts, messageColors, printRules, rules };
+}
+
+/** Message limits for a size; sizes added in the admin get limits from their diameter. */
+export function messageLimitsFor(sizeId: string): { maxChars: number; maxLines: number } {
+  if (messageLimits[sizeId]) return messageLimits[sizeId];
+  const inches = sizes.find((s) => s.id === sizeId)?.inches ?? 6;
+  return { maxChars: Math.round(8 + inches * 3.5), maxLines: inches <= 4 ? 1 : inches <= 8 ? 2 : 3 };
+}

@@ -2,16 +2,18 @@
 // Pure functions only. State lives in components/store-provider.tsx.
 
 import { products, type Product } from './data';
-import { designIdFor, price as cakePrice, productionHours as cakeHours, sanitize as sanitizeCake, summary as cakeSummary } from './cake/engine';
+import { designIdFor, optionNames, price as cakePrice, productionHours as cakeHours, sanitize as sanitizeCake, summary as cakeSummary } from './cake/engine';
 import { MAX_CUSTOM_CAKES_PER_ORDER } from './cake/config';
 import type { CakeConfiguration } from './cake/types';
+import { businessRules, DEFAULT_RULES } from './config/business';
 
 // ---------- Pricing (the only place fees and totals are computed) ----------
 
 export type Size = 'Regular' | 'Large';
 
-export const DELIVERY_FEE = 70;
-export const FREE_DELIVERY_FROM = 999;
+/** Defaults. Live values come from businessRules(), which admin Settings can change. */
+export const DELIVERY_FEE = DEFAULT_RULES.deliveryFee;
+export const FREE_DELIVERY_FROM = DEFAULT_RULES.freeDeliveryFrom;
 export const LARGE_SURCHARGE = 40;
 export const MAX_QTY_PER_LINE = 10;
 
@@ -26,6 +28,12 @@ export type CustomCakeSpec = {
   /** Browser-storage references: the customer's photo and the rendered print artwork. */
   printAssetId: string | null;
   artworkAssetId: string | null;
+  /**
+   * What the customer chose and paid, frozen when the line was made: option names and the
+   * price breakdown. Production sheets and invoices read this, so renaming or re-pricing
+   * an option later never rewrites an order.
+   */
+  snapshot?: { options: Record<string, string>; price: { label: string; amount: number }[] };
 };
 
 export type CartLine = { lineId: string; product: Product; size: Size; unitPrice: number; qty: number; custom?: CustomCakeSpec };
@@ -42,7 +50,11 @@ export function makeCustomLine(raw: CakeConfiguration, qty = 1, assets: { artwor
   const product: Product = { id: 'custom-cake', name: s.title, category: 'Cake', description: s.lines[0], price: breakdown.total, image: 'custom-cake', searchTerms: [], prepMinutes: cakeHours(config) * 60 };
   return {
     lineId: `custom:${designId}`, product, size: 'Regular', unitPrice: breakdown.total, qty: Math.min(MAX_CUSTOM_CAKES_PER_ORDER, Math.max(1, qty)),
-    custom: { designId, config, title: s.title, lines: s.lines, productionHours: cakeHours(config), priceVersion: breakdown.version, printAssetId: config.print.enabled ? config.print.assetId : null, artworkAssetId: assets.artworkAssetId ?? null },
+    custom: {
+      designId, config, title: s.title, lines: s.lines, productionHours: cakeHours(config), priceVersion: breakdown.version,
+      printAssetId: config.print.enabled ? config.print.assetId : null, artworkAssetId: assets.artworkAssetId ?? null,
+      snapshot: { options: optionNames(config), price: breakdown.lines },
+    },
   };
 }
 
@@ -73,8 +85,9 @@ export function makeLine(product: Product, size: Size, qty: number): CartLine {
 export function calcTotals(lines: CartLine[]) {
   const subtotal = lines.reduce((sum, line) => sum + line.unitPrice * line.qty, 0);
   const itemCount = lines.reduce((sum, line) => sum + line.qty, 0);
-  const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
-  return { subtotal, delivery, total: subtotal + delivery, itemCount, toFreeDelivery: subtotal > 0 && subtotal < FREE_DELIVERY_FROM ? FREE_DELIVERY_FROM - subtotal : 0 };
+  const { deliveryFee, freeDeliveryFrom } = businessRules();
+  const delivery = subtotal === 0 || subtotal >= freeDeliveryFrom ? 0 : deliveryFee;
+  return { subtotal, delivery, total: subtotal + delivery, itemCount, toFreeDelivery: subtotal > 0 && subtotal < freeDeliveryFrom ? freeDeliveryFrom - subtotal : 0 };
 }
 
 /** Restores cart lines saved by an older version or another tab, re-pricing from the live menu. */
@@ -96,7 +109,8 @@ export function normalizeCart(raw: unknown): CartLine[] {
 
 export type OrderStatus = 'NEW' | 'CONFIRMED' | 'PREPARING' | 'READY' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED';
 export type PaymentMethod = 'UPI' | 'Card' | 'COD';
-export type PaymentStatus = 'PAID' | 'DUE' | 'REFUNDED' | 'VOID';
+/** REFUND_PENDING: a paid order was cancelled; a person still has to complete the refund. */
+export type PaymentStatus = 'PAID' | 'DUE' | 'REFUND_PENDING' | 'REFUNDED' | 'VOID' | 'FAILED';
 export type StatusEvent = { status: OrderStatus; at: string };
 
 export type Order = {
@@ -116,9 +130,13 @@ export type Order = {
   history: StatusEvent[];
   items: CartLine[];
   source: 'online' | 'sample';
+  /** The payment gateway's reference (simulated today), when there is one. */
+  paymentReference?: string;
+  /** Delivery instructions from the customer, if any. */
+  instructions?: string;
 };
 
-export type CheckoutDetails = Pick<Order, 'customer' | 'address' | 'city' | 'pin' | 'slot' | 'paymentMethod'>;
+export type CheckoutDetails = Pick<Order, 'customer' | 'address' | 'city' | 'pin' | 'slot' | 'paymentMethod'> & Partial<Pick<Order, 'paymentReference' | 'instructions'>>;
 
 export const STATUS_FLOW: OrderStatus[] = ['NEW', 'CONFIRMED', 'PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED'];
 
@@ -177,8 +195,13 @@ export function cancelOrder(order: Order, at: Date): Order {
     ...order,
     status: 'CANCELLED',
     history: [...order.history, { status: 'CANCELLED', at: at.toISOString() }],
-    paymentStatus: order.paymentStatus === 'PAID' ? 'REFUNDED' : 'VOID',
+    paymentStatus: order.paymentStatus === 'PAID' ? 'REFUND_PENDING' : 'VOID',
   };
+}
+
+/** A person confirms that the refund of a cancelled, paid order was completed. */
+export function markRefunded(order: Order): Order {
+  return order.paymentStatus === 'REFUND_PENDING' ? { ...order, paymentStatus: 'REFUNDED' } : order;
 }
 
 /** Sequential TRS-#### ids; never collides with an order already on this device. */
@@ -187,19 +210,23 @@ export function nextOrderId(orders: Order[]): string {
   return `TRS-${highest + 1}`;
 }
 
-export function createOrder(details: CheckoutDetails, lines: CartLine[], existing: Order[], at: Date): Order {
+export function createOrder(details: CheckoutDetails, lines: CartLine[], existing: Order[], at: Date, opts: { autoConfirm?: boolean } = {}): Order {
   const totals = calcTotals(lines);
   const iso = at.toISOString();
+  const autoConfirm = opts.autoConfirm ?? businessRules().autoConfirm;
+  const { paymentReference, instructions, ...rest } = details;
   return {
-    ...details,
+    ...rest,
+    ...(paymentReference ? { paymentReference } : {}),
+    ...(instructions?.trim() ? { instructions: instructions.trim().slice(0, 300) } : {}),
     id: nextOrderId(existing),
     createdAt: iso,
     subtotal: totals.subtotal,
     delivery: totals.delivery,
     total: totals.total,
     items: lines,
-    status: 'CONFIRMED',
-    history: [{ status: 'NEW', at: iso }, { status: 'CONFIRMED', at: iso }],
+    status: autoConfirm ? 'CONFIRMED' : 'NEW',
+    history: autoConfirm ? [{ status: 'NEW', at: iso }, { status: 'CONFIRMED', at: iso }] : [{ status: 'NEW', at: iso }],
     paymentStatus: details.paymentMethod === 'COD' ? 'DUE' : 'PAID',
     source: 'online',
   };
@@ -296,11 +323,34 @@ export function ordersToCsv(orders: Order[]): string {
 
 // ---------- Migration and demo data ----------
 
+/**
+ * Restores an order's lines exactly as they were sold: name, price and custom cake spec are
+ * the order's own snapshot, never re-read from today's menu or cake prices. Lines saved
+ * before snapshots existed (no unit price) fall back to the menu.
+ */
+export function restoreOrderLines(raw: unknown): CartLine[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((entry): CartLine[] => {
+    const p = entry?.product;
+    const qty = Math.max(0, Math.round(Number(entry?.qty) || 0));
+    const unit = Number(entry?.unitPrice);
+    if (!p || typeof p.id !== 'string' || qty <= 0) return [];
+    if (entry.unitPrice === undefined || !Number.isFinite(unit) || unit < 0) return normalizeCart([entry]);
+    const size: Size = entry.size === 'Large' ? 'Large' : 'Regular';
+    const product: Product = {
+      ...p, name: String(p.name ?? p.id), category: String(p.category ?? ''), description: String(p.description ?? ''),
+      price: Number.isFinite(Number(p.price)) ? Number(p.price) : unit, image: String(p.image ?? ''), searchTerms: Array.isArray(p.searchTerms) ? p.searchTerms : [],
+    };
+    const custom = entry.custom?.config ? ({ ...entry.custom, config: sanitizeCake(entry.custom.config) } as CustomCakeSpec) : undefined;
+    return [{ lineId: String(entry.lineId ?? lineIdFor(p.id, size)), product, size, unitPrice: unit, qty, ...(custom ? { custom } : {}) }];
+  });
+}
+
 /** Accepts orders saved by the earlier version of the site (no history/source fields). */
 export function normalizeOrder(raw: unknown): Order | null {
   const o = raw as Partial<Order> | null;
   if (!o || typeof o.id !== 'string' || !o.createdAt) return null;
-  const items = normalizeCart(o.items);
+  const items = restoreOrderLines(o.items);
   const status = (o.status && o.status in STATUS_LABEL ? o.status : 'CONFIRMED') as OrderStatus;
   return {
     id: o.id,
@@ -311,6 +361,8 @@ export function normalizeOrder(raw: unknown): Order | null {
     pin: o.pin ?? '',
     slot: o.slot ?? '',
     paymentMethod: (['UPI', 'Card', 'COD'].includes(o.paymentMethod as string) ? o.paymentMethod : 'UPI') as PaymentMethod,
+    ...(typeof o.paymentReference === 'string' ? { paymentReference: o.paymentReference } : {}),
+    ...(typeof o.instructions === 'string' ? { instructions: o.instructions } : {}),
     paymentStatus: o.paymentStatus ?? (o.paymentMethod === 'COD' ? 'DUE' : 'PAID'),
     subtotal: o.subtotal ?? calcTotals(items).subtotal,
     delivery: o.delivery ?? calcTotals(items).delivery,

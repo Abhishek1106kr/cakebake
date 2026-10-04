@@ -3,7 +3,7 @@ import { products } from './data';
 import { makeLine } from './orders';
 import {
   applyLines, applyMovement, availableUnits, formatQty, initialInventory, mergeInventory, needsFor,
-  recipes, shortLines, stockState, type Ingredient,
+  recipes, shortLines, stockLevel, stockState, availableQty, type Ingredient,
 } from './inventory';
 
 const p = (id: string) => products.find((x) => x.id === id)!;
@@ -98,5 +98,42 @@ describe('stock state and storage', () => {
     expect(formatQty(0.123, 'kg')).toBe('0.12 kg');
     expect(formatQty(12.345, 'L')).toBe('12.3 L');
     expect(formatQty(4.6, 'pcs')).toBe('5 pcs');
+  });
+});
+
+describe('reserved stock', () => {
+  it('reserve and release move stock aside without changing what is on hand', () => {
+    const reserved = applyMovement(initialInventory, 'butter', 1, 'Reserve');
+    const butter = reserved.find((i) => i.id === 'butter')!;
+    expect(butter.onHand).toBe(2.8);
+    expect(butter.reserved).toBe(1);
+    expect(availableQty(butter)).toBe(1.8);
+    const released = applyMovement(reserved, 'butter', 0.4, 'Release').find((i) => i.id === 'butter')!;
+    expect(released.reserved).toBe(0.6);
+    // Can't reserve more than is on hand, or release below zero.
+    expect(applyMovement(initialInventory, 'butter', 50, 'Reserve').find((i) => i.id === 'butter')!.reserved).toBe(2.8);
+    expect(applyMovement(initialInventory, 'butter', 5, 'Release').find((i) => i.id === 'butter')!.reserved).toBe(0);
+  });
+
+  it('reserved stock is not available to the shop', () => {
+    const all = availableUnits(initialInventory, [], 'basque-cheesecake', 'Regular');
+    const held = applyMovement(initialInventory, 'cream-cheese', 2.4, 'Reserve');
+    expect(all).toBeGreaterThan(0);
+    expect(availableUnits(held, [], 'basque-cheesecake', 'Regular')).toBe(0);
+  });
+
+  it('grades four stock levels', () => {
+    const item: Ingredient = { id: 'x', name: 'X', area: 'Baking', unit: 'kg', onHand: 10, reorderPoint: 4 };
+    expect(stockLevel(item)).toBe('HEALTHY');
+    expect(stockLevel({ ...item, onHand: 3 })).toBe('LOW');
+    expect(stockLevel({ ...item, onHand: 2 })).toBe('CRITICAL');
+    expect(stockLevel({ ...item, onHand: 0 })).toBe('OUT');
+    expect(stockLevel({ ...item, onHand: 5, reserved: 5 })).toBe('OUT');
+  });
+
+  it('keeps admin reorder points and reservations across reloads', () => {
+    const saved = initialInventory.map((i) => (i.id === 'milk' ? { ...i, onHand: 5, reorderPoint: 8, reserved: 2 } : i));
+    const merged = mergeInventory(JSON.parse(JSON.stringify(saved))).find((i) => i.id === 'milk')!;
+    expect(merged).toMatchObject({ onHand: 5, reorderPoint: 8, reserved: 2 });
   });
 });

@@ -2,9 +2,14 @@
 // the preview renders from it, pricing and rules read it, the bakery bakes from it.
 // It is renderer-agnostic, so a future 3D preview reads the same object.
 
+/** ACTIVE: offered. INACTIVE: shown but unavailable. ARCHIVED: hidden; kept so past orders and drafts still resolve. */
+export type OptionStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
+
 export type OptionBase = {
   id: string;
   name: string;
+  description?: string;
+  status?: OptionStatus;
   /** Price added to the cake (₹). Sample values: see config.ts. */
   price: number;
   available: boolean;
@@ -30,8 +35,11 @@ export type DecorationOption = OptionBase & { kind: 'drip' | 'gold-leaf' | 'pear
 export type TopperOption = OptionBase & { kind: 'none' | 'birthday' | 'number' | 'name'; needsText?: boolean; maxChars?: number };
 export type CandleOption = OptionBase & { kind: 'none' | 'thin' | 'number' | 'sparkler'; needsText?: boolean };
 export type PackagingOption = OptionBase;
-export type FontOption = { id: string; name: string; family: string; note: string; lineHeight: number; widthFactor: number };
-export type MessageColorOption = { id: string; name: string; hex: string };
+export type FontOption = { id: string; name: string; family: string; note: string; lineHeight: number; widthFactor: number; status?: OptionStatus };
+export type MessageColorOption = { id: string; name: string; hex: string; status?: OptionStatus };
+
+/** Edible print rules: price, extra hours, resolution (dots per cm), upload limits and the safe-area inset. */
+export type PrintRules = { price: number; productionHours: number; minDotsPerCm: number; maxUploadBytes: number; minSourcePx: number; acceptedTypes: string[]; printableInset: number; minSizeInches?: number };
 
 export type OptionGroupId = 'size' | 'shape' | 'sponge' | 'filling' | 'frosting' | 'finish' | 'color' | 'decorations' | 'toppings' | 'topper' | 'candles' | 'packaging' | 'print';
 
@@ -90,6 +98,6 @@ export type RuleScope = { [K in keyof Omit<CakeConfiguration, 'version' | 'messa
 };
 
 /** A compatibility rule: if `when` matches, the options in `block` are not allowed, with a reason. */
-export type CompatibilityRule = { id: string; when: RuleScope; block: RuleScope; reason: string };
+export type CompatibilityRule = { id: string; when: RuleScope; block: RuleScope; reason: string; enabled?: boolean };
 
 export type Issue = { field: OptionGroupId | 'message' | 'print' | 'notes'; level: 'error' | 'warning'; message: string; ruleId?: string };

@@ -4,7 +4,7 @@ import { useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { AlignCenter, AlignLeft, AlignRight, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Crosshair, ImagePlus, Maximize2, Minimize2, Minus, Plus, RotateCcw, RotateCw, Trash2 } from 'lucide-react';
 import * as C from '@/lib/cake/config';
-import { find, fitPlacement, messageFit, optionState, printCheck, printableArea, sizeOf, type CakeContext } from '@/lib/cake/engine';
+import { find, fitPlacement, messageColorOptions, options, messageFit, messageFonts, optionState, printCheck, printableArea, sizeOf, type CakeContext } from '@/lib/cake/engine';
 import type { CakeConfiguration, OptionBase, OptionGroupId } from '@/lib/cake/types';
 import { processUpload } from '@/lib/cake/assets';
 import { track } from '@/engine/intelligence/events/track';
@@ -33,7 +33,7 @@ export function OptionTiles<T extends OptionBase>({ group, items, config, ctx, s
   };
   return (
     <div className="option-tiles" role="radiogroup" aria-label={group} style={{ ['--cols' as string]: columns }}>
-      {items.map((o) => {
+      {items.filter((o) => o.status !== 'ARCHIVED').map((o) => {
         const state = optionState(config, group, o.id, ctx);
         const active = value === o.id;
         return (
@@ -52,7 +52,7 @@ export function OptionTiles<T extends OptionBase>({ group, items, config, ctx, s
 export function ColorSwatches({ config, ctx, set }: { config: CakeConfiguration; ctx: CakeContext; set: SetFn }) {
   return (
     <div className="swatches" role="radiogroup" aria-label="Frosting colour">
-      {C.colors.map((c) => {
+      {options('color').map((c) => {
         const state = optionState(config, 'color', c.id, ctx);
         const active = config.color === c.id;
         return (
@@ -76,7 +76,7 @@ export function ToppingsPicker({ config, ctx, set }: { config: CakeConfiguration
   };
   return (
     <div className="option-tiles topping-tiles" style={{ ['--cols' as string]: 3 }}>
-      {C.toppings.map((t) => {
+      {options('toppings').map((t) => {
         const q = qty(t.id);
         const state = q ? { disabled: false, reason: null } : optionState(config, 'toppings', t.id, ctx);
         return (
@@ -99,7 +99,7 @@ export function ToppingsPicker({ config, ctx, set }: { config: CakeConfiguration
 export function DecorationsPicker({ config, ctx, set }: { config: CakeConfiguration; ctx: CakeContext; set: SetFn }) {
   return (
     <div className="option-tiles" style={{ ['--cols' as string]: 3 }}>
-      {C.decorations.map((d) => {
+      {options('decorations').map((d) => {
         const on = config.decorations.includes(d.id);
         const state = on ? { disabled: false, reason: null } : optionState(config, 'decorations', d.id, ctx);
         return (
@@ -132,11 +132,11 @@ export function MessageEditor({ config, set, onFocus }: { config: CakeConfigurat
       {warn && <p className="studio-warning" role="status">{warn}</p>}
       <div className="field-label">Lettering</div>
       <div className="font-chips" role="radiogroup" aria-label="Lettering style">
-        {C.fonts.map((f) => <button key={f.id} type="button" role="radio" aria-checked={m.font === f.id} className={m.font === f.id ? 'is-active' : ''} style={{ fontFamily: f.family }} onClick={() => upd({ font: f.id }, 'font')}>{f.name}<small>{f.note}</small></button>)}
+        {messageFonts().map((f) => <button key={f.id} type="button" role="radio" aria-checked={m.font === f.id} className={m.font === f.id ? 'is-active' : ''} style={{ fontFamily: f.family }} onClick={() => upd({ font: f.id }, 'font')}>{f.name}<small>{f.note}</small></button>)}
       </div>
       <div className="field-label">Colour</div>
       <div className="ink-dots" role="radiogroup" aria-label="Lettering colour">
-        {C.messageColors.map((c) => <button key={c.id} type="button" role="radio" aria-checked={m.color === c.hex} aria-label={c.name} className={m.color === c.hex ? 'is-active' : ''} style={{ background: c.hex }} onClick={() => upd({ color: c.hex }, 'color')} />)}
+        {messageColorOptions().map((c) => <button key={c.id} type="button" role="radio" aria-checked={m.color === c.hex} aria-label={c.name} className={m.color === c.hex ? 'is-active' : ''} style={{ background: c.hex }} onClick={() => upd({ color: c.hex }, 'color')} />)}
       </div>
       <div className="editor-row">
         <label className="slider"><span>Size</span><input type="range" min={0.06} max={0.16} step={0.005} value={m.size} onChange={(e) => upd({ size: Number(e.target.value) }, 'size')} /></label>

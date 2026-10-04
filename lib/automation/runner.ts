@@ -4,6 +4,7 @@
 
 import type { Order, OrderStatus } from '@/lib/orders';
 import { sessionId } from '@/engine/intelligence/context/context';
+import { emitDomain } from '@/lib/admin/domain-events';
 import {
   afterAttempt, buildInvoice, maskPhone, newJob, NOTIFY_STATUSES, RETRY_DELAYS_MS, whatsappMessage,
   type AutomationEvent, type AutomationEventType, type Faults, type Invoice, type Job,
@@ -74,11 +75,17 @@ async function run(id: string, getOrder: () => Order | undefined) {
   const next = afterAttempt(job, outcome);
   saveJob(next);
   const kind = job.kind;
-  if (next.status === 'succeeded') log(kind === 'invoice' ? 'invoice.generated' : 'whatsapp.sent', order.id, 'ok', next.result?.invoiceNumber ?? job.topic);
+  if (next.status === 'succeeded') {
+    log(kind === 'invoice' ? 'invoice.generated' : 'whatsapp.sent', order.id, 'ok', next.result?.invoiceNumber ?? job.topic);
+    emitDomain(kind === 'invoice' ? 'invoice.generated' : 'notification.sent', order.id, { jobId: job.id, topic: job.topic });
+  }
   else if (next.status === 'retrying') {
     log(kind === 'invoice' ? 'invoice.retrying' : 'whatsapp.retrying', order.id, 'retry', next.lastError ?? undefined);
     setTimeout(() => void run(id, getOrder), RETRY_DELAYS_MS[next.attempts - 1] ?? 1600);
-  } else log(kind === 'invoice' ? 'invoice.failed' : 'whatsapp.failed', order.id, 'failed', next.lastError ?? undefined);
+  } else {
+    log(kind === 'invoice' ? 'invoice.failed' : 'whatsapp.failed', order.id, 'failed', next.lastError ?? undefined);
+    emitDomain(kind === 'invoice' ? 'invoice.failed' : 'notification.failed', order.id, { jobId: job.id, topic: job.topic, error: next.lastError });
+  }
 }
 
 // ---------- Triggers ----------

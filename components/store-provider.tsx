@@ -5,11 +5,13 @@ import { makeStatusEvent, publishStatus } from '@/lib/tracking/events';
 import { canTransition, type TrackingStatus } from '@/lib/tracking/status';
 import { onOrderCreated, onStatusChanged, resumePending } from '@/lib/automation/runner';
 import { Product, products as menu } from '@/lib/data';
+import { emitDomain } from '@/lib/admin/domain-events';
+import { onCatalog, startLiveCatalog } from '@/lib/catalog/live';
 import { track } from '@/engine/intelligence/events/track';
 import {
   CartLine, CheckoutDetails, CheckoutErrors, MAX_QTY_PER_LINE, Order, OrderStatus, Size,
   advanceOrder, calcTotals, cancelOrder, cancelRestoresStock, canCancel, createOrder, lineIdFor,
-  makeLine, nextStatus, normalizeCart, normalizeOrder, seedOrders, validateCheckout, makeCustomLine,
+  makeLine, markRefunded, nextStatus, normalizeCart, normalizeOrder, seedOrders, validateCheckout, makeCustomLine,
 } from '@/lib/orders';
 import { validate as validateCake } from '@/lib/cake/engine';
 import type { CakeConfiguration } from '@/lib/cake/types';
@@ -74,13 +76,20 @@ type StoreContextValue = {
   placeOrder: (details: CheckoutDetails) => PlaceOrderResult;
   advance: (orderId: string) => void;
   cancel: (orderId: string) => void;
+  /** Move an order to a specific next status (validated by the state machine). False if not allowed. */
+  transition: (orderId: string, to: OrderStatus) => boolean;
+  /** Record that the refund of a cancelled, paid order was completed. */
+  refund: (orderId: string) => boolean;
   /** Development/testing only: put an order into any state (step by step, so every event fires). */
   devSetStatus: (orderId: string, status: OrderStatus) => void;
   // Inventory
   inventory: Ingredient[];
   movements: Movement[];
-  recordMovement: (ingredientId: string, delta: number, reason: MovementReason) => void;
+  recordMovement: (ingredientId: string, delta: number, reason: MovementReason, meta?: { note?: string; actor?: string }) => void;
+  setReorderPoint: (ingredientId: string, value: number) => void;
   resetDemo: () => void;
+  /** Bumps when the bakery's catalogue, Cake Builder or settings change (re-render menus and prices). */
+  catalogRevision: number;
 };
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -92,9 +101,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [movements, setMovements] = useState<Movement[]>([]);
   const [latestId, setLatestId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [catalogRevision, setCatalogRevision] = useState(0);
 
   // Load once, migrate data from the earlier version, then follow other tabs.
   useEffect(() => {
+    // The bakery's catalogue first, so the stored bag is priced against today's menu.
+    const stopCatalog = startLiveCatalog();
+    const offCatalog = onCatalog(() => {
+      setCatalogRevision((r) => r + 1);
+      setCart((current) => normalizeCart(current));
+    });
     const storedOrders = read<unknown[]>(KEYS.orders);
     let loaded = storedOrders ? parseOrders(storedOrders) : seedOrders(new Date());
     let latest = read<string>(KEYS.latestId);
@@ -126,7 +142,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       } catch {}
     };
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    return () => { window.removeEventListener('storage', onStorage); offCatalog(); stopCatalog(); };
   }, []);
 
   useEffect(() => { if (mounted) write(KEYS.cart, cart); }, [cart, mounted]);
@@ -138,6 +154,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // ---------- Cart ----------
 
   const canAddMore = (product: Product, size: Size = 'Regular') => {
+    // Sold out, or no longer on the menu: the bakery's catalogue decides.
+    const live = menu.find((p) => p.id === product.id);
+    if (!live || live.available === false) return 0;
     const inLine = cart.find((line) => line.lineId === lineIdFor(product.id, size))?.qty ?? 0;
     return Math.min(availableUnits(inventory, cart, product.id, size), MAX_QTY_PER_LINE - inLine);
   };
@@ -204,9 +223,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const order = createOrder(details, cart, orders, new Date());
     onOrderCreated(order);
     publishStatus(makeStatusEvent(order, null, order.status, 'system'));
+    emitDomain('order.created', order.id, { total: order.total, status: order.status, items: order.items.length, custom: order.items.some((l) => l.custom) });
+    for (const l of order.items) if (l.custom) emitDomain('customCake.created', order.id, { designId: l.custom.designId, productionHours: l.custom.productionHours });
     const after = applyLines(inventory, order.items, -1);
     setOrders((current) => [order, ...current]);
     setInventory((current) => applyLines(current, order.items, -1));
+    emitDomain('inventory.changed', order.id, { reason: 'order' });
     // Events carry ids and amounts only, never the customer's details.
     track('order_created', { orderId: order.id, total: order.total, items: order.items.map((l) => ({ productId: l.product.id, qty: l.qty, size: l.size })), paymentMethod: order.paymentMethod });
     for (const l of order.items) if (l.custom) track('custom_cake_ordered', { designId: l.custom.designId, orderId: order.id, total: l.unitPrice });
@@ -245,7 +267,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     ordersRef.current = next;
     setOrders(next);
     publishStatus(makeStatusEvent(updated, order.status, to, source, now));
+    emitDomain('order.status.changed', orderId, { from: order.status, to, source });
+    if (to === 'CANCELLED' && cancelRestoresStock(order)) emitDomain('inventory.changed', orderId, { reason: 'cancellation' });
     onStatusChanged(updated, to);
+    return true;
+  };
+
+  const transition = (orderId: string, to: OrderStatus): boolean => {
+    const order = ordersRef.current.find((o) => o.id === orderId);
+    if (!order) return false;
+    if (to === 'CANCELLED') return canCancel(order) ? applyTransition(orderId, 'CANCELLED', 'admin') : false;
+    return nextStatus(order.status) === to ? applyTransition(orderId, to, 'admin') : false;
+  };
+
+  const refund = (orderId: string): boolean => {
+    const order = ordersRef.current.find((o) => o.id === orderId);
+    if (!order || order.paymentStatus !== 'REFUND_PENDING') return false;
+    const updated = markRefunded(order);
+    const next = ordersRef.current.map((o) => (o.id === orderId ? updated : o));
+    ordersRef.current = next;
+    setOrders(next);
+    emitDomain('order.refunded', orderId, { amount: order.total });
     return true;
   };
 
@@ -285,12 +327,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // ---------- Inventory ----------
 
-  const recordMovement = (ingredientId: string, delta: number, reason: MovementReason) => {
+  const recordMovement = (ingredientId: string, delta: number, reason: MovementReason, meta: { note?: string; actor?: string } = {}) => {
     if (!delta) return;
     track('inventory_updated', { ingredientId, delta, reason });
-    setInventory((current) => applyMovement(current, ingredientId, delta));
-    const movement: Movement = { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at: new Date().toISOString(), ingredientId, delta, reason };
-    setMovements((current) => [movement, ...current].slice(0, 50));
+    setInventory((current) => applyMovement(current, ingredientId, delta, reason));
+    const movement: Movement = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at: new Date().toISOString(), ingredientId, delta, reason,
+      ...(meta.note ? { note: meta.note.slice(0, 200) } : {}), ...(meta.actor ? { actor: meta.actor } : {}),
+    };
+    setMovements((current) => [movement, ...current].slice(0, 500));
+    emitDomain('inventory.changed', ingredientId, { delta, reason });
+  };
+
+  const setReorderPoint = (ingredientId: string, value: number) => {
+    if (!(value >= 0 && Number.isFinite(value))) return;
+    setInventory((current) => current.map((i) => (i.id === ingredientId ? { ...i, reorderPoint: Math.round(value * 1000) / 1000 } : i)));
+    emitDomain('inventory.changed', ingredientId, { reorderPoint: value });
   };
 
   const resetDemo = () => {
@@ -307,7 +359,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     mounted, cart, addToCart, updateQty, removeFromCart, clearCart, canAddMore, addCustomCake,
     cartCount: totals.itemCount, subtotal: totals.subtotal, deliveryFee: totals.delivery, total: totals.total, toFreeDelivery: totals.toFreeDelivery,
     orders, myOrders, latestOrder: orders.find((o) => o.id === latestId) ?? null, findOrder: (id) => orders.find((o) => o.id === id),
-    placeOrder, advance, cancel, devSetStatus, inventory, movements, recordMovement, resetDemo,
+    placeOrder, advance, cancel, transition, refund, devSetStatus, inventory, movements, recordMovement, setReorderPoint, resetDemo, catalogRevision,
   };
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

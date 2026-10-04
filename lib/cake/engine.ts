@@ -11,16 +11,26 @@ export type CakeContext = { inventory?: Ingredient[]; month?: number };
 
 // ---------- Catalogue access ----------
 
-const GROUPS = {
+// Read on every call: the catalogue is a set of live bindings that admin overrides replace.
+const groups = () => ({
   size: C.sizes, shape: C.shapes, sponge: C.sponges, filling: C.fillings, frosting: C.frostings, finish: C.finishes, color: C.colors,
   toppings: C.toppings, decorations: C.decorations, topper: C.toppers, candles: C.candles, packaging: C.packaging,
-} as const;
-type CatalogueGroup = keyof typeof GROUPS;
+});
+type Groups = ReturnType<typeof groups>;
+export type CatalogueGroup = keyof Groups;
+export const CATALOGUE_GROUPS: CatalogueGroup[] = ['size', 'shape', 'sponge', 'filling', 'frosting', 'finish', 'color', 'toppings', 'decorations', 'topper', 'candles', 'packaging'];
 
-export function options<G extends CatalogueGroup>(group: G): (typeof GROUPS)[G] { return GROUPS[group]; }
-export function find<G extends CatalogueGroup>(group: G, id: string): (typeof GROUPS)[G][number] | undefined {
-  return (GROUPS[group] as readonly OptionBase[]).find((o) => o.id === id) as (typeof GROUPS)[G][number] | undefined;
+/** Options customers can see (archived ones are hidden; inactive ones show as unavailable). */
+export function options<G extends CatalogueGroup>(group: G): Groups[G] {
+  return (groups()[group] as OptionBase[]).filter((o) => o.status !== 'ARCHIVED') as Groups[G];
 }
+/** Every option, archived included (admin, and resolving older designs). */
+export function allOptions<G extends CatalogueGroup>(group: G): Groups[G] { return groups()[group]; }
+export function find<G extends CatalogueGroup>(group: G, id: string): Groups[G][number] | undefined {
+  return (groups()[group] as readonly OptionBase[]).find((o) => o.id === id) as Groups[G][number] | undefined;
+}
+export const messageFonts = () => C.fonts.filter((f) => !f.status || f.status === 'ACTIVE');
+export const messageColorOptions = () => C.messageColors.filter((m) => !m.status || m.status === 'ACTIVE');
 export const sizeOf = (c: CakeConfiguration) => find('size', c.size) as SizeOption;
 export const shapeOf = (c: CakeConfiguration) => find('shape', c.shape) as ShapeOption;
 
@@ -39,7 +49,8 @@ export function defaultConfig(): CakeConfiguration {
 export type Availability = { ok: true } | { ok: false; reason: string };
 
 export function availability(option: OptionBase, ctx: CakeContext = {}): Availability {
-  if (!option.available) return { ok: false, reason: 'Currently unavailable' };
+  if (option.status === 'ARCHIVED') return { ok: false, reason: 'No longer offered' };
+  if (!option.available || option.status === 'INACTIVE') return { ok: false, reason: 'Currently unavailable' };
   if (option.seasonMonths && ctx.month && !option.seasonMonths.includes(ctx.month)) return { ok: false, reason: option.note ?? 'Out of season' };
   if (option.ingredients && ctx.inventory) {
     for (const [ingredient, need] of Object.entries(option.ingredients)) {
@@ -65,7 +76,7 @@ function scopeMatches(scope: RuleScope, c: CakeConfiguration): boolean {
 }
 
 export function violations(c: CakeConfiguration, rules: CompatibilityRule[] = C.rules): CompatibilityRule[] {
-  return rules.filter((r) => scopeMatches(r.when, c) && scopeMatches(r.block, c));
+  return rules.filter((r) => r.enabled !== false && scopeMatches(r.when, c) && scopeMatches(r.block, c));
 }
 
 const SCOPE_KEY: Partial<Record<OptionGroupId, keyof RuleScope>> = { toppings: 'topping', decorations: 'decoration', topper: 'topper', candles: 'candles', print: 'print' };
@@ -143,7 +154,7 @@ export type MessageFit = { maxChars: number; maxLines: number; chars: number; li
 
 /** Whether the message fits: character and line limits for the size, and the width of the printable outline. */
 export function messageFit(c: CakeConfiguration): MessageFit {
-  const limits = C.messageLimits[c.size] ?? { maxChars: 24, maxLines: 2 };
+  const limits = C.messageLimitsFor(c.size);
   const font = C.fonts.find((f) => f.id === c.message.font) ?? C.fonts[0];
   const lines = messageLines(c.message.text);
   const chars = lines.join('').length;
@@ -323,6 +334,24 @@ export function ingredientsFor(c: CakeConfiguration): Record<string, number> {
 }
 
 // ---------- Summary, identity, sharing ----------
+
+/** The chosen options by name, for the order's snapshot (renaming an option later never rewrites an order). */
+export function optionNames(c: CakeConfiguration): Record<string, string> {
+  const n = (g: CatalogueGroup, id: string) => find(g, id)?.name ?? id;
+  const out: Record<string, string> = {
+    size: n('size', c.size), shape: n('shape', c.shape), sponge: n('sponge', c.sponge), filling: n('filling', c.filling),
+    frosting: n('frosting', c.frosting), finish: n('finish', c.finish), color: n('color', c.color), packaging: n('packaging', c.packaging),
+  };
+  if (c.toppings.length) out.toppings = c.toppings.map((t) => `${n('toppings', t.id)} ×${t.qty}`).join(', ');
+  if (c.decorations.length) out.decorations = c.decorations.map((d) => n('decorations', d)).join(', ');
+  if (c.topper.id !== 'none') out.topper = `${n('topper', c.topper.id)}${c.topper.text ? ` “${c.topper.text}”` : ''}`;
+  if (c.candles.id !== 'none') out.candles = `${n('candles', c.candles.id)}${c.candles.text ? ` ${c.candles.text}` : ''}`;
+  if (c.message.text.trim()) {
+    out.messageFont = C.fonts.find((f) => f.id === c.message.font)?.name ?? c.message.font;
+    out.messageColor = C.messageColors.find((m) => m.hex === c.message.color)?.name ?? c.message.color;
+  }
+  return out;
+}
 
 export function summary(c: CakeConfiguration): { title: string; lines: string[] } {
   const sponge = find('sponge', c.sponge);

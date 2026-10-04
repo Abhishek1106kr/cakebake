@@ -6,10 +6,13 @@ import type { CartLine, Size } from './orders';
 import { ingredientsFor } from './cake/engine';
 
 export type Unit = 'kg' | 'L' | 'pcs';
-export type Ingredient = { id: string; name: string; area: 'Coffee' | 'Bar' | 'Baking' | 'Kitchen'; unit: Unit; onHand: number; reorderPoint: number };
+/** `reserved`: set aside by hand (an event, a large order) and not available to the shop. */
+export type Ingredient = { id: string; name: string; area: 'Coffee' | 'Bar' | 'Baking' | 'Kitchen'; unit: Unit; onHand: number; reorderPoint: number; reserved?: number };
 export type StockState = 'Out' | 'Low' | 'Healthy';
-export type MovementReason = 'Restock' | 'Wastage' | 'Correction';
-export type Movement = { id: string; at: string; ingredientId: string; delta: number; reason: MovementReason };
+/** Four-level view for operations: Critical is at or under half the reorder point. */
+export type StockLevel = 'HEALTHY' | 'LOW' | 'CRITICAL' | 'OUT';
+export type MovementReason = 'Restock' | 'Wastage' | 'Correction' | 'Reserve' | 'Release';
+export type Movement = { id: string; at: string; ingredientId: string; delta: number; reason: MovementReason; note?: string; actor?: string };
 
 export const initialInventory: Ingredient[] = [
   { id: 'beans', name: 'Arabica beans', area: 'Coffee', unit: 'kg', onHand: 2.1, reorderPoint: 4 },
@@ -80,11 +83,11 @@ export function applyLines(inventory: Ingredient[], lines: Pick<CartLine, 'produ
 export function availableUnits(inventory: Ingredient[], cart: CartLine[], productId: string, size: Size, cap = 99): number {
   const recipe = recipes[productId];
   if (!recipe) return cap;
-  const reserved = needsFor(cart);
+  const inBag = needsFor(cart);
   let units = cap;
   for (const [ingredient, amount] of Object.entries(recipe)) {
     const item = inventory.find((i) => i.id === ingredient);
-    const left = (item?.onHand ?? 0) - (reserved[ingredient] ?? 0);
+    const left = (item ? availableQty(item) : 0) - (inBag[ingredient] ?? 0);
     units = Math.min(units, Math.floor(left / (amount * SIZE_FACTOR[size]) + 1e-9));
   }
   return Math.max(0, units);
@@ -93,26 +96,54 @@ export function availableUnits(inventory: Ingredient[], cart: CartLine[], produc
 /** Lines that can't be fully made from current stock (e.g. another tab used it). */
 export function shortLines(inventory: Ingredient[], lines: CartLine[]): CartLine[] {
   const needs = needsFor(lines);
-  const short = new Set(inventory.filter((item) => (needs[item.id] ?? 0) > item.onHand + 1e-9).map((item) => item.id));
+  const short = new Set(inventory.filter((item) => (needs[item.id] ?? 0) > availableQty(item) + 1e-9).map((item) => item.id));
   return lines.filter((line) => Object.keys(line.custom ? ingredientsFor(line.custom.config) : recipes[line.product.id] ?? {}).some((ingredient) => short.has(ingredient)));
 }
 
+/** On hand minus what's been set aside by hand. */
+export const availableQty = (item: Ingredient) => Math.max(0, round(item.onHand - (item.reserved ?? 0)));
+
 export function stockState(item: Ingredient): StockState {
-  if (item.onHand <= 0) return 'Out';
-  if (item.onHand <= item.reorderPoint) return 'Low';
+  if (availableQty(item) <= 0) return 'Out';
+  if (availableQty(item) <= item.reorderPoint) return 'Low';
   return 'Healthy';
 }
 
-export function applyMovement(inventory: Ingredient[], ingredientId: string, delta: number): Ingredient[] {
-  return inventory.map((item) => (item.id === ingredientId ? { ...item, onHand: Math.max(0, round(item.onHand + delta)) } : item));
+export function stockLevel(item: Ingredient): StockLevel {
+  const left = availableQty(item);
+  if (left <= 0) return 'OUT';
+  if (left <= item.reorderPoint / 2) return 'CRITICAL';
+  if (left <= item.reorderPoint) return 'LOW';
+  return 'HEALTHY';
 }
 
-/** Keeps stored levels for known ingredients and adds any that are new in this version. */
+/**
+ * Applies a manual movement. Restock/Wastage/Correction change what's on hand; Reserve and
+ * Release move stock in and out of `reserved` (never more than is on hand, never below zero).
+ */
+export function applyMovement(inventory: Ingredient[], ingredientId: string, delta: number, reason: MovementReason = 'Correction'): Ingredient[] {
+  return inventory.map((item) => {
+    if (item.id !== ingredientId) return item;
+    if (reason === 'Reserve' || reason === 'Release') {
+      const reserved = Math.min(item.onHand, Math.max(0, round((item.reserved ?? 0) + (reason === 'Reserve' ? Math.abs(delta) : -Math.abs(delta)))));
+      return { ...item, reserved };
+    }
+    const onHand = Math.max(0, round(item.onHand + delta));
+    return { ...item, onHand, reserved: Math.min(item.reserved ?? 0, onHand) };
+  });
+}
+
+/** Keeps stored levels (and reorder points / reservations set in the admin) for known ingredients and adds any new ones. */
 export function mergeInventory(stored: unknown): Ingredient[] {
   if (!Array.isArray(stored)) return initialInventory;
   return initialInventory.map((base) => {
     const saved = stored.find((s: Partial<Ingredient>) => s?.id === base.id) as Partial<Ingredient> | undefined;
-    return saved && typeof saved.onHand === 'number' ? { ...base, onHand: saved.onHand } : base;
+    if (!saved || typeof saved.onHand !== 'number') return base;
+    return {
+      ...base, onHand: saved.onHand,
+      ...(typeof saved.reorderPoint === 'number' && saved.reorderPoint >= 0 ? { reorderPoint: saved.reorderPoint } : {}),
+      ...(typeof saved.reserved === 'number' && saved.reserved > 0 ? { reserved: Math.min(saved.reserved, saved.onHand) } : {}),
+    };
   });
 }
 

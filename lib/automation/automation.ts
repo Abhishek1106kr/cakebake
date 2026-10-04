@@ -9,6 +9,7 @@
 
 import type { Order, OrderStatus } from '@/lib/orders';
 import { statusCopy } from '@/lib/tracking/status';
+import { businessRules } from '@/lib/config/business';
 
 export type JobKind = 'invoice' | 'whatsapp';
 export type JobStatus = 'requested' | 'retrying' | 'succeeded' | 'failed';
@@ -70,7 +71,23 @@ export function afterAttempt(job: Job, outcome: { ok: true; result: Job['result'
 // ---------- Invoice ----------
 
 export type InvoiceLine = { description: string; detail: string[]; qty: number; unitPrice: number; amount: number };
-export type Invoice = { invoiceNumber: string; orderId: string; issuedAt: string; customer: string; lines: InvoiceLine[]; subtotal: number; delivery: number; total: number; paymentMethod: string; paymentStatus: string; note: string };
+export type InvoiceTax = { rate: number; inclusive: boolean; amount: number; gstin: string };
+export type Invoice = {
+  invoiceNumber: string; orderId: string; issuedAt: string; customer: string; lines: InvoiceLine[]; subtotal: number; delivery: number; total: number;
+  paymentMethod: string; paymentStatus: string; note: string;
+  /** Snapshots taken when the invoice is issued: later edits to the customer or tax settings never change it. */
+  customerSnapshot?: { name: string; address: string; city: string; pin: string };
+  tax?: InvoiceTax;
+  /** 1 for the first issue; regenerating keeps the number and adds a revision. */
+  revision?: number;
+  revisions?: { revision: number; issuedAt: string; reason: string; by: string }[];
+};
+
+/** Tax inside a tax-inclusive total (prices are charged as shown; tax-exclusive pricing isn't supported by checkout). */
+export function taxSnapshot(total: number, rules = businessRules()): InvoiceTax {
+  const amount = rules.taxInclusive && rules.taxRate > 0 ? Math.round((total * rules.taxRate) / (100 + rules.taxRate) * 100) / 100 : 0;
+  return { rate: rules.taxRate, inclusive: rules.taxInclusive, amount, gstin: rules.gstin };
+}
 
 export const invoiceNumberFor = (orderId: string) => `INV-${orderId.replace(/\D/g, '')}`;
 
@@ -94,6 +111,9 @@ export function buildInvoice(order: Order, now = new Date()): Invoice {
     paymentMethod: order.paymentMethod,
     paymentStatus: order.paymentStatus,
     note: 'Simulated invoice for the Tresor prototype. No tax registration or payment is real.',
+    customerSnapshot: { name: order.customer.name, address: order.address, city: order.city, pin: order.pin },
+    tax: taxSnapshot(order.total),
+    revision: 1,
   };
 }
 

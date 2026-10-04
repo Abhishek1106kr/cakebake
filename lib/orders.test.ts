@@ -5,7 +5,7 @@ import {
   advanceOrder, calcTotals, canCancel, cancelOrder, cancelRestoresStock, createOrder, filterOrders,
   makeLine, nextOrderId, nextStatus, normalizeCart, normalizeOrder, normalizePhone, orderStats,
   ordersToCsv, prepTarget, seedOrders, sizesFor, unitPrice, unitsSoldToday, validateCheckout,
-  leadHours, makeCustomLine,
+  leadHours, makeCustomLine, markRefunded,
   type CheckoutDetails, type Order,
 } from './orders';
 import { needsFor } from './inventory';
@@ -129,9 +129,26 @@ describe('order lifecycle', () => {
     expect(cancelOrder(out, at)).toBe(out);
   });
 
-  it('refunds paid orders and voids unpaid ones on cancel', () => {
-    expect(cancelOrder(createOrder(details, lines, [], at), at).paymentStatus).toBe('REFUNDED');
+  it('marks a paid cancellation refund-pending until a person completes it, and voids unpaid ones', () => {
+    const cancelled = cancelOrder(createOrder(details, lines, [], at), at);
+    expect(cancelled.paymentStatus).toBe('REFUND_PENDING');
+    expect(markRefunded(cancelled).paymentStatus).toBe('REFUNDED');
     expect(cancelOrder(createOrder({ ...details, paymentMethod: 'COD' }, lines, [], at), at).paymentStatus).toBe('VOID');
+    const paid = createOrder(details, lines, [], at);
+    expect(markRefunded(paid)).toBe(paid); // nothing to refund on an active paid order
+  });
+
+  it('auto-confirms by default and can leave orders NEW for staff to confirm', () => {
+    expect(createOrder(details, lines, [], at).status).toBe('CONFIRMED');
+    const pending = createOrder(details, lines, [], at, { autoConfirm: false });
+    expect(pending.status).toBe('NEW');
+    expect(pending.history.map((h) => h.status)).toEqual(['NEW']);
+  });
+
+  it('keeps the payment reference and instructions it was given', () => {
+    const o = createOrder({ ...details, paymentReference: 'SIM-1', instructions: '  Ring twice  ' }, lines, [], at);
+    expect(o).toMatchObject({ paymentReference: 'SIM-1', instructions: 'Ring twice' });
+    expect(normalizeOrder(JSON.parse(JSON.stringify(o)))).toMatchObject({ paymentReference: 'SIM-1', instructions: 'Ring twice' });
   });
 
   it('issues sequential ids that never collide', () => {
@@ -206,6 +223,26 @@ describe('reporting', () => {
     const legacy = normalizeOrder({ id: 'TRS-1', createdAt: at.toISOString(), items: [{ product: { id: 'tresor-latte' }, qty: 1 }], paymentMethod: 'COD' });
     expect(legacy).toMatchObject({ status: 'CONFIRMED', paymentStatus: 'DUE', source: 'online', total: 210 + DELIVERY_FEE });
     expect(normalizeOrder({ nope: true })).toBeNull();
+  });
+
+  it('restores stored lines as sold, never re-priced from the current menu', () => {
+    const sold = createOrder(details, [makeLine(latte, 'Regular', 2)], [], at);
+    const stored = JSON.parse(JSON.stringify(sold));
+    // The menu changes after the sale: new price, new name.
+    stored.items[0].product.price = 999;
+    const restored = normalizeOrder({ ...stored, items: [{ ...stored.items[0], product: { ...stored.items[0].product, name: 'Old Latte name' } }] })!;
+    expect(restored.items[0].unitPrice).toBe(210);
+    expect(restored.items[0].product.name).toBe('Old Latte name');
+    expect(restored.total).toBe(sold.total);
+  });
+
+  it('keeps a custom cake line exactly as ordered, including its option names', () => {
+    const line = makeCustomLine({ ...defaultCake(), size: '8in', sponge: 'chocolate' });
+    const o = createOrder(details, [line], [], at);
+    const restored = normalizeOrder(JSON.parse(JSON.stringify(o)))!;
+    expect(restored.items[0].unitPrice).toBe(line.unitPrice);
+    expect(restored.items[0].custom?.snapshot?.options.sponge).toBe('Dark chocolate');
+    expect(restored.items[0].custom?.snapshot?.price.reduce((s, l) => s + l.amount, 0)).toBe(line.unitPrice);
   });
 });
 

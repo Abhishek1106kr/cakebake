@@ -12,6 +12,8 @@ export type Product = {
   featured?: boolean;
   /** Whole cakes carry campaign details; their imagery lives in lib/cake-assets.ts. */
   cake?: CakeDetails;
+  /** False when the bakery marks it sold out for now (admin → Products). Absent = available. */
+  available?: boolean;
 };
 
 export type CakeDetails = {
@@ -26,7 +28,8 @@ export type CakeDetails = {
   ingredients: string[];
 };
 
-export const products: Product[] = [
+/** The menu as shipped in code. Admin product changes are applied on top of this, never to it. */
+export const baseProducts: Product[] = [
   { id:'almond-croissant', name:'Almond Croissant', category:'Pastry', description:'Laminated pastry, almond frangipane and toasted flakes.', price:190, image:'c1', tag:'Bestseller', searchTerms:['almond','croissant','nutty','breakfast','pastry','flaky','buttery'], dietary:['Vegetarian'], prepMinutes:8, featured:true },
   { id:'pain-au-chocolat', name:'Pain au Chocolat', category:'Pastry', description:'Dark chocolate wrapped in our signature laminated dough.', price:175, image:'c2', tag:'Crowd favourite', searchTerms:['chocolate','pain','pastry','breakfast','dark chocolate','sweet'], dietary:['Vegetarian'], prepMinutes:8, featured:true },
   { id:'tresor-latte', name:'Tresor Latte', category:'Coffee', description:'Double espresso, silky milk and a little house sweetness.', price:210, image:'c3', tag:'House favourite', searchTerms:['coffee','latte','milk','espresso','creamy','caffeine','hot'], dietary:['Vegetarian'], prepMinutes:6, featured:true },
@@ -59,6 +62,14 @@ export const products: Product[] = [
   { id:'salted-caramel', name:'Salted Caramel', category:'Cake', description:'Caramel mousse, salted caramel centre and white chocolate.', price:2000, image:'cake:salted-caramel', searchTerms:['caramel','salted','sweet','warm','white chocolate','cake','dessert'], dietary:['Vegetarian'], prepMinutes:15,
     cake:{ slug:'salted-caramel', story:'Burnt-sugar caramel mousse around a soft salted caramel centre, crowned with a white chocolate disc.', flavorProfile:['Caramel','Sea salt','White chocolate'], texture:'Creamy mousse, molten centre', sweetness:4, occasion:['Birthday','Gift'], availability:'Daily', size:'500 g · serves 6–8', ingredients:['Caramelised sugar','Sea salt','White chocolate','Fresh cream'] } },
 ];
+
+/**
+ * The live storefront menu. Starts as the code menu; lib/catalog replaces it (after
+ * hydration) with admin changes applied: prices, copy, sold-out flags, new products,
+ * and without disabled or archived ones. Read it at call time, not once at import.
+ */
+export let products: Product[] = baseProducts;
+export function setStorefrontProducts(next: Product[]) { products = next; }
 
 export const categories = ['All', 'Coffee', 'Pastry', 'Cake', 'Dessert', 'Drinks', 'Savoury'];
 
