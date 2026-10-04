@@ -6,8 +6,10 @@ import { track } from '@/engine/intelligence/events/track';
 import {
   CartLine, CheckoutDetails, CheckoutErrors, MAX_QTY_PER_LINE, Order, Size,
   advanceOrder, calcTotals, cancelOrder, cancelRestoresStock, canCancel, createOrder, lineIdFor,
-  makeLine, nextStatus, normalizeCart, normalizeOrder, seedOrders, validateCheckout,
+  makeLine, nextStatus, normalizeCart, normalizeOrder, seedOrders, validateCheckout, makeCustomLine,
 } from '@/lib/orders';
+import { validate as validateCake } from '@/lib/cake/engine';
+import type { CakeConfiguration } from '@/lib/cake/types';
 import {
   Ingredient, Movement, MovementReason, applyLines, applyMovement, availableUnits,
   initialInventory, mergeInventory, shortLines,
@@ -44,6 +46,7 @@ function parseOrders(raw: unknown): Order[] {
 }
 
 export type PlaceOrderResult = { ok: true; order: Order } | { ok: false; errors: CheckoutErrors };
+export type AddCustomResult = { ok: true; line: CartLine } | { ok: false; errors: string[] };
 
 type StoreContextValue = {
   mounted: boolean;
@@ -54,6 +57,7 @@ type StoreContextValue = {
   removeFromCart: (lineId: string) => void;
   clearCart: () => void;
   canAddMore: (product: Product, size?: Size) => number;
+  addCustomCake: (config: CakeConfiguration, opts?: { artworkAssetId?: string | null; replaceLineId?: string }) => AddCustomResult;
   cartCount: number;
   subtotal: number;
   deliveryFee: number;
@@ -161,6 +165,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  /** Adds a custom cake after validating it against live stock and season. Same design replaces itself. */
+  const addCustomCake = (config: CakeConfiguration, opts: { artworkAssetId?: string | null; replaceLineId?: string } = {}): AddCustomResult => {
+    const errors = validateCake(config, { inventory, month: new Date().getMonth() + 1 }).filter((i) => i.level === 'error').map((i) => i.message);
+    if (errors.length) return { ok: false, errors };
+    const line = makeCustomLine(config, 1, { artworkAssetId: opts.artworkAssetId ?? null });
+    setCart((current) => [...current.filter((l) => l.lineId !== line.lineId && l.lineId !== opts.replaceLineId), line]);
+    track('custom_cake_added_to_cart', {
+      designId: line.custom!.designId, total: line.unitPrice, productionHours: line.custom!.productionHours,
+      size: config.size, sponge: config.sponge, hasPrint: config.print.enabled, messageLength: config.message.text.length, toppings: config.toppings.length,
+    });
+    return { ok: true, line };
+  };
+
   const removeFromCart = (lineId: string) => {
     const target = cart.find((l) => l.lineId === lineId);
     if (target) track('product_removed', { productId: target.product.id, qty: target.qty });
@@ -183,6 +200,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setInventory((current) => applyLines(current, order.items, -1));
     // Events carry ids and amounts only, never the customer's details.
     track('order_created', { orderId: order.id, total: order.total, items: order.items.map((l) => ({ productId: l.product.id, qty: l.qty, size: l.size })), paymentMethod: order.paymentMethod });
+    for (const l of order.items) if (l.custom) track('custom_cake_ordered', { designId: l.custom.designId, orderId: order.id, total: l.unitPrice });
     if (order.paymentMethod !== 'COD') track('payment_success', { method: order.paymentMethod, amount: order.total, simulated: true });
     for (const p of menu) {
       if (availableUnits(inventory, [], p.id, 'Regular') > 0 && availableUnits(after, [], p.id, 'Regular') === 0) track('product_out_of_stock', { productId: p.id });
@@ -228,7 +246,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const myOrders = orders.filter((o) => o.source === 'online');
 
   const value: StoreContextValue = {
-    mounted, cart, addToCart, updateQty, removeFromCart, clearCart, canAddMore,
+    mounted, cart, addToCart, updateQty, removeFromCart, clearCart, canAddMore, addCustomCake,
     cartCount: totals.itemCount, subtotal: totals.subtotal, deliveryFee: totals.delivery, total: totals.total, toFreeDelivery: totals.toFreeDelivery,
     orders, myOrders, latestOrder: orders.find((o) => o.id === latestId) ?? null, findOrder: (id) => orders.find((o) => o.id === id),
     placeOrder, advance, cancel, inventory, movements, recordMovement, resetDemo,

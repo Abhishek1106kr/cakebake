@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added (2026-10-04, Cake Playground)
+- **`/customize`:** a live cake designer covering size, shape, sponge, filling, frosting, finish, colour, toppings, decorations, topper, candles and packaging. It includes a message editor with fit checks and an edible photo print with a safe-area outline.
+- **Smarter design:** designer suggestions, style presets and "Surprise me".
+- **Your designs:** undo, redo and reset; autosave with "Continue your cake?"; saved designs; share links.
+- **Bag and checkout:** custom cakes in the bag (re-priced from their spec), dated checkout slots after production time, and stock drawn from real ingredients.
+- **Admin:** a Custom cakes production sheet with 300 dpi print artwork, and Cake Playground analytics.
+- **Old route:** `/customize-cake` now redirects to `/customize`.
+
 ### Added (2026-10-04, Our Story chapter 10)
 - **"The people behind the cake":** an editorial collage of the team and cake-making photos, placed just above the footer. The rest of the page is unchanged.
 

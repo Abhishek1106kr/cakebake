@@ -6,7 +6,8 @@ import { ArrowRight, Check, CreditCard, LockKeyhole, Smartphone } from 'lucide-r
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/components/store-provider';
-import { CheckoutErrors, CheckoutField, PaymentMethod, normalizePhone, validateCheckout } from '@/lib/orders';
+import { CheckoutErrors, CheckoutField, PaymentMethod, leadHours, normalizePhone, validateCheckout } from '@/lib/orders';
+import { slotsAfter } from '@/lib/cake/engine';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -19,6 +20,12 @@ export default function CheckoutPage() {
   const [touched, setTouched] = useState<Partial<Record<CheckoutField, boolean>>>({});
   const [orderError, setOrderError] = useState('');
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '', city: 'Bengaluru', pin: '560038', slot: '18:00–20:00' });
+  // Custom cakes are made to order: only offer dated slots after they can be ready.
+  const lead = leadHours(cart);
+  const customSlots = useMemo(() => (lead ? slotsAfter(new Date(), lead, 6) : []), [lead]);
+  useEffect(() => {
+    if (customSlots.length && !customSlots.some((x) => x.label === form.slot)) setForm((f) => ({ ...f, slot: customSlots[0].label }));
+  }, [customSlots]); // eslint-disable-line react-hooks/exhaustive-deps
   const errors: CheckoutErrors = validateCheckout(form, cart);
   const show = (field: CheckoutField) => (submitted || touched[field] ? errors[field] : undefined);
   const blur = (field: CheckoutField) => () => setTouched((t) => ({ ...t, [field]: true }));
@@ -90,7 +97,7 @@ export default function CheckoutPage() {
                 {field('address', 'Address', <textarea {...aria('address')} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Flat / building, street, landmark" autoComplete="street-address" />, true)}
                 <div className="field"><label>City</label><input value={form.city} readOnly /></div>
                 {field('pin', 'PIN code', <input {...aria('pin')} inputMode="numeric" maxLength={6} value={form.pin} onChange={(e) => setForm({ ...form, pin: e.target.value.replace(/\D/g, '') })} placeholder="560038" autoComplete="postal-code" />)}
-                <div className="field full"><label>Delivery slot</label><select value={form.slot} onChange={(e) => setForm({ ...form, slot: e.target.value })}><option>10:00–12:00</option><option>14:00–16:00</option><option>18:00–20:00</option></select></div>
+                <div className="field full"><label>Delivery slot</label>{customSlots.length ? (<><select value={form.slot} onChange={(e) => setForm({ ...form, slot: e.target.value })}>{customSlots.map((x) => <option key={x.id}>{x.label}</option>)}</select><span className="small muted">Your custom cake needs about {lead} hours to bake and finish, so the earliest slot is {customSlots[0].label}.</span></>) : (<select value={form.slot} onChange={(e) => setForm({ ...form, slot: e.target.value })}><option>10:00–12:00</option><option>14:00–16:00</option><option>18:00–20:00</option></select>)}</div>
               </div>
             </div>
           </div>

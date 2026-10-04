@@ -23,7 +23,7 @@ export { search, type SearchHit, type SearchResult, type SearchOptions } from '.
 export { RANKING_VERSION, WEIGHTS } from './ranking/ranking';
 export { explanation, reasonLine, confidenceLabel, type Explanation } from './explanations/explain';
 export { similarTo, pairsWith, cartSuggestions, forYou, unitsSold, type Recommendation } from './recommend/recommend';
-export { salesByDay, productPerformance, funnel, searchAnalytics, categoryMix } from './analytics/metrics';
+export { salesByDay, productPerformance, funnel, searchAnalytics, categoryMix, cakeAnalytics } from './analytics/metrics';
 export { stockOutlook, ses, backtest, type StockOutlook } from './forecast/forecast';
 export { generateInsights, type Insight } from './insights/insights';
 export { orderShowcase, moodsFor, selectRendition, type ShowcaseItem, type Rendition } from './content/content';

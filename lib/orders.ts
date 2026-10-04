@@ -2,6 +2,9 @@
 // Pure functions only. State lives in components/store-provider.tsx.
 
 import { products, type Product } from './data';
+import { designIdFor, price as cakePrice, productionHours as cakeHours, sanitize as sanitizeCake, summary as cakeSummary } from './cake/engine';
+import { MAX_CUSTOM_CAKES_PER_ORDER } from './cake/config';
+import type { CakeConfiguration } from './cake/types';
 
 // ---------- Pricing (the only place fees and totals are computed) ----------
 
@@ -12,7 +15,43 @@ export const FREE_DELIVERY_FROM = 999;
 export const LARGE_SURCHARGE = 40;
 export const MAX_QTY_PER_LINE = 10;
 
-export type CartLine = { lineId: string; product: Product; size: Size; unitPrice: number; qty: number };
+/** A custom cake's production specification, carried on its cart line and into the order. */
+export type CustomCakeSpec = {
+  designId: string;
+  config: CakeConfiguration;
+  title: string;
+  lines: string[];
+  productionHours: number;
+  priceVersion: string;
+  /** Browser-storage references: the customer's photo and the rendered print artwork. */
+  printAssetId: string | null;
+  artworkAssetId: string | null;
+};
+
+export type CartLine = { lineId: string; product: Product; size: Size; unitPrice: number; qty: number; custom?: CustomCakeSpec };
+
+/**
+ * A cart line for a custom cake. Price, summary and production time are always derived
+ * from the configuration here, never taken from the caller.
+ */
+export function makeCustomLine(raw: CakeConfiguration, qty = 1, assets: { artworkAssetId?: string | null } = {}): CartLine {
+  const config = sanitizeCake(raw);
+  const breakdown = cakePrice(config);
+  const s = cakeSummary(config);
+  const designId = designIdFor(config);
+  const product: Product = { id: 'custom-cake', name: s.title, category: 'Cake', description: s.lines[0], price: breakdown.total, image: 'custom-cake', searchTerms: [], prepMinutes: cakeHours(config) * 60 };
+  return {
+    lineId: `custom:${designId}`, product, size: 'Regular', unitPrice: breakdown.total, qty: Math.min(MAX_CUSTOM_CAKES_PER_ORDER, Math.max(1, qty)),
+    custom: { designId, config, title: s.title, lines: s.lines, productionHours: cakeHours(config), priceVersion: breakdown.version, printAssetId: config.print.enabled ? config.print.assetId : null, artworkAssetId: assets.artworkAssetId ?? null },
+  };
+}
+
+export const isCustomLine = (line: Pick<CartLine, 'custom'>) => Boolean(line.custom);
+
+/** Hours until everything in the bag can be ready (custom cakes are made to order). */
+export function leadHours(lines: CartLine[]): number {
+  return lines.reduce((max, l) => Math.max(max, l.custom?.productionHours ?? 0), 0);
+}
 
 /** Only drinks come in two sizes. */
 export function sizesFor(product: Product): Size[] {
@@ -42,6 +81,8 @@ export function calcTotals(lines: CartLine[]) {
 export function normalizeCart(raw: unknown): CartLine[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((entry) => {
+    // Custom cakes: rebuild from the configuration so price and summary can't be tampered with.
+    if (entry?.custom?.config) return [makeCustomLine(entry.custom.config, Number(entry.qty) || 1, { artworkAssetId: entry.custom.artworkAssetId ?? null })];
     const id = entry?.product?.id;
     const product = products.find((p) => p.id === id);
     const qty = Math.min(MAX_QTY_PER_LINE, Math.max(0, Math.round(Number(entry?.qty) || 0)));
@@ -239,7 +280,7 @@ export function minutesSince(iso: string, now: Date): number {
 
 /** The kitchen's target: the slowest item in the order. */
 export function prepTarget(order: Order): number {
-  return order.items.reduce((max, line) => Math.max(max, line.product.prepMinutes ?? 5), 0);
+  return order.items.reduce((max, line) => Math.max(max, line.custom ? line.custom.productionHours * 60 : line.product.prepMinutes ?? 5), 0);
 }
 
 export function itemsSummary(order: Order): string {

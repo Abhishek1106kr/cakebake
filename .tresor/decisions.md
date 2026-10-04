@@ -168,3 +168,26 @@ Decision:
 Kept the existing /about route (already labelled "Our story" in the transition labels) instead of adding /our-story. That path would also collide with the public/our-story media folder. The header link now points to /about; the footer is untouched, as the brief requires.
 
 Related: TRESOR-STORY.
+
+
+## DEC-012 · Cake Playground pricing authority without a backend
+Date: 2026-10-04
+
+Decision:
+`lib/cake/engine.ts` is the only place a custom cake is priced. Cart lines are rebuilt from their configuration on every load, and add-to-bag re-validates against live stock and season. Customer photos stay in IndexedDB. Share links carry the design but never the photo.
+
+Reasoning:
+The owner requires frontend-only business logic. The brief asks for an authoritative price and safe handling of uploads.
+
+Related: TRESOR-CAKE-PLAYGROUND.
+
+## DEC-013 · 2D layered SVG preview, not 3D
+Date: 2026-10-04
+
+Decision:
+The preview is a layered 2D SVG renderer (extruded side view and flat top view) driven only by `CakeConfiguration`. Three.js was not added.
+
+Reasoning:
+It looks good, stays instant, and is accessible. The configuration is renderer-agnostic, so a future 3D view needs no data changes.
+
+Related: TRESOR-CAKE-PLAYGROUND.

@@ -31,7 +31,7 @@ export function LineReveal({ lines, className = '', delay = 0, gap = 0.13, as = 
 // Page transition: a sage veil sweeps away as the new page settles in.
 // The first load shows the page directly.
 let firstMount = true;
-const LABELS: [string, string][] = [['/shop', 'Menu'], ['/customize-cake', 'Customize cake'], ['/cart', 'Your bag'], ['/checkout', 'Checkout'], ['/order-confirmed', 'Order'], ['/track-order', 'Order'], ['/about', 'Our story'], ['/contact', 'Visit'], ['/account', 'Account'], ['/admin', 'Admin']];
+const LABELS: [string, string][] = [['/shop', 'Menu'], ['/customize', 'Cake Playground'], ['/cart', 'Your bag'], ['/checkout', 'Checkout'], ['/order-confirmed', 'Order'], ['/track-order', 'Order'], ['/about', 'Our story'], ['/contact', 'Visit'], ['/account', 'Account'], ['/admin', 'Admin']];
 
 export function PageTransition({ children }: { children: ReactNode }) {
   const reduce = useReducedMotion();

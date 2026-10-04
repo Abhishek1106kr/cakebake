@@ -6,7 +6,7 @@ import { useStore } from '@/components/store-provider';
 import { InsightList, useEvents } from '@/components/admin/insights';
 import { rupees, useNow } from '@/components/admin/admin-utils';
 import {
-  confidenceLabel, funnel, operationStats, productPerformance, salesByDay, searchAnalytics, stockOutlook,
+  cakeAnalytics, confidenceLabel, funnel, operationStats, productPerformance, salesByDay, searchAnalytics, stockOutlook,
 } from '@/engine/intelligence';
 
 const STEP_LABEL = { product_view: 'Viewed a product', product_added: 'Added to bag', checkout_started: 'Started checkout', order_created: 'Placed an order' } as const;
@@ -20,6 +20,7 @@ export default function AnalyticsPage() {
   const days = useMemo(() => salesByDay(orders, now, 7), [orders, now]);
   const steps = useMemo(() => funnel(events), [events]);
   const searches = useMemo(() => searchAnalytics(events), [events]);
+  const cakes = useMemo(() => cakeAnalytics(events), [events]);
   const perf = useMemo(() => productPerformance(orders, events).slice(0, 8), [orders, events]);
   const outlook = useMemo(() => stockOutlook(inventory, orders, now), [inventory, orders, now]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,6 +99,21 @@ export default function AnalyticsPage() {
           )}
         </section>
       </div>
+
+      <section className="panel analytics-block">
+        <div className="panel-head"><h2>Cake Playground</h2><span className="small muted">{cakes.opened} opened · {cakes.started} started · {cakes.added} added · {cakes.ordered} ordered · {pct(cakes.conversion)} of visitors add a cake</span></div>
+        {cakes.opened === 0 ? <p className="muted">No one has opened the playground yet.</p> : (
+          <div className="analytics-grid cake-analytics">
+            <div><h3 className="small muted">Most chosen</h3><ul className="plain-list">{cakes.popular.map((p) => <li key={`${p.group}${p.optionId}`}><span>{p.group} · {p.optionId}</span><strong>{p.count}</strong></li>)}</ul></div>
+            <div>
+              <h3 className="small muted">Added to bag</h3>
+              <ul className="plain-list">{cakes.combos.map((c) => <li key={c.combo}><span>{c.combo}</span><strong>{c.count}</strong></li>)}</ul>
+              <p className="small muted">{pct(cakes.withMessage)} carry a message · {pct(cakes.withPrint)} have a photo print</p>
+              {cakes.abandonedAt.length > 0 && <p className="small muted">Left without adding, last at: {cakes.abandonedAt.map((a) => `${a.group} (${a.count})`).join(', ')}</p>}
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="panel analytics-block">
         <div className="panel-head"><h2>Stock outlook</h2><span className="small muted">{confidenceLabel(outlook.confidence)} confidence · {outlook.warnings[0] ?? 'based on recent orders'}</span></div>

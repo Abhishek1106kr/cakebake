@@ -8,6 +8,9 @@ export const CUSTOMER_EVENTS = [
   'page_view', 'product_view', 'search_started', 'search_completed', 'category_view', 'product_added', 'product_removed',
   'cart_updated', 'checkout_started', 'payment_started', 'payment_success', 'payment_failure', 'order_created',
   'order_cancelled', 'tracking_viewed', 'recommendation_shown', 'recommendation_clicked', 'campaign_view', 'campaign_clicked',
+  // Cake Playground
+  'customizer_opened', 'option_selected', 'cake_started', 'cake_completed', 'message_added', 'image_uploaded', 'design_saved',
+  'design_shared', 'design_reopened', 'custom_cake_added_to_cart', 'custom_cake_abandoned', 'custom_cake_ordered',
 ] as const;
 
 export const OPERATIONAL_EVENTS = [
@@ -54,6 +57,12 @@ export const REQUIRED_PAYLOAD: Partial<Record<EventType, string[]>> = {
   recommendation_clicked: ['surface', 'productId'],
   campaign_view: ['campaignId'],
   campaign_clicked: ['campaignId'],
+  option_selected: ['group', 'optionId'],
+  design_saved: ['designId'],
+  design_shared: ['designId'],
+  design_reopened: ['designId'],
+  custom_cake_added_to_cart: ['designId', 'total'],
+  custom_cake_ordered: ['designId', 'orderId'],
   inventory_updated: ['ingredientId', 'delta', 'reason'],
   product_out_of_stock: ['productId'],
   delivery_status_changed: ['orderId', 'status'],

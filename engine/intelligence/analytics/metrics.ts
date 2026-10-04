@@ -100,3 +100,41 @@ export function categoryMix(orders: OrderWithTotal[]): { category: string; units
   }
   return [...units.entries()].map(([category, u]) => ({ category, units: u, share: total ? Math.round((u / total) * 100) / 100 : 0 })).sort((a, b) => b.units - a.units);
 }
+
+export type CakeStats = {
+  opened: number;
+  started: number;
+  added: number;
+  ordered: number;
+  conversion: number | null;
+  popular: { group: string; optionId: string; count: number }[];
+  combos: { combo: string; count: number }[];
+  abandonedAt: { group: string; count: number }[];
+  withMessage: number | null;
+  withPrint: number | null;
+};
+
+/** Cake Playground analytics: funnel, popular choices and combinations, where people stop. */
+export function cakeAnalytics(events: TresorEvent[]): CakeStats {
+  const sessions = (type: string) => new Set(events.filter((e) => e.type === type).map((e) => e.sessionId ?? e.id)).size;
+  const opened = sessions('customizer_opened');
+  const addedEvents = events.filter((e) => e.type === 'custom_cake_added_to_cart');
+  const count = <K extends string>(keys: K[]) => {
+    const m = new Map<K, number>();
+    for (const k of keys) m.set(k, (m.get(k) ?? 0) + 1);
+    return [...m.entries()].sort((a, b) => b[1] - a[1]);
+  };
+  const picks = events.filter((e) => e.type === 'option_selected' && !['surprise', 'style', 'suggestion', 'message', 'print', 'notes'].includes(String(e.payload.group)));
+  return {
+    opened,
+    started: sessions('cake_started'),
+    added: addedEvents.length,
+    ordered: events.filter((e) => e.type === 'custom_cake_ordered').length,
+    conversion: opened ? Math.round((sessions('custom_cake_added_to_cart') / opened) * 100) / 100 : null,
+    popular: count(picks.map((e) => `${e.payload.group}:${e.payload.optionId}`)).slice(0, 8).map(([k, n]) => ({ group: k.split(':')[0], optionId: k.split(':')[1], count: n })),
+    combos: count(addedEvents.map((e) => `${e.payload.size} · ${e.payload.sponge}`)).slice(0, 5).map(([combo, n]) => ({ combo, count: n })),
+    abandonedAt: count(events.filter((e) => e.type === 'custom_cake_abandoned').map((e) => String(e.payload.lastGroup))).map(([group, n]) => ({ group, count: n })),
+    withMessage: addedEvents.length ? Math.round((addedEvents.filter((e) => Number(e.payload.messageLength) > 0).length / addedEvents.length) * 100) / 100 : null,
+    withPrint: addedEvents.length ? Math.round((addedEvents.filter((e) => e.payload.hasPrint === true).length / addedEvents.length) * 100) / 100 : null,
+  };
+}

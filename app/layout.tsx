@@ -5,6 +5,7 @@ import { StoreFooter } from '@/components/store-footer';
 import { StoreProvider } from '@/components/store-provider';
 import { TransitionProvider } from '@/components/transitions';
 import { PageViewTracker } from '@/components/intelligence';
+import { cakeScript } from '@/lib/cake/font';
 
 export const metadata = {
   title: 'Tresor Bakery — pastry, cakes & slow rituals',
@@ -13,7 +14,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={cakeScript.variable}>
       <head>
         {/* Local mock imagery (git-ignored public/mock-assets). Dev only: production never loads it. */}
         {process.env.NODE_ENV === 'development' && <link rel="stylesheet" href="/mock-assets/mock.css" />}

@@ -3,6 +3,7 @@
 // Starting levels and recipes are sample values to confirm with the bakery.
 
 import type { CartLine, Size } from './orders';
+import { ingredientsFor } from './cake/engine';
 
 export type Unit = 'kg' | 'L' | 'pcs';
 export type Ingredient = { id: string; name: string; area: 'Coffee' | 'Bar' | 'Baking' | 'Kitchen'; unit: Unit; onHand: number; reorderPoint: number };
@@ -52,9 +53,13 @@ const SIZE_FACTOR: Record<Size, number> = { Regular: 1, Large: 1.5 };
 const round = (n: number) => Math.round(n * 1000) / 1000;
 
 /** Total ingredient needs for a set of cart lines. */
-export function needsFor(lines: Pick<CartLine, 'product' | 'size' | 'qty'>[]): Record<string, number> {
+export function needsFor(lines: (Pick<CartLine, 'product' | 'size' | 'qty'> & Partial<Pick<CartLine, 'custom'>>)[]): Record<string, number> {
   const needs: Record<string, number> = {};
   for (const line of lines) {
+    if (line.custom) {
+      for (const [ingredient, amount] of Object.entries(ingredientsFor(line.custom.config))) needs[ingredient] = round((needs[ingredient] ?? 0) + amount * line.qty);
+      continue;
+    }
     for (const [ingredient, amount] of Object.entries(recipes[line.product.id] ?? {})) {
       needs[ingredient] = round((needs[ingredient] ?? 0) + amount * SIZE_FACTOR[line.size] * line.qty);
     }
@@ -89,7 +94,7 @@ export function availableUnits(inventory: Ingredient[], cart: CartLine[], produc
 export function shortLines(inventory: Ingredient[], lines: CartLine[]): CartLine[] {
   const needs = needsFor(lines);
   const short = new Set(inventory.filter((item) => (needs[item.id] ?? 0) > item.onHand + 1e-9).map((item) => item.id));
-  return lines.filter((line) => Object.keys(recipes[line.product.id] ?? {}).some((ingredient) => short.has(ingredient)));
+  return lines.filter((line) => Object.keys(line.custom ? ingredientsFor(line.custom.config) : recipes[line.product.id] ?? {}).some((ingredient) => short.has(ingredient)));
 }
 
 export function stockState(item: Ingredient): StockState {

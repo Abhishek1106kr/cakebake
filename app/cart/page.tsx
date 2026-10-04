@@ -8,6 +8,9 @@ import { AnimatedNumber, Magnetic } from '@/components/motion';
 import { FREE_DELIVERY_FROM } from '@/lib/orders';
 import { EASE } from '@/lib/motion';
 import { CartSuggestions } from '@/components/recommendations';
+import { CakePreview } from '@/components/cake-studio/preview';
+import { slotsAfter } from '@/lib/cake/engine';
+import type { Route } from 'next';
 
 export default function CartPage() {
   const reduce = useReducedMotion();
@@ -51,10 +54,22 @@ export default function CartPage() {
                   transition={{ duration: 0.4, ease: EASE, delay: i * 0.05 }}
                   style={{ overflow: 'hidden' }}
                 >
-                  <Link href={`/shop/${item.product.id}`} className={`cart-thumb ${item.product.image}`} />
+                  {item.custom
+                    ? <Link href={`/customize?line=${encodeURIComponent(item.lineId)}` as Route} className="cart-thumb cart-thumb-cake" aria-label="Edit this cake"><CakePreview config={item.custom.config} /></Link>
+                    : <Link href={`/shop/${item.product.id}`} className={`cart-thumb ${item.product.image}`} />}
                   <div>
-                    <Link href={`/shop/${item.product.id}`} className="cart-item-name">{item.product.name}</Link>
-                    <div className="small muted">{item.product.category}{item.size === 'Large' ? ' · Large' : ''} · ₹{item.unitPrice}</div>
+                    {item.custom ? (
+                      <>
+                        <Link href={`/customize?line=${encodeURIComponent(item.lineId)}` as Route} className="cart-item-name">{item.custom.title}</Link>
+                        <div className="small muted">{item.custom.lines.slice(0, 2).join(' · ')} · ₹{item.unitPrice.toLocaleString('en-IN')}</div>
+                        <div className="small cart-custom-note">Made to order · ready from {slotsAfter(new Date(), item.custom.productionHours, 1)[0]?.label} · <Link href={`/customize?line=${encodeURIComponent(item.lineId)}` as Route}>Edit design</Link></div>
+                      </>
+                    ) : (
+                      <>
+                        <Link href={`/shop/${item.product.id}`} className="cart-item-name">{item.product.name}</Link>
+                        <div className="small muted">{item.product.category}{item.size === 'Large' ? ' · Large' : ''} · ₹{item.unitPrice}</div>
+                      </>
+                    )}
                     <div className="qty" style={{ marginTop: 10 }}>
                       <motion.button whileTap={{ scale: 0.85 }} aria-label="Decrease" onClick={() => updateQty(item.lineId, item.qty - 1)}><Minus size={14} /></motion.button>
                       <AnimatePresence mode="popLayout" initial={false}><motion.span key={item.qty} initial={{ y: 10, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} transition={{ duration: 0.18 }}>{item.qty}</motion.span></AnimatePresence>

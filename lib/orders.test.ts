@@ -5,8 +5,11 @@ import {
   advanceOrder, calcTotals, canCancel, cancelOrder, cancelRestoresStock, createOrder, filterOrders,
   makeLine, nextOrderId, nextStatus, normalizeCart, normalizeOrder, normalizePhone, orderStats,
   ordersToCsv, prepTarget, seedOrders, sizesFor, unitPrice, unitsSoldToday, validateCheckout,
+  leadHours, makeCustomLine,
   type CheckoutDetails, type Order,
 } from './orders';
+import { needsFor } from './inventory';
+import { defaultConfig as defaultCake, price as cakePrice } from './cake/engine';
 
 const byId = (id: string): Product => {
   const p = products.find((x) => x.id === id);
@@ -203,5 +206,44 @@ describe('reporting', () => {
     const legacy = normalizeOrder({ id: 'TRS-1', createdAt: at.toISOString(), items: [{ product: { id: 'tresor-latte' }, qty: 1 }], paymentMethod: 'COD' });
     expect(legacy).toMatchObject({ status: 'CONFIRMED', paymentStatus: 'DUE', source: 'online', total: 210 + DELIVERY_FEE });
     expect(normalizeOrder({ nope: true })).toBeNull();
+  });
+});
+
+describe('custom cake lines', () => {
+  const cake = { ...defaultCake(), size: '8in', sponge: 'chocolate', filling: 'hazelnut' };
+
+  it('prices and summarises from the configuration', () => {
+    const line = makeCustomLine(cake);
+    expect(line.unitPrice).toBe(cakePrice(cake).total);
+    expect(line.lineId).toMatch(/^custom:TC-/);
+    expect(line.custom?.title).toBe('Custom dark chocolate cake');
+    expect(line.custom?.productionHours).toBe(24);
+  });
+
+  it('re-prices on load, so a tampered price never survives', () => {
+    const tampered = { ...makeCustomLine(cake), unitPrice: 1, product: { ...makeCustomLine(cake).product, price: 1 } };
+    const [restored] = normalizeCart([tampered]);
+    expect(restored.unitPrice).toBe(cakePrice(cake).total);
+    expect(restored.custom?.config.sponge).toBe('chocolate');
+  });
+
+  it('caps custom cakes per line and reports the lead time', () => {
+    expect(makeCustomLine(cake, 9).qty).toBe(3);
+    const slow = makeCustomLine({ ...cake, finish: 'ruffled' });
+    expect(leadHours([makeLine(latte, 'Regular', 1), slow])).toBe(30);
+    expect(leadHours([makeLine(latte, 'Regular', 1)])).toBe(0);
+  });
+
+  it('draws on real ingredient stock', () => {
+    const needs = needsFor([makeCustomLine(cake)]);
+    expect(needs.chocolate).toBeGreaterThan(0);
+    expect(needs.eggs).toBeCloseTo(4 * (8 / 6) ** 2, 2);
+  });
+
+  it('keeps the full specification on the order', () => {
+    const order = createOrder(details, [makeCustomLine({ ...cake, message: { ...defaultCake().message, text: 'Happy Birthday Aanya' } })], [], at);
+    expect(order.items[0].custom?.config.message.text).toBe('Happy Birthday Aanya');
+    expect(prepTarget(order)).toBe(24 * 60);
+    expect(normalizeOrder(JSON.parse(JSON.stringify(order)))?.items[0].custom?.designId).toBe(order.items[0].custom?.designId);
   });
 });

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-04T15:00:00Z",
-  "current_task_id": "TRESOR-STORY-TEAM",
+  "updated_at": "2026-10-04T18:30:00Z",
+  "current_task_id": "TRESOR-CAKE-PLAYGROUND",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -465,6 +465,38 @@
         "no broken images; video loads; chapter is last before footer"
       ],
       "blockers": []
+    },
+    {
+      "id": "TRESOR-CAKE-PLAYGROUND",
+      "title": "Cake Playground: interactive custom cake designer",
+      "description": "/customize: live SVG preview (side/top), options catalogue and compatibility rules as data, pricing and production time, message and edible-print editors, undo/redo/autosave, save/share, designer intelligence (suggestions, styles, surprise me), cart/order/checkout integration, admin production sheet and analytics.",
+      "status": "completed",
+      "priority": "critical",
+      "dependencies": [
+        "TRESOR-INTEL-ENGINE"
+      ],
+      "files": [
+        "lib/cake/",
+        "components/cake-studio/",
+        "engine/intelligence/cake/designer.ts",
+        "app/customize/",
+        "app/admin/custom-cakes/page.tsx",
+        "lib/orders.ts",
+        "lib/inventory.ts",
+        "app/cart/page.tsx",
+        "app/checkout/page.tsx",
+        "CAKE.md"
+      ],
+      "started_at": "2026-10-04T15:30:00Z",
+      "completed_at": "2026-10-04T18:30:00Z",
+      "validation": [
+        "176 tests passing",
+        "tsc clean",
+        "Chrome e2e: design → photo print → bag → dated checkout slot → order → admin spec + 300 dpi artwork → share link; no console errors"
+      ],
+      "blockers": [
+        "Sample prices and production times need bakery confirmation"
+      ]
     }
   ]
 }
