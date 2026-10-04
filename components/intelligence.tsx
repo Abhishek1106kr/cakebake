@@ -15,8 +15,9 @@ export { track };
 
 /** Live inputs the engine needs: what the kitchen can make now, and what's been selling. */
 export function useEngineInputs() {
-  const { inventory, orders } = useStore();
-  const availability = useCallback((p: Product) => availableUnits(inventory, [], p.id, 'Regular'), [inventory]);
+  const { inventory, orders, catalogRevision } = useStore();
+  // Sold out by the bakery (admin) counts as nothing available. catalogRevision re-runs this when the menu changes.
+  const availability = useCallback((p: Product) => (p.available === false ? 0 : availableUnits(inventory, [], p.id, 'Regular')), [inventory, catalogRevision]); // eslint-disable-line react-hooks/exhaustive-deps
   const popularity = useMemo(() => unitsSold(orders), [orders]);
   return { availability, popularity, orders };
 }

@@ -1,69 +1,225 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import type { Route } from 'next';
+import { useMemo, useState } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { useStore } from '@/components/store-provider';
-import { StockBadge, clock } from '@/components/admin/admin-utils';
-import { MovementReason, formatQty, stockState } from '@/lib/inventory';
+import { useAdmin } from '@/components/admin/admin-provider';
+import { NumberInput } from '@/components/admin/forms';
+import { Chips, Drawer, Empty, Field, Guard, Kpi, Meter, PageHeader, Panel, SearchField, Spark, StockBadge, dateTime, useUrlParam } from '@/components/admin/ui';
+import { availableQty, formatQty, stockLevel, type Ingredient, type MovementReason, type StockLevel } from '@/lib/inventory';
+import { stockOutlook, type StockOutlook } from '@/engine/intelligence';
+import { dailyConsumption } from '@/engine/intelligence/forecast/forecast';
+import { inventoryCsvRows, ordersConsuming, usageBreakdown, whyLow } from '@/lib/admin/inventory-ops';
+import { toCsv, downloadText, stamp } from '@/lib/admin/csv';
 
-export default function InventoryAdmin() {
-  const { inventory, movements, recordMovement, mounted } = useStore();
-  const [ingredientId, setIngredientId] = useState(inventory[0]?.id ?? '');
-  const [reason, setReason] = useState<MovementReason>('Restock');
-  const [amount, setAmount] = useState('');
-  const [error, setError] = useState('');
-  const selected = inventory.find((i) => i.id === ingredientId);
+type LevelFilter = 'ALL' | 'attention' | StockLevel;
+const LEVELS: { id: LevelFilter; label: string }[] = [
+  { id: 'attention', label: 'Needs attention' }, { id: 'CRITICAL', label: 'Critical' }, { id: 'OUT', label: 'Out' }, { id: 'LOW', label: 'Low' }, { id: 'HEALTHY', label: 'Healthy' }, { id: 'ALL', label: 'All' },
+];
+const MOVES: { id: MovementReason; label: string; help: string }[] = [
+  { id: 'Restock', label: 'Restock', help: 'Adds to what’s on hand.' },
+  { id: 'Wastage', label: 'Wastage', help: 'Removes spoiled or dropped stock.' },
+  { id: 'Correction', label: 'Stock count', help: 'Sets on hand to what you counted.' },
+  { id: 'Reserve', label: 'Reserve', help: 'Sets stock aside (an event, a big order). Not available to the shop.' },
+  { id: 'Release', label: 'Release', help: 'Returns reserved stock to available.' },
+];
 
-  if (!mounted) return <div className="page-loader" />;
+export default function InventoryPage() {
+  return <Guard permission="inventory.view"><Inventory /></Guard>;
+}
 
-  const submit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const value = Number(amount);
-    if (!selected || !Number.isFinite(value) || value <= 0) { setError('Enter a quantity above zero.'); return; }
-    const delta = reason === 'Restock' ? value : reason === 'Wastage' ? -value : value - selected.onHand;
-    if (reason === 'Wastage' && value > selected.onHand) { setError(`Only ${formatQty(selected.onHand, selected.unit)} on hand.`); return; }
-    recordMovement(selected.id, delta, reason);
-    setAmount('');
-    setError('');
+function Inventory() {
+  const { inventory, orders } = useStore();
+  const admin = useAdmin();
+  const { now } = admin;
+  const [level, setLevel] = useUrlParam('level', 'ALL');
+  const [area, setArea] = useUrlParam('area', '');
+  const [query, setQuery] = useUrlParam('q', '');
+  const [openId, setOpenId] = useUrlParam('item', '');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const lf = (LEVELS.some((x) => x.id === level) ? level : 'ALL') as LevelFilter;
+  const outlook = useMemo(() => new Map(stockOutlook(inventory, orders, now).result.map((r) => [r.ingredientId, r])), [inventory, orders, now]);
+  const matches = (i: Ingredient, f: LevelFilter) => f === 'ALL' || (f === 'attention' ? stockLevel(i) !== 'HEALTHY' : stockLevel(i) === f);
+  const shown = inventory.filter((i) => matches(i, lf) && (!area || i.area === area) && (!query || i.name.toLowerCase().includes(query.toLowerCase())))
+    .sort((a, b) => availableQty(a) / Math.max(a.reorderPoint, 1e-9) - availableQty(b) / Math.max(b.reorderPoint, 1e-9));
+  const counts = Object.fromEntries(LEVELS.map((x) => [x.id, inventory.filter((i) => matches(i, x.id)).length])) as Record<LevelFilter, number>;
+  const item = inventory.find((i) => i.id === openId);
+
+  const review = async () => {
+    const list = inventory.filter((i) => selected.has(i.id));
+    const r = await admin.confirm({ title: `Mark ${list.length} ingredient${list.length === 1 ? '' : 's'} as reviewed?`, impact: ['Records in the audit log that someone checked these levels today. Stock doesn’t change.'], confirmLabel: 'Mark reviewed', reason: 'optional' });
+    if (!r.ok) return;
+    for (const i of list) admin.act({ permission: 'inventory.adjust', action: 'inventory.reviewed', entity: { type: 'inventory', id: i.id, label: i.name }, after: { onHand: i.onHand, reserved: i.reserved ?? 0, level: stockLevel(i) }, reason: r.reason, source: 'bulk', quiet: true, run: () => {} });
+    admin.toast({ tone: 'success', title: `${list.length} reviewed` });
+    setSelected(new Set());
   };
+
+  const coverOf = (i: Ingredient) => { const o = outlook.get(i.id); return o && o.forecastDaily > 0 ? Math.round((availableQty(i) / o.forecastDaily) * 10) / 10 : null; };
 
   return (
     <div>
-      <div className="admin-top"><div><div className="eyebrow">Operations</div><h1 className="display admin-title">Inventory</h1><div className="muted">Stock goes down when orders are placed, and back up if they’re cancelled before baking starts.</div></div></div>
-
-      <form className="panel admin-form" onSubmit={submit}>
-        <label>Ingredient<select value={ingredientId} onChange={(e) => setIngredientId(e.target.value)}>{inventory.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}</select></label>
-        <label>Movement<select value={reason} onChange={(e) => setReason(e.target.value as MovementReason)}><option value="Restock">Restock (add)</option><option value="Wastage">Wastage (remove)</option><option value="Correction">Stock count (set to)</option></select></label>
-        <label>Quantity{selected ? ` (${selected.unit})` : ''}<input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" /></label>
-        <button className="btn btn-primary" type="submit">Record movement</button>
-        {error && <p className="field-error" role="alert">{error}</p>}
-      </form>
-
-      <div className="admin-grid">
-        <div className="panel">
-          <div className="table-wrap">
-            <table className="table">
-              <thead><tr><th>Item</th><th>Area</th><th>On hand</th><th>Reorder point</th><th>State</th></tr></thead>
+      <PageHeader eyebrow="Operations" title="Inventory" description="Orders draw stock down as they’re placed; early cancellations put it back. Every manual movement is audited."
+        actions={<button type="button" className="ad-btn" onClick={() => downloadText(`tresor-inventory-${stamp()}.csv`, toCsv(inventoryCsvRows(shown, outlook)))}>Export ({shown.length}) <ArrowUpRight size={14} /></button>} />
+      <div className="ad-kpis">
+        <Kpi label="Out" value={counts.OUT} tone={counts.OUT ? 'bad' : undefined} />
+        <Kpi label="Critical" value={counts.CRITICAL} tone={counts.CRITICAL ? 'bad' : undefined} meta="At or under half the reorder point" />
+        <Kpi label="Low" value={counts.LOW} tone={counts.LOW ? 'warn' : undefined} />
+        <Kpi label="Healthy" value={counts.HEALTHY} tone="ok" />
+        <Kpi label="Under 1 day of cover" value={inventory.filter((i) => (coverOf(i) ?? Infinity) < 1).length} />
+      </div>
+      <Panel>
+        <div className="ad-toolbar"><Chips label="Stock level" items={LEVELS} value={lf} onChange={setLevel} counts={counts} /></div>
+        <div className="ad-toolbar">
+          <select className="ad-select" value={area} onChange={(e) => setArea(e.target.value)} aria-label="Area"><option value="">All areas</option>{['Baking', 'Kitchen', 'Bar', 'Coffee'].map((a) => <option key={a}>{a}</option>)}</select>
+          <SearchField value={query} onChange={setQuery} placeholder="Ingredient" label="Search ingredients" />
+        </div>
+        {selected.size > 0 && admin.can('inventory.adjust') && (
+          <div className="ad-bulkbar" role="region" aria-label="Bulk actions"><strong>{selected.size} selected</strong>
+            <button type="button" className="ad-btn ad-btn-sm" onClick={review}>Mark reviewed</button>
+            <button type="button" className="ad-btn ad-btn-sm" onClick={() => downloadText(`tresor-inventory-selected-${stamp()}.csv`, toCsv(inventoryCsvRows(inventory.filter((i) => selected.has(i.id)), outlook)))}>Export</button>
+            <button type="button" className="ad-btn ad-btn-sm ad-btn-ghost" style={{ marginLeft: 'auto' }} onClick={() => setSelected(new Set())}>Clear</button>
+          </div>
+        )}
+        {shown.length === 0 ? <Empty>Nothing at this level.</Empty> : (
+          <div className="ad-table-wrap">
+            <table className="table ad-cards">
+              <thead><tr><th /><th>Ingredient</th><th>Area</th><th className="num">On hand</th><th className="num">Reserved</th><th className="num">Available</th><th className="num">Reorder at</th><th className="num">Use / day</th><th className="num">Cover</th><th>Status</th><th /></tr></thead>
               <tbody>
-                {inventory.map((item) => (
-                  <tr key={item.id}><td><strong>{item.name}</strong></td><td>{item.area}</td><td>{formatQty(item.onHand, item.unit)}</td><td>{formatQty(item.reorderPoint, item.unit)}</td><td><StockBadge state={stockState(item)} /></td></tr>
-                ))}
+                {shown.map((i) => {
+                  const o = outlook.get(i.id);
+                  const cover = coverOf(i);
+                  const lvl = stockLevel(i);
+                  return (
+                    <tr key={i.id} className={`${selected.has(i.id) ? 'is-selected' : ''} ${lvl === 'OUT' || lvl === 'CRITICAL' ? 'is-urgent' : ''}`}>
+                      <td data-label=""><input type="checkbox" className="ad-check" checked={selected.has(i.id)} onChange={() => setSelected((s) => { const n = new Set(s); if (n.has(i.id)) n.delete(i.id); else n.add(i.id); return n; })} aria-label={`Select ${i.name}`} /></td>
+                      <td data-label="Ingredient"><button type="button" className="ad-link ad-rowlink" onClick={() => setOpenId(i.id)}>{i.name}</button></td>
+                      <td data-label="Area">{i.area}</td>
+                      <td data-label="On hand" className="num">{formatQty(i.onHand, i.unit)}</td>
+                      <td data-label="Reserved" className="num">{i.reserved ? formatQty(i.reserved, i.unit) : '—'}</td>
+                      <td data-label="Available" className="num"><strong>{formatQty(availableQty(i), i.unit)}</strong> <Meter value={availableQty(i)} max={i.reorderPoint * 2} tone={lvl === 'HEALTHY' ? 'ok' : lvl === 'LOW' ? 'warn' : 'bad'} /></td>
+                      <td data-label="Reorder at" className="num">{formatQty(i.reorderPoint, i.unit)}</td>
+                      <td data-label="Use / day" className="num">{o ? formatQty(o.forecastDaily, i.unit) : '—'}</td>
+                      <td data-label="Cover" className="num">{cover === null ? '—' : `${cover} d`}</td>
+                      <td data-label="Status"><StockBadge level={lvl} /></td>
+                      <td data-label="" className="cell-actions"><button type="button" className="ad-btn ad-btn-sm" onClick={() => setOpenId(i.id)}>{admin.can('inventory.adjust') ? 'Adjust' : 'View'}</button></td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-        </div>
-        <aside className="panel">
-          <div className="panel-head"><h2>Recent movements</h2></div>
-          {movements.length === 0 ? <p className="muted small">No manual movements yet.</p> : movements.slice(0, 12).map((m) => {
-            const item = inventory.find((i) => i.id === m.ingredientId);
-            return (
-              <div key={m.id} className="summary-row">
-                <div><strong>{item?.name ?? m.ingredientId}</strong><div className="small muted">{m.reason} · {clock(m.at)}</div></div>
-                <span className={m.delta >= 0 ? 'delta-up' : 'delta-down'}>{m.delta >= 0 ? '+' : '−'}{item ? formatQty(Math.abs(m.delta), item.unit) : Math.abs(m.delta)}</span>
-              </div>
-            );
-          })}
-        </aside>
-      </div>
+        )}
+      </Panel>
+      {item && <IngredientDrawer item={item} outlook={outlook.get(item.id)} onClose={() => setOpenId('')} />}
     </div>
+  );
+}
+
+function IngredientDrawer({ item, outlook, onClose }: { item: Ingredient; outlook?: StockOutlook; onClose: () => void }) {
+  const { orders, movements, recordMovement, setReorderPoint } = useStore();
+  const admin = useAdmin();
+  const { now } = admin;
+  const [reason, setReason] = useState<MovementReason>('Restock');
+  const [amount, setAmount] = useState<number | null>(null);
+  const [note, setNote] = useState('');
+  const [reorder, setReorder] = useState<number | null>(item.reorderPoint);
+  const [error, setError] = useState('');
+  const usage = useMemo(() => usageBreakdown(item.id, orders, now), [item.id, orders, now]);
+  const trend = useMemo(() => dailyConsumption(orders, now, 14)[item.id] ?? new Array(14).fill(0), [orders, now, item.id]);
+  const consuming = useMemo(() => ordersConsuming(item.id, orders), [item.id, orders]);
+  const history = movements.filter((m) => m.ingredientId === item.id).slice(0, 20);
+  const why = whyLow(item, usage, outlook);
+  const canAdjust = admin.can('inventory.adjust');
+
+  const submit = async () => {
+    setError('');
+    if (amount === null || !(amount > 0)) { setError('Enter an amount above zero.'); return; }
+    let delta = amount;
+    if (reason === 'Wastage') { if (amount > item.onHand) { setError(`Only ${formatQty(item.onHand, item.unit)} on hand.`); return; } delta = -amount; }
+    if (reason === 'Correction') delta = amount - item.onHand;
+    if (reason === 'Reserve' && amount > availableQty(item)) { setError(`Only ${formatQty(availableQty(item), item.unit)} available to reserve.`); return; }
+    if (reason === 'Release' && amount > (item.reserved ?? 0)) { setError(`Only ${formatQty(item.reserved ?? 0, item.unit)} reserved.`); return; }
+    if (reason !== 'Restock' && !note.trim()) { setError('Add a short reason for this movement.'); return; }
+    if (delta === 0) { setError('That matches what’s on hand already.'); return; }
+    const after = reason === 'Reserve' || reason === 'Release'
+      ? { reserved: Math.round(((item.reserved ?? 0) + (reason === 'Reserve' ? amount : -amount)) * 1000) / 1000 }
+      : { onHand: Math.max(0, Math.round((item.onHand + delta) * 1000) / 1000) };
+    const big = reason === 'Correction' && Math.abs(delta) > item.reorderPoint;
+    if (big) {
+      const r = await admin.confirm({ title: `Set ${item.name} to ${formatQty(amount, item.unit)}?`, impact: [`That’s ${delta > 0 ? '+' : '−'}${formatQty(Math.abs(delta), item.unit)} from the recorded ${formatQty(item.onHand, item.unit)}.`, 'Shop availability updates immediately.'], confirmLabel: 'Record count', tone: 'primary' });
+      if (!r.ok) return;
+    }
+    const res = admin.act({
+      permission: 'inventory.adjust', action: `inventory.${reason.toLowerCase()}`, entity: { type: 'inventory', id: item.id, label: item.name },
+      before: { onHand: item.onHand, reserved: item.reserved ?? 0 }, after, reason: note || reason,
+      run: () => recordMovement(item.id, delta, reason, { note, actor: admin.staff?.name }), success: `${MOVES.find((m) => m.id === reason)?.label} recorded for ${item.name}`,
+    });
+    if (res.ok) { setAmount(null); setNote(''); }
+  };
+
+  const saveReorder = () => {
+    if (reorder === null || reorder < 0) return;
+    admin.act({ permission: 'inventory.adjust', action: 'inventory.reorderPoint.changed', entity: { type: 'inventory', id: item.id, label: item.name }, before: { reorderPoint: item.reorderPoint }, after: { reorderPoint: reorder }, run: () => setReorderPoint(item.id, reorder), success: 'Reorder point saved' });
+  };
+
+  return (
+    <Drawer open onClose={onClose} wide title={item.name} subtitle={<><StockBadge level={stockLevel(item)} /><span>{item.area} · {item.unit}</span></>}>
+      <div className="ad-kpis">
+        <Kpi label="On hand" value={formatQty(item.onHand, item.unit)} />
+        <Kpi label="Reserved" value={formatQty(item.reserved ?? 0, item.unit)} />
+        <Kpi label="Available" value={formatQty(availableQty(item), item.unit)} />
+        <Kpi label="Days of cover" value={outlook && outlook.forecastDaily > 0 ? `${Math.round((availableQty(item) / outlook.forecastDaily) * 10) / 10}` : '—'} meta={outlook ? `${formatQty(outlook.forecastDaily, item.unit)} / day forecast` : 'No recent use'} />
+        <Kpi label="Suggested restock" value={outlook?.suggestedRestock ? formatQty(outlook.suggestedRestock, item.unit) : '—'} meta="3 days + reorder point" />
+      </div>
+
+      <div className="ad-why">
+        <h3 className="ad-section-title">Why is this {stockLevel(item) === 'HEALTHY' ? 'healthy' : 'low'}?</h3>
+        <ul>{why.map((w) => <li key={w}>{w}</li>)}</ul>
+        <Link className="ad-link small" href={'/admin/intelligence' as Route}>See the evidence in Intelligence →</Link>
+      </div>
+
+      {canAdjust && (
+        <div className="ad-movement">
+          <h3 className="ad-section-title">Record a movement</h3>
+          <div className="ad-chips" role="radiogroup" aria-label="Movement type">
+            {MOVES.map((m) => <button key={m.id} type="button" role="radio" aria-checked={reason === m.id} className={`ad-chip ${reason === m.id ? 'is-on' : ''}`} onClick={() => { setReason(m.id); setError(''); }}>{m.label}</button>)}
+          </div>
+          <p className="ad-muted small">{MOVES.find((m) => m.id === reason)?.help}</p>
+          <div className="ad-form">
+            <Field label={`${reason === 'Correction' ? 'Counted on hand' : 'Amount'} (${item.unit})`} error={error}><NumberInput value={amount} step={0.01} onChange={setAmount} invalid={Boolean(error)} /></Field>
+            <Field label={reason === 'Restock' ? 'Note (optional)' : 'Reason'}><input value={note} onChange={(e) => setNote(e.target.value)} placeholder={reason === 'Wastage' ? 'e.g. Dropped tray' : reason === 'Reserve' ? 'e.g. Saturday wedding order' : ''} /></Field>
+          </div>
+          <div className="ad-row" style={{ justifyContent: 'flex-end', marginTop: 8 }}><button type="button" className="ad-btn ad-btn-primary" onClick={submit}>Record {MOVES.find((m) => m.id === reason)?.label.toLowerCase()}</button></div>
+          <div className="ad-row" style={{ marginTop: 10 }}>
+            <Field label={`Reorder point (${item.unit})`}><NumberInput value={reorder} step={0.01} onChange={setReorder} /></Field>
+            <button type="button" className="ad-btn" style={{ alignSelf: 'flex-end' }} disabled={reorder === item.reorderPoint} onClick={saveReorder}>Save reorder point</button>
+          </div>
+        </div>
+      )}
+
+      <div className="ad-detail-grid">
+        <section>
+          <h3 className="ad-section-title">Use, last 14 days</h3>
+          <Spark values={trend} label={`Daily use of ${item.name} over 14 days`} />
+          <p className="ad-muted small">This week {formatQty(usage.thisWeek, item.unit)} · last week {formatQty(usage.lastWeek, item.unit)}{usage.changePct !== null ? ` · ${usage.changePct >= 0 ? '+' : ''}${usage.changePct}%` : ''}</p>
+          {usage.byProduct.length > 0 && <div className="ad-bars">{usage.byProduct.slice(0, 5).map((b) => <div key={b.key} className="ad-bar-row"><span>{b.name}</span><span className="ad-bar"><span style={{ width: `${Math.round(b.share * 100)}%` }} /></span><span className="ad-num">{Math.round(b.share * 100)}%</span></div>)}</div>}
+        </section>
+        <section>
+          <h3 className="ad-section-title">Orders using it</h3>
+          {consuming.length === 0 ? <p className="ad-muted small">No recent orders use it.</p> : (
+            <ul className="ad-lines">{consuming.map(({ order, amount: a }) => <li key={order.id}><Link className="ad-rowlink" href={`/admin/orders/${order.id}` as Route}>{order.id}</Link><span className="ad-muted small">{formatQty(a, item.unit)} · {dateTime(order.createdAt)}</span></li>)}</ul>
+          )}
+        </section>
+      </div>
+
+      <h3 className="ad-section-title">Movement history</h3>
+      {history.length === 0 ? <p className="ad-muted small">No manual movements yet.</p> : (
+        <table className="table"><thead><tr><th>When</th><th>Type</th><th className="num">Change</th><th>By</th><th>Note</th></tr></thead>
+          <tbody>{history.map((m) => <tr key={m.id}><td>{dateTime(m.at)}</td><td>{m.reason}</td><td className="num">{m.reason === 'Reserve' || m.reason === 'Release' ? `${m.reason === 'Reserve' ? '+' : '−'}${formatQty(Math.abs(m.delta), item.unit)} reserved` : `${m.delta >= 0 ? '+' : '−'}${formatQty(Math.abs(m.delta), item.unit)}`}</td><td>{m.actor ?? '—'}</td><td className="ad-muted">{m.note ?? ''}</td></tr>)}</tbody>
+        </table>
+      )}
+    </Drawer>
   );
 }

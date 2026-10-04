@@ -1229,3 +1229,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 @media (prefers-reduced-motion: reduce) {
   .ts-steam, .ts-glow, .ts-dial, .ts-breathe, .ts-bob, .ts-spark, .tl-pulse { animation: none; }
 }
+
+/* Announcement bar (admin → Content). Hidden unless one is live. */
+.announce-bar{background:var(--deep);color:#F4F7F6;font-size:12.5px;line-height:1.4;text-align:center;padding:8px 16px;overflow-wrap:anywhere}.announce-bar a{color:inherit;text-decoration:underline;text-underline-offset:3px}

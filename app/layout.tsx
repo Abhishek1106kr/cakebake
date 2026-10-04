@@ -8,6 +8,7 @@ import { PageViewTracker } from '@/components/intelligence';
 import { cakeScript } from '@/lib/cake/font';
 import { SmoothScroll } from '@/components/smooth-scroll';
 import { HideOnAdmin } from '@/components/hide-on-admin';
+import { AnnouncementBar } from '@/components/announcement-bar';
 import 'lenis/dist/lenis.css';
 
 export const metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <PageViewTracker />
           <SmoothScroll />
           <TransitionProvider>
-            <HideOnAdmin><StoreHeader /></HideOnAdmin>
+            <HideOnAdmin><AnnouncementBar /><StoreHeader /></HideOnAdmin>
             {children}
             <HideOnAdmin><StoreFooter /></HideOnAdmin>
           </TransitionProvider>

@@ -8,6 +8,7 @@ import { ProductCard } from '@/components/product-card';
 import { SplitText } from '@/components/cinematic';
 import { categories, products, semanticSuggestions } from '@/lib/data';
 import { track, useSearch, useTrackSearch } from '@/components/intelligence';
+import { useStore } from '@/components/store-provider';
 import { ForYouRow } from '@/components/recommendations';
 import { useSearchParams } from 'next/navigation';
 
@@ -33,7 +34,9 @@ function Shop() {
   const { hits, interpretation, corrections, relaxed } = searched.result;
   const noMatch = relaxed.includes('everything');
   const reasons = useMemo(() => new Map(hits.map((h) => [h.product.id, h.reason])), [hits]);
-  const base = useMemo(() => (query.trim() ? hits.map((h) => h.product) : products), [query, hits]);
+  const { catalogRevision } = useStore();
+  // The live menu (admin changes applied); catalogRevision re-reads it when the bakery edits the catalogue.
+  const base = useMemo(() => (query.trim() ? hits.map((h) => h.product) : products), [query, hits, catalogRevision]); // eslint-disable-line react-hooks/exhaustive-deps
   const counts = useMemo(() => Object.fromEntries(categories.map((c) => [c, c === 'All' ? base.length : base.filter((p) => p.category === c).length])), [base]);
   const filtered = useMemo(() => {
     const cat = category === 'All' ? base : base.filter((p) => p.category === category);

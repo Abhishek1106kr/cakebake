@@ -9,12 +9,6 @@
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ]
  },
@@ -25,12 +19,6 @@
   "overflowPx": 0,
   "h1": "Orders",
   "errors": [
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -47,12 +35,6 @@
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ]
  },
@@ -66,9 +48,16 @@
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/products",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Products",
+  "errors": [
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -76,23 +65,124 @@
   ]
  },
  {
-  "route": "/admin/orders/TRS-1036",
+  "route": "/admin/cake-builder",
   "width": 1440,
   "status": 200,
   "overflowPx": 0,
-  "h1": "TRS-1036",
+  "h1": "Cake Builder",
   "errors": [
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ]
+ },
+ {
+  "route": "/admin/inventory",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Inventory",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/customers",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Customers",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/campaigns",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Campaigns",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/content",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Content",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/media",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Media",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/automations",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Automations",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/invoices",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Invoices",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/shop",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "What\u00a0are\u00a0you\u00a0in\u00a0the\u00a0mood\u00a0for?",
+  "errors": []
+ },
+ {
+  "route": "/",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "",
+  "errors": []
  },
  {
   "route": "/admin",
@@ -104,12 +194,6 @@
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ]
  },
@@ -120,12 +204,6 @@
   "overflowPx": 0,
   "h1": "Orders",
   "errors": [
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -142,12 +220,6 @@
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ]
  },
@@ -161,9 +233,16 @@
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/products",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Products",
+  "errors": [
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -171,22 +250,123 @@
   ]
  },
  {
-  "route": "/admin/orders/TRS-1036",
+  "route": "/admin/cake-builder",
   "width": 390,
   "status": 200,
   "overflowPx": 0,
-  "h1": "TRS-1036",
+  "h1": "Cake Builder",
   "errors": [
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
-   "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)",
    "Failed to load resource: the server responded with a status of 404 (Not Found)"
   ]
+ },
+ {
+  "route": "/admin/inventory",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Inventory",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/customers",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Customers",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/campaigns",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Campaigns",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/content",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Content",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/media",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Media",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/automations",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Automations",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/admin/invoices",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Invoices",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "route": "/shop",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "What\u00a0are\u00a0you\u00a0in\u00a0the\u00a0mood\u00a0for?",
+  "errors": []
+ },
+ {
+  "route": "/",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "",
+  "errors": []
  }
 ]
