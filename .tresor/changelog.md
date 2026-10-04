@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Added (2026-10-04, Our Story)
+- **/about rebuilt as a cinematic editorial archive:**
+  - opening film behind the TRESOR wordmark
+  - the 8+ numeral with photography inside it
+  - a scroll-driven craft essay and a people interlude
+  - a hand-placed memory wall and the bakery today
+  - candlelit Customer Love, the closing statement and a CTA
+- **Homepage:** a compact Customer Love section closes it, directly above the footer.
+- **Content:** `assets/manifest/images.json` and `videos.json` (roles, crops, alt text, license status), with `lib/story.ts` content and STORY.md.
+- **Favicon** (`app/icon.svg`).
+
+### Fixed
+- Reduced-motion branches no longer cause hydration mismatches (`useReducedMotionSafe`).
+- The header "Our story" link now goes to /about.
+
 ### Added (2026-10-04, phases 8-10)
 - **Homepage counter:** ordered for the moment (time of day, season, stock, sales), with a reason on each item. Mood prompts change with the time and always return results.
 - **Menu:** "This morning / This evening" for-you row while browsing.

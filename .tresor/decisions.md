@@ -148,3 +148,23 @@ Decision:
 public/our-story/ is git-ignored and not published. It holds third-party downloads and personal-looking photos the owner added. Asked the owner how to use it.
 
 Related: TRESOR-OUR-STORY.
+
+
+## DEC-010 · Story media is local prototype; reviews are dev-only placeholders
+Date: 2026-10-04
+
+Decision:
+The owner's Pinterest/Klickpin downloads drive the Story page through a manifest of roles and ids. The files stay git-ignored and are never deployed. Sample customer quotes are flagged `mock`, render only in development under a visible note, and are attributed to "Customer", never a named person.
+
+Reasoning:
+Rights are unknown, and fabricated reviews must never reach customers. One image shows an identifiable child.
+
+Related: TRESOR-STORY.
+
+## DEC-011 · Story lives at /about
+Date: 2026-10-04
+
+Decision:
+Kept the existing /about route (already labelled "Our story" in the transition labels) instead of adding /our-story. That path would also collide with the public/our-story media folder. The header link now points to /about; the footer is untouched, as the brief requires.
+
+Related: TRESOR-STORY.

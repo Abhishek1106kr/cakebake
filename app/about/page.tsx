@@ -1,6 +1,16 @@
-import Link from 'next/link';
-import { ArrowRight, Leaf, Sparkles, Timer } from 'lucide-react';
+import type { Metadata } from 'next';
+import { StoryPage } from '@/components/story/story-page';
+
+export const metadata: Metadata = {
+  title: 'Our story · Tresor Bakery',
+  description: 'Eight years of early mornings, cakes finished by hand, and the birthdays, anniversaries and small moments they were made for. The Tresor story.',
+  openGraph: {
+    title: 'Our story · Tresor Bakery',
+    description: 'Baked with time. Shared with people. 8+ years of baking at Tresor.',
+    type: 'article',
+  },
+};
 
 export default function AboutPage() {
-  return <main className="page"><section className="editorial-hero"><div className="container editorial-hero-grid"><div><div className="eyebrow">About Tresor</div><h1 className="display h1">A neighbourhood bakery with a little <em>theatre.</em></h1><p>We’re building the kind of place that makes ordinary Tuesday evenings feel worth stepping out for.</p></div><div className="editorial-poster"><span>EST. 2026</span><strong>GOOD<br/>THINGS<br/><em>TAKE TIME.</em></strong></div></div></section><section className="section"><div className="container about-grid"><div><div className="eyebrow">What we care about</div><h2 className="display h2">Precision without pretension.</h2></div><div className="about-copy"><p>Every product has a job: wake you up, slow you down, split with a friend, or make a bad day slightly less bad.</p><div className="about-values"><div><Sparkles size={18}/><strong>Small-batch</strong><span>Fresh pastry and thoughtful prep.</span></div><div><Leaf size={18}/><strong>Simple</strong><span>Ingredients doing the talking.</span></div><div><Timer size={18}/><strong>Human</strong><span>Technology stays out of your way.</span></div></div></div></div></section><section className="section quote-section"><div className="container quote-card"><span className="eyebrow">The rule</span><blockquote>“The best part of the order is the moment after it arrives.”</blockquote><Link className="btn btn-light" href="/shop">Explore the menu <ArrowRight size={16}/></Link></div></section></main>;
+  return <StoryPage />;
 }

@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-04T12:10:00Z",
-  "current_task_id": "TRESOR-INTEL-NEXT",
+  "updated_at": "2026-10-04T13:30:00Z",
+  "current_task_id": "TRESOR-STORY",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -398,19 +398,48 @@
     {
       "id": "TRESOR-OUR-STORY",
       "title": "Owner-supplied our-story media",
-      "description": "public/our-story/ (12 files: Klickpin downloads and personal photos) appeared in the workspace. Git-ignored like mock-assets; not published. Owner to decide use.",
-      "status": "blocked",
+      "description": "Owner supplied public/our-story/ for the Story page. Used as local prototype media (git-ignored, rights unknown), with web renditions in _web/ and the manifest in assets/manifest/.",
+      "status": "completed",
       "priority": "low",
       "dependencies": [],
       "files": [
         ".gitignore"
       ],
       "started_at": "2026-10-04T12:10:00Z",
-      "completed_at": null,
+      "completed_at": "2026-10-04T13:30:00Z",
       "validation": [],
-      "blockers": [
-        "Owner decision: use locally as mock, replace with licensed media, or remove"
-      ]
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-STORY",
+      "title": "Our Story editorial archive + Customer Love",
+      "description": "/about rebuilt as a cinematic story (opening film, 8+ numeral, craft essay, people, memory wall, today, customer love, finale, CTA). Compact customer love above the homepage footer. Manifest-driven media, mock reviews dev-only.",
+      "status": "completed",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-OUR-STORY"
+      ],
+      "files": [
+        "app/about/page.tsx",
+        "components/story/",
+        "lib/story.ts",
+        "lib/story-media.ts",
+        "assets/manifest/images.json",
+        "assets/manifest/videos.json",
+        "STORY.md",
+        "app/page.tsx",
+        "components/cinematic.tsx"
+      ],
+      "started_at": "2026-10-04T12:20:00Z",
+      "completed_at": "2026-10-04T13:30:00Z",
+      "validation": [
+        "134 tests passing",
+        "tsc clean",
+        "desktop + mobile walkthrough in Chrome (videos play in view, pause out)",
+        "reduced motion: static layouts, no video, no hydration error",
+        "footer unchanged; love section directly above it on home and story"
+      ],
+      "blockers": []
     }
   ]
 }

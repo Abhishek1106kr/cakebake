@@ -9,6 +9,18 @@ import type { MediaAsset } from '@/lib/media';
 import { EASE, EASE_IMAGE } from '@/lib/motion';
 import { browserContext, selectRendition, type IntelligenceContext } from '@/engine/intelligence';
 
+/**
+ * Reduced-motion preference, but only after mount. The server can't know it, so the
+ * first client render must match the server (motion on); the static version swaps in
+ * right after hydration instead of causing a hydration mismatch.
+ */
+export function useReducedMotionSafe(): boolean {
+  const reduce = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted && Boolean(reduce);
+}
+
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 // Device, network and motion settings for choosing media. Read once per page load and shared by every <Media>.
@@ -60,7 +72,7 @@ export function Media({ asset, className = '', imgStyle, eager = false, sizes = 
 
 /** Splits text into masked characters or words that rise in sequence. */
 export function SplitText({ text, by = 'word', as = 'span', className = '', delay = 0, stagger = by === 'char' ? 0.035 : 0.07, trigger = 'view' }: { text: string; by?: 'char' | 'word'; as?: 'span' | 'h1' | 'h2' | 'p'; className?: string; delay?: number; stagger?: number; trigger?: 'mount' | 'view' }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const Tag = motion[as];
   const units = by === 'char' ? Array.from(text) : text.split(' ');
   const activate = trigger === 'mount' ? { animate: 'visible' } : { whileInView: 'visible', viewport: { once: true, amount: 0.6 } };
@@ -80,7 +92,7 @@ export function SplitText({ text, by = 'word', as = 'span', className = '', dela
 
 /** A pinned scene: `height` of scroll drives a 0→1 progress value for its contents. */
 export function ScrollScene({ height = '300vh', className = '', children }: { height?: string; className?: string; children: (progress: MotionValue<number>) => ReactNode }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
   // A function-derived value keeps transforms on the JS path. Handing scrollYProgress straight
@@ -97,7 +109,7 @@ export function ScrollScene({ height = '300vh', className = '', children }: { he
 
 /** Vertical scroll drives a horizontal track (pinned). On touch-first screens it becomes a native swipe row. */
 export function HorizontalTrack({ children, className = '' }: { children: ReactNode; className?: string }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [distance, setDistance] = useState(0);
@@ -193,7 +205,7 @@ export function GlazeReveal({ asset, progress, className = '' }: { asset: MediaA
 
 /** Restrained parallax wrapper. */
 export function Parallax({ children, distance = 80, className = '' }: { children: ReactNode; distance?: number; className?: string }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], [distance / 2, -distance / 2]);
@@ -206,7 +218,7 @@ export function Parallax({ children, distance = 80, className = '' }: { children
  * it from ever counting as visible); the clip animates on an inner layer.
  */
 export function MaskedReveal({ children, className = '', from = 'bottom' }: { children: ReactNode; className?: string; from?: 'bottom' | 'center' }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.25 });
   const hidden = from === 'center' ? 'inset(42% 42% 42% 42% round 24px)' : 'inset(100% 0% 0% 0% round 24px)';
