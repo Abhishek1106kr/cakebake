@@ -530,3 +530,8 @@ body.ad-locked { overflow: hidden; }
   .ad-top { justify-content: flex-start; }
   .ad-top-right { margin-left: auto; }
 }
+/* Copilot: model-written answer above the record-based facts */
+.ad-model-answer { border-left: 3px solid var(--ad-sage); padding: 6px 0 6px 10px; margin-bottom: 6px; }
+.ad-model-answer p { margin: 0 0 4px; }
+.ad-model-answer.is-loading { color: var(--ad-muted); border-left-color: var(--ad-line); }
+.ad-model-answer svg { vertical-align: -2px; }
