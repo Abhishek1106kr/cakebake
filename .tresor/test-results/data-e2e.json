@@ -1,0 +1,218 @@
+{
+ "checks": [
+  {
+   "name": "storefront fetches only the manifest, not the dataset",
+   "ok": true,
+   "detail": "[]"
+  },
+  {
+   "name": "storefront renders",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "admin has the 1,000 shipped orders",
+   "ok": true,
+   "detail": "1000"
+  },
+  {
+   "name": "today\u2019s live orders are dated today",
+   "ok": true,
+   "detail": "8"
+  },
+  {
+   "name": "no order is dated in the future",
+   "ok": true,
+   "detail": "0"
+  },
+  {
+   "name": "overview \u201cOrders today\u201d matches the records",
+   "ok": true,
+   "detail": "8 vs 8"
+  },
+  {
+   "name": "orders are paginated over the whole history",
+   "ok": true,
+   "detail": "1000 orders \u00b7 page 1 of 40"
+  },
+  {
+   "name": "orders table renders a page, not everything",
+   "ok": true,
+   "detail": "25"
+  },
+  {
+   "name": "search by order number finds it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order detail shows payment records",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "order detail links the customer record",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "at least 600 customers",
+   "ok": true,
+   "detail": "640"
+  },
+  {
+   "name": "customer drawer shows id, lifetime value and order history",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "customer drawer shows issues, invoices and payment records",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "failed payments filter shows failed attempts",
+   "ok": true,
+   "detail": "25"
+  },
+  {
+   "name": "payment drawer shows the order\u2019s payment timeline",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "refund-pending payments are listed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "invoices issued for eligible orders",
+   "ok": true,
+   "detail": "Issued951"
+  },
+  {
+   "name": "issues queue has open issues",
+   "ok": true,
+   "detail": "10"
+  },
+  {
+   "name": "a new issue opens with the next number",
+   "ok": true,
+   "detail": "ISS-0077"
+  },
+  {
+   "name": "assigning acknowledges it",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "reply and internal note are recorded separately",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "resolving needs and keeps a resolution",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "issue actions are in the audit log",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "the order shows its new issue",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "automation jobs from the history",
+   "ok": true,
+   "detail": "555"
+  },
+  {
+   "name": "low stock is explained by its history",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "days of cover agree with recorded use (counter included)",
+   "ok": true,
+   "detail": "2.5"
+  },
+  {
+   "name": "analytics orders match the records",
+   "ok": true,
+   "detail": "33 vs 33"
+  },
+  {
+   "name": "analytics shows a customer journey",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kitchen board shows today\u2019s live orders",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "custom cakes list has history",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "new orders continue after the shipped numbers",
+   "ok": true,
+   "detail": "TRS-09142"
+  },
+  {
+   "name": "tracking shows the new order",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "the new order appears first in the admin",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "the new order has a payment record",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "reset demo restores the shipped orders",
+   "ok": true,
+   "detail": "1000, new order gone: True"
+  },
+  {
+   "name": "reset demo removes the browser changes",
+   "ok": true,
+   "detail": "[] None"
+  },
+  {
+   "name": "reset demo keeps the demo sign-in",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "no uncaught page errors",
+   "ok": true,
+   "detail": "[]"
+  }
+ ],
+ "timingsMs": {
+  "overview": 1116,
+  "orders": 830,
+  "order-detail": 823,
+  "customers": 770,
+  "payments": 808,
+  "invoices": 790,
+  "issues": 769,
+  "automations": 818,
+  "inventory": 818,
+  "analytics": 793,
+  "kitchen": 842,
+  "custom-cakes": 1118
+ }
+}

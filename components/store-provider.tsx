@@ -297,6 +297,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // controls) must each start from the state the previous one produced, not a stale render.
   const ordersRef = useRef<Order[]>(orders);
   ordersRef.current = orders;
+  const inventoryRef = useRef<Ingredient[]>(inventory);
+  inventoryRef.current = inventory;
+  // Read-only hook for tests and support: the records as the app sees them (shipped plus this
+  // browser's changes). Demo data only; nothing here is secret.
+  useEffect(() => {
+    (window as unknown as { __tresorDemo?: unknown }).__tresorDemo = { orders: () => ordersRef.current, inventory: () => inventoryRef.current, seedLoaded: () => seedStatusRef.current === 'ready' };
+  }, []);
 
   /**
    * The one way an order changes status. Validates the step against the state machine,

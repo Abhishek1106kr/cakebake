@@ -15,7 +15,7 @@ DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStora
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..', '..')
 SHOTS = os.path.join(ROOT, '.tresor', 'test-results', 'screenshots', 'admin')
-ROUTES = ['/admin', '/admin/orders', '/admin/kitchen', '/admin/custom-cakes', '/admin/products', '/admin/cake-builder', '/admin/inventory',
+ROUTES = ['/admin', '/admin/orders', '/admin/kitchen', '/admin/custom-cakes', '/admin/issues', '/admin/payments', '/admin/products', '/admin/cake-builder', '/admin/inventory',
           '/admin/customers', '/admin/campaigns', '/admin/content', '/admin/media', '/admin/analytics', '/admin/intelligence',
           '/admin/automations', '/admin/invoices', '/admin/staff', '/admin/audit', '/admin/settings']
 

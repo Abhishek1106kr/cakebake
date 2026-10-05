@@ -43,8 +43,8 @@ function Overview() {
   const recentlyNew = admin.lastDomainEvent?.type === 'order.created' ? admin.lastDomainEvent.entityId : null;
 
   const reset = async () => {
-    const r = await admin.confirm({ title: 'Reset all demo orders and stock?', impact: ['Every order in this browser is replaced by the six sample orders.', 'Ingredient stock returns to its starting levels.', 'Catalogue, settings, staff and the audit log are kept.'], confirmLabel: 'Reset demo data', tone: 'danger', reason: 'required' });
-    if (r.ok) admin.act({ permission: 'settings.edit', action: 'demo.reset', entity: { type: 'settings', id: 'demo-data' }, before: { orders: orders.length }, after: { orders: 6 }, reason: r.reason, run: () => resetDemo(), success: 'Demo data reset' });
+    const r = await admin.confirm({ title: 'Reset the demo data?', impact: ['Removes every change made in this browser: orders placed here, status changes, stock movements, issues, catalogue and Cake Builder edits, settings, staff changes and audit entries.', 'The shipped demo history comes back: 1,000 orders, 640 customers and their records.', 'Your demo sign-in, the bag and saved cake designs stay.'], confirmLabel: 'Reset demo data', tone: 'danger', reason: 'optional' });
+    if (r.ok) admin.act({ permission: 'settings.edit', action: 'demo.reset', entity: { type: 'settings', id: 'demo-data' }, before: { orders: orders.length }, after: { orders: 1000 }, reason: r.reason || null, run: () => resetDemo(), success: 'Demo data reset' });
   };
 
   return (

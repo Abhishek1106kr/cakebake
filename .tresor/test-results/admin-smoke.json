@@ -4,7 +4,7 @@
   "width": 1440,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -29,6 +29,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 1440,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {
@@ -148,7 +164,7 @@
   "width": 1280,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -173,6 +189,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 1280,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 1280,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {
@@ -292,7 +324,7 @@
   "width": 1024,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -317,6 +349,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 1024,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 1024,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {
@@ -436,7 +484,7 @@
   "width": 768,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -461,6 +509,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 768,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 768,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {
@@ -580,7 +644,7 @@
   "width": 430,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -605,6 +669,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 430,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 430,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {
@@ -724,7 +804,7 @@
   "width": 390,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -749,6 +829,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 390,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {
@@ -868,7 +964,7 @@
   "width": 375,
   "status": 200,
   "overflowPx": 0,
-  "h1": "Good morning, Tresor.",
+  "h1": "Good afternoon, Tresor.",
   "errors": []
  },
  {
@@ -893,6 +989,22 @@
   "status": 200,
   "overflowPx": 0,
   "h1": "Custom cakes",
+  "errors": []
+ },
+ {
+  "route": "/admin/issues",
+  "width": 375,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Issues",
+  "errors": []
+ },
+ {
+  "route": "/admin/payments",
+  "width": 375,
+  "status": 200,
+  "overflowPx": 0,
+  "h1": "Payments",
   "errors": []
  },
  {

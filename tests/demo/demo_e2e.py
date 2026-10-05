@@ -40,6 +40,13 @@ async def login(page, base, email='test@omni.com', password='testpass'):
     await page.click('button[type=submit]')
 
 
+async def pick_role(page, word):
+    """Selects the demo role whose label contains `word` (staff arrive with the demo dataset)."""
+    sel = page.locator('select[aria-label="Demo staff role"]')
+    await page.wait_for_selector('select[aria-label="Demo staff role"] option', state='attached', timeout=60000)
+    await sel.select_option(label=next(o for o in await sel.locator('option').all_text_contents() if word in o))
+
+
 async def checkout(page, base, method='COD'):
     await go(page, base, '/checkout', 700)
     await page.fill('#f-name', 'Demo Tester')
@@ -154,10 +161,11 @@ async def main():
 
         # Demo staff switching still demonstrates RBAC.
         sel = page.locator('select[aria-label="Demo staff role"]')
-        await sel.select_option(label=next(o for o in await sel.locator('option').all_text_contents() if 'Kitchen' in o)); await page.wait_for_timeout(500)
+        await page.wait_for_selector('select[aria-label="Demo staff role"] option', state='attached', timeout=60000)  # staff arrive with the demo dataset
+        await pick_role(page, 'Kitchen'); await page.wait_for_timeout(500)
         nav = await page.text_content('.ad-side nav') or ''
         check('switching to Kitchen hides Staff and Settings', 'Staff' not in nav and 'Settings' not in nav, nav[:200])
-        await sel.select_option(label=next(o for o in await sel.locator('option').all_text_contents() if 'Owner' in o)); await page.wait_for_timeout(400)
+        await pick_role(page, 'Owner'); await page.wait_for_timeout(400)
         check('switching back to Owner restores them', 'Settings' in (await page.text_content('.ad-side nav') or ''))
 
         # Open redirects are refused.
@@ -169,7 +177,7 @@ async def main():
             check(f'next={bad} is ignored (stays in the admin)', page.url.rstrip('/') == base + '/admin', page.url)
 
         # Logout keeps demo data, clears the sign-in and the chosen demo role.
-        await sel.select_option(label=next(o for o in await sel.locator('option').all_text_contents() if 'Manager' in o)); await page.wait_for_timeout(300)
+        await pick_role(page, 'Manager'); await page.wait_for_timeout(300)
         orders_before = await page.evaluate("localStorage.getItem('tresor-orders')")
         await page.locator('button.ad-logout').click()
         await page.wait_for_url('**/admin/login', timeout=15000)

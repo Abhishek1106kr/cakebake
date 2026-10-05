@@ -55,8 +55,12 @@ async def order_of(page, oid):
 
 
 async def stock(page, ing):
-    inv = await ls(page, 'tresor-inventory', []) or []
-    return next((i for i in inv if i['id'] == ing), None)
+    # Stock is saved in the browser only after a change; until then the shipped levels apply.
+    inv = await ls(page, 'tresor-inventory', None)
+    if inv:
+        return next((i for i in inv if i['id'] == ing), None)
+    levels = await page.evaluate("fetch('/mock-data/manifest.json').then(r => r.json()).then(m => m.inventoryLevels)")
+    return next(({'id': l['id'], 'onHand': l['onHand'], 'reserved': l['reserved']} for l in levels if l['id'] == ing), None)
 
 
 async def buy(page, base, product='almond-croissant', method='UPI'):
@@ -312,7 +316,7 @@ async def main():
             await admin.locator('button:has-text("Export view")').click()
         path = await (await dl.value).path()
         rows = open(path, encoding='utf-8').read().strip().split('\n')
-        cancelled = len([o for o in await ls(admin, 'tresor-orders', []) if o['status'] == 'CANCELLED'])
+        cancelled = await admin.evaluate("window.__tresorDemo.orders().filter(o => o.status === 'CANCELLED').length")
         check('CSV export contains exactly the filtered orders', len(rows) - 1 == cancelled, f'{len(rows) - 1} vs {cancelled}')
 
         # ---------- 12. Failure → attention → retry ----------
@@ -362,9 +366,7 @@ async def main():
         # ---------- 15. Analytics traceable; audit complete ----------
         await go(admin, base, '/admin/analytics')
         kpi = await admin.locator('.ad-kpi:has(.ad-kpi-label:text-is("Orders")) .ad-kpi-value').text_content()
-        week = time.time() * 1000 - 7 * 86400000
-        all_orders = await ls(admin, 'tresor-orders', [])
-        expected = len([o for o in all_orders if o['status'] != 'CANCELLED' and time.mktime(time.strptime(o['createdAt'][:19], '%Y-%m-%dT%H:%M:%S')) * 1000 - time.timezone * 1000 >= week])
+        expected = await admin.evaluate("(() => { const week = Date.now() - 7 * 86400000; return window.__tresorDemo.orders().filter(o => o.status !== 'CANCELLED' && Date.parse(o.createdAt) >= week).length; })()")
         check('analytics order count matches the records', int(kpi) == expected, f'{kpi} vs {expected}')
         actions = {r['action'] for r in await ls(admin, 'tresor-audit', [])}
         want = {'order.status.changed', 'order.cancelled', 'order.refunded', 'inventory.restock', 'customCake.note.added', 'product.price.changed', 'product.archived', 'cake.option.price.changed', 'settings.changed', 'session.switched', 'automation.retried', 'invoice.regenerated', 'campaign.published', 'content.announcement.published'}

@@ -542,3 +542,4 @@ body.ad-locked { overflow: hidden; }
 .ad-thread-meta { font-size: 11px; color: var(--ad-muted); }
 .ad-note-item { background: #FCFCFB; border-left: 3px dashed var(--ad-mist); padding-left: 8px !important; }
 .ad-section-title svg { vertical-align: -2px; margin-right: 4px; }
+.cc-more { margin: 8px auto 4px; display: block; }

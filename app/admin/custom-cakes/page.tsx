@@ -53,6 +53,11 @@ function CustomCakes() {
   const counts = Object.fromEntries(VIEWS.map((x) => [x.id, jobs.filter((j) => inView(j, x.id, now)).length])) as Record<View, number>;
   useEffect(() => { if (orderParam) { const j = jobs.find((x) => x.order.id === orderParam); if (j) setSelected(j.key); } }, [orderParam, jobs]);
   const current = shown.find((j) => j.key === selected) ?? jobs.find((j) => j.key === selected) ?? shown[0];
+  // Each row draws the cake, so the list renders 20 at a time (the history has 100+ cakes).
+  const [limit, setLimit] = useState(20);
+  useEffect(() => { setLimit(20); }, [v]);
+  const visible = shown.slice(0, limit);
+  if (current && !visible.includes(current) && shown.includes(current)) visible.push(current);
 
   return (
     <div>
@@ -63,7 +68,7 @@ function CustomCakes() {
       ) : (
         <div className="cc-grid ad-cc">
           <section className="ad-panel cc-list" aria-label="Custom cake jobs">
-            {shown.length === 0 ? <Empty>Nothing in this view.</Empty> : shown.map((j) => {
+            {shown.length === 0 ? <Empty>Nothing in this view.</Empty> : visible.map((j) => {
               const due = requiredBy(j.order);
               const startBy = new Date(due.getTime() - customHours(j.order) * 3600000);
               const p = priorityOf(j.order, now);
@@ -79,6 +84,7 @@ function CustomCakes() {
                 </button>
               );
             })}
+                      {shown.length > limit && <button type="button" className="ad-btn ad-btn-sm cc-more" onClick={() => setLimit((n) => n + 20)}>Show {Math.min(20, shown.length - limit)} more ({shown.length - limit} left)</button>}
           </section>
           <section className="ad-panel">{current && <Sheet job={current} />}</section>
         </div>

@@ -1,13 +1,13 @@
 {
  "base": "http://localhost:3004",
- "seconds": 171,
+ "seconds": 174,
  "passed": 63,
  "total": 63,
  "checks": [
   {
    "name": "order placed in the shop",
    "ok": true,
-   "detail": "TRS-1042"
+   "detail": "TRS-09142"
   },
   {
    "name": "new order appears in the admin without refresh",
@@ -27,12 +27,12 @@
   {
    "name": "placing the order consumed stock",
    "ok": true,
-   "detail": "12 -> 11.94"
+   "detail": "7.412 -> 7.352"
   },
   {
    "name": "order carries the simulated payment reference",
    "ok": true,
-   "detail": "SIM-MUUTAFNL-260"
+   "detail": "SIM-MUUXQ0IQ-260"
   },
   {
    "name": "admin moves the order to PREPARING",
@@ -87,17 +87,17 @@
   {
    "name": "order timeline shows created, payment, invoice, WhatsApp, every status",
    "ok": true,
-   "detail": "Order created5 Oct, 11:01 amConfirmed5 Oct, 11:01 amPaid by UPI (simulated)Ref SIM-MUUTAFNL-2605 Oct, 11:01 amInvoice generatedINV-10425 Oct, 11:01 amWhatsApp sentconfirmation5 Oct, 11:01 amPreparing5"
+   "detail": "Order created5 Oct, 01:05 pmConfirmed5 Oct, 01:05 pmPaid by UPI (simulated)Ref SIM-MUUXQ0IQ-2605 Oct, 01:05 pmInvoice generatedINV-091425 Oct, 01:05 pmWhatsApp sentconfirmation5 Oct, 01:05 pmPreparing"
   },
   {
    "name": "second order consumed butter",
    "ok": true,
-   "detail": "2.77 -> 2.74"
+   "detail": "3.666 -> 3.636"
   },
   {
    "name": "cancel confirmation shows the stock impact",
    "ok": true,
-   "detail": "Cancel order TRS-1043?Asha Rao \u00b7 \u20b9245 \u00b7 ConfirmedWhat happensStock goes back on the shelf: 0.06 kg bread flour, 0.03 kg butter, 0.02 kg dark chocolate.Paid \u20b9245"
+   "detail": "Cancel order TRS-09143?Asha Rao \u00b7 \u20b9245 \u00b7 ConfirmedWhat happensStock goes back on the shelf: 0.06 kg bread flour, 0.03 kg butter, 0.02 kg dark chocolate.Paid \u20b924"
   },
   {
    "name": "cancel requires a reason",
@@ -122,7 +122,7 @@
   {
    "name": "manual restock adds to stock",
    "ok": true,
-   "detail": "11.94 -> 13.94"
+   "detail": "7.352 -> 9.352"
   },
   {
    "name": "wastage without a reason is refused",
@@ -142,7 +142,7 @@
   {
    "name": "custom cake ordered",
    "ok": true,
-   "detail": "TRS-1044"
+   "detail": "TRS-09144"
   },
   {
    "name": "custom cake appears in production",
@@ -187,7 +187,7 @@
   {
    "name": "price change confirmation explains past orders keep their price",
    "ok": true,
-   "detail": "Change Almond Croissant\u2019s price?What happens\u20b9190 \u2192 \u20b9210 for new bags from now on.2 past orders keep the price they were "
+   "detail": "Change Almond Croissant\u2019s price?What happens\u20b9190 \u2192 \u20b9210 for new bags from now on.137 past orders keep the price they wer"
   },
   {
    "name": "shop shows the new price",
@@ -262,7 +262,7 @@
   {
    "name": "CSV export contains exactly the filtered orders",
    "ok": true,
-   "detail": "1 vs 1"
+   "detail": "50 vs 50"
   },
   {
    "name": "WhatsApp failure leaves the job failed, order safe",
@@ -282,7 +282,7 @@
   {
    "name": "regenerated invoice keeps its number and adds a revision",
    "ok": true,
-   "detail": "('INV-1042', 2)"
+   "detail": "('INV-09142', 2)"
   },
   {
    "name": "regenerated invoice still matches the order (snapshot, not new prices)",
@@ -302,7 +302,7 @@
   {
    "name": "analytics order count matches the records",
    "ok": true,
-   "detail": "11 vs 11"
+   "detail": "38 vs 38"
   },
   {
    "name": "every management action is in the audit log",

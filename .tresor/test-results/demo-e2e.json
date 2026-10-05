@@ -212,7 +212,7 @@
  {
   "name": "stored sign-in holds no password",
   "ok": true,
-  "detail": "{\"v\":1,\"email\":\"test@omni.com\",\"signedInAt\":\"2026-10-05T05:26:37.786Z\"}"
+  "detail": "{\"v\":1,\"email\":\"test@omni.com\",\"signedInAt\":\"2026-10-05T07:40:10.561Z\"}"
  },
  {
   "name": "admin works after login (Command Centre)",
@@ -242,7 +242,7 @@
  {
   "name": "switching to Kitchen hides Staff and Settings",
   "ok": true,
-  "detail": "TodayOverviewOrdersKitchenCustom CakesCatalogueInventory"
+  "detail": "TodayOverviewOrdersKitchenCustom CakesIssuesCatalogueInventory"
  },
  {
   "name": "switching back to Owner restores them",
@@ -317,7 +317,7 @@
  {
   "name": "checkout places the order",
   "ok": true,
-  "detail": "TRS-1042"
+  "detail": "TRS-09142"
  },
  {
   "name": "order tracking shows the order",
