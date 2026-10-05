@@ -52,9 +52,11 @@ const isActive = (href: string, path: string) => (href === '/admin' ? path === '
 
 export function AdminShell({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <AdminProvider>
-      <Shell className={className}>{children}</Shell>
-    </AdminProvider>
+    <div className={`ad-root ${className ?? ''}`}>
+      <AdminProvider>
+        <Shell>{children}</Shell>
+      </AdminProvider>
+    </div>
   );
 }
 
