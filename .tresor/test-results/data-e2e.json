@@ -202,17 +202,17 @@
   }
  ],
  "timingsMs": {
-  "overview": 1116,
-  "orders": 830,
-  "order-detail": 823,
-  "customers": 770,
-  "payments": 808,
-  "invoices": 790,
-  "issues": 769,
-  "automations": 818,
-  "inventory": 818,
-  "analytics": 793,
-  "kitchen": 842,
-  "custom-cakes": 1118
+  "overview": 1120,
+  "orders": 807,
+  "order-detail": 807,
+  "customers": 803,
+  "payments": 895,
+  "invoices": 820,
+  "issues": 803,
+  "automations": 823,
+  "inventory": 863,
+  "analytics": 794,
+  "kitchen": 821,
+  "custom-cakes": 1089
  }
 }

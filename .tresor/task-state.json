@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-05T01:45:00Z",
-  "current_task_id": "TRESOR-ADMIN-OS",
+  "updated_at": "2026-10-05T12:00:00Z",
+  "current_task_id": "TRESOR-MOCK-DATA",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -557,6 +557,85 @@
         "weight: JS before load 263 vs 256 KB home; idle work 1-5 ms vs 316-627 ms"
       ],
       "blockers": []
+    },
+    {
+      "id": "TRESOR-DEMO-DEPLOY",
+      "title": "Public demo: mock admin auth and demo protection",
+      "description": "Mock sign-in gate above the admin, demo warning and labels, noindex/robots/X-Robots-Tag, honest copy.",
+      "status": "completed",
+      "priority": "high",
+      "dependencies": [],
+      "files": [
+        "lib/admin/mock-auth.ts",
+        "components/admin/mock-auth-gate.tsx",
+        "app/admin/login/",
+        "components/mock-site-warning.tsx",
+        "app/robots.ts",
+        "next.config.ts"
+      ],
+      "started_at": "2026-10-05T05:30:00Z",
+      "completed_at": "2026-10-05T06:30:00Z",
+      "validation": [
+        "demo e2e 71/71",
+        "11 auth unit tests"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-AI-COPILOT",
+      "title": "Admin copilot on OpenRouter with model fallback",
+      "description": "Guarded server route, compact context without contact details, primary + fallback models.",
+      "status": "completed",
+      "priority": "medium",
+      "dependencies": [
+        "TRESOR-DEMO-DEPLOY"
+      ],
+      "files": [
+        "app/api/ai/copilot/",
+        "lib/ai/openrouter.ts",
+        "lib/admin/copilot-context.ts",
+        "components/admin/copilot.tsx"
+      ],
+      "started_at": "2026-10-05T06:40:00Z",
+      "completed_at": "2026-10-05T07:20:00Z",
+      "validation": [
+        "live answer verified",
+        "fallback verified with a mistyped primary",
+        "14 unit tests"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-MOCK-DATA",
+      "title": "Shippable mock data and visual pass",
+      "description": "1,000 linked orders and records, validator, MockDataStore with overlays and time shift, Payments and Issues screens, admin on the dataset, image variants.",
+      "status": "completed",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-DEMO-DEPLOY"
+      ],
+      "files": [
+        "scripts/generate-mock-data.ts",
+        "scripts/validate-mock-data.ts",
+        "lib/mock-data/",
+        "public/mock-data/",
+        "app/admin/payments/",
+        "app/admin/issues/",
+        "scripts/build-media-variants.ts",
+        "lib/media-variants.ts"
+      ],
+      "started_at": "2026-10-05T07:00:00Z",
+      "completed_at": "2026-10-05T12:00:00Z",
+      "validation": [
+        "data validator consistent",
+        "data e2e 40/40",
+        "admin e2e 63/63",
+        "screens 140/140",
+        "unit 289/289"
+      ],
+      "blockers": [
+        "Licensed photography needed before images can be deployed"
+      ]
     }
   ]
 }

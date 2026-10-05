@@ -212,7 +212,7 @@
  {
   "name": "stored sign-in holds no password",
   "ok": true,
-  "detail": "{\"v\":1,\"email\":\"test@omni.com\",\"signedInAt\":\"2026-10-05T07:40:10.561Z\"}"
+  "detail": "{\"v\":1,\"email\":\"test@omni.com\",\"signedInAt\":\"2026-10-05T07:50:30.114Z\"}"
  },
  {
   "name": "admin works after login (Command Centre)",

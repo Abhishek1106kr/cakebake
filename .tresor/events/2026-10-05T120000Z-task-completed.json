@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-10-05T12:00:00Z",
+  "agent": "claude-code",
+  "type": "task_completed",
+  "task_id": "TRESOR-MOCK-DATA",
+  "summary": "Public demo: shipped 1,000-order dataset wired into the admin, Payments and Issues, copilot with model fallback, image pipeline",
+  "details": {
+    "dataset": {
+      "orders": 1000,
+      "customers": 640,
+      "products": 47,
+      "customCakes": 112,
+      "payments": 1047,
+      "invoices": 951,
+      "issues": 76,
+      "jobs": 555,
+      "movements": 6086,
+      "audit": 980
+    },
+    "tests": {
+      "unit": "289/289",
+      "data_e2e": "40/40",
+      "demo_e2e": "71/71",
+      "admin_e2e": "63/63",
+      "screens": "140/140"
+    },
+    "copilot": "Haiku 4.5 primary; Sonnet 5.5 answered on a mistyped primary",
+    "images": "AVIF variants local only; not deployed"
+  },
+  "files": [
+    "public/mock-data/",
+    "lib/mock-data/",
+    "scripts/",
+    "app/admin/payments/",
+    "app/admin/issues/",
+    "app/api/ai/copilot/",
+    ".tresor/demo/REPORT.md"
+  ],
+  "status": "completed"
+}

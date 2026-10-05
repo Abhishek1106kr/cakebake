@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Added (2026-10-05, public demo: `.tresor/demo/REPORT.md`, DEC-024 to DEC-027)
+- **Demo deployment:** mock admin sign-in at `/admin/login` (gate above the admin, safe return paths, Log out, "Demo role" switcher), one-time demonstration warning, "Demo environment" chip, noindex everywhere (metadata, robots.txt, X-Robots-Tag), no-store on admin pages. Server work parked on branch `admin-os-server`.
+- **Shipped dataset:** 1,000 linked orders over 15 months with customers, payments, refunds, invoices, custom cakes, issues, jobs, notifications, stock history, analytics, campaigns, staff and audit (`public/mock-data`), generated deterministically with the app's own code and validated. Loaded with fetch, moved to today, merged with browser overlays; Reset demo.
+- **Admin:** Payments and Issues screens; order and customer details show payments, issues, invoices and lifetime value; notification history; analytics from the dataset; stock history, "why is this low?" and forecasts from recorded use.
+- **Copilot:** model answers through `/api/ai/copilot` (OpenRouter; Haiku 4.5 with Sonnet 5.5 and Gemini 3.8 Flash fallbacks), key server-side only, rate-limited.
+- **Images:** AVIF/WebP variants, placeholders and admin thumbnails for local images (`npm run media:variants`); not deployed.
+- **Catalogue:** 47 products, 33 ingredients with recipes.
+
+### Fixed (2026-10-05)
+- Admin crashed to a blank page on malformed saved data (six keys); the whole site crashed with storage fully blocked.
+- Confirm dialogs were see-through; invoice Generate/View; checkout claimed "Secure" payment for a simulation.
+- Copilot treated "cake"/"coffee" questions as about one product; iced cold brew was "warm for the rain".
+
 ### Added (2026-10-04, admin command centre: `.tresor/admin/GAP_ANALYSIS.md`, `.tresor/admin/ADMIN_REPORT.md`)
 - **Bakery operating system admin**, 18 screens in its own shell:
   - Command Centre, Orders (+ `/admin/orders/[id]`), Kitchen, Custom Cakes

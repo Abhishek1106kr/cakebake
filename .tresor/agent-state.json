@@ -5,16 +5,16 @@
     "session_id": "session_011gAotvzZtmvMeDbDfgTpSd",
     "status": "idle",
     "started_at": null,
-    "last_updated_at": "2026-10-05T01:45:00Z"
+    "last_updated_at": "2026-10-05T12:00:00Z"
   },
   "project": {
     "name": "Tresor",
-    "phase": "v2: admin command centre",
-    "current_objective": "Admin complete and verified; real imagery, server persistence and server-side authorization remain"
+    "phase": "v2: public frontend-only demo",
+    "current_objective": "Demo with 1,000-order dataset, mock admin sign-in and copilot shipped; licensed photography and the parked server build remain"
   },
   "current_activity": {
-    "task_id": "TRESOR-ADMIN-OS",
-    "description": "Admin command centre shipped and verified (e2e, visual, stress, scale, weight)",
+    "task_id": "TRESOR-MOCK-DATA",
+    "description": "Shipped dataset, admin on it, Payments/Issues, copilot with fallback, image pipeline",
     "stage": "done",
     "current_file": null,
     "current_action": null
@@ -27,8 +27,8 @@
     "files_deleted": 0
   },
   "validation": {
-    "last_test_command": "npm test && npx tsc --noEmit; tests/admin/*.py; tests/stress/run_clients.py",
-    "tests_passed": 245,
+    "last_test_command": "npm test; npm run mock:validate; tests/demo/*.py; tests/admin/*.py",
+    "tests_passed": 289,
     "tests_failed": 0,
     "lint_status": "not configured",
     "typecheck_status": "passed",
@@ -41,7 +41,10 @@
     "Inventory levels, recipes and delivery fee are sample values to confirm with the café.",
     "Orders and admin data live per browser (frontend-only by requirement); admin only sees orders placed in the same browser.",
     "CLAUDE.md (sage palette, Framer Motion, v3 routes) conflicts with the chosen v2 design; not imported into this repo pending the owner’s call.",
-    "Admin permissions are enforced in the browser only; server-side authorization with the same permission names is required before real use."
+    "Admin permissions are enforced in the browser only; server-side authorization with the same permission names is required before real use.",
+    "Admin sign-in on main is a mock (public demo credentials); not a security boundary.",
+    "Copilot rate limits are in memory per server instance; set OPENROUTER_API_KEY on the host for the deployed copilot.",
+    "Reference images are local only; the deployed site shows tone art until licensed photos exist."
   ],
   "next_actions": [
     "Owner visual review of v2 at http://localhost:3002 and /admin",
