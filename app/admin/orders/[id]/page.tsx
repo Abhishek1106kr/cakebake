@@ -14,7 +14,12 @@ export default function OrderPage({ params }: { params: Promise<{ id: string }> 
 function Order({ id }: { id: string }) {
   const { findOrder } = useStore();
   const order = findOrder(id);
-  if (!order) return <Panel><Empty action={<Link className="ad-btn" href="/admin/orders">Back to orders</Link>}>No order {id} in this browser.</Empty></Panel>;
+  if (!order) return (
+    <div>
+      <PageHeader eyebrow="Order" title="Order not found" />
+      <Panel><Empty action={<Link className="ad-btn" href="/admin/orders">Back to orders</Link>}>No order {id} in this browser.</Empty></Panel>
+    </div>
+  );
   return (
     <div>
       <PageHeader eyebrow="Order" title={order.id} description={`${order.customer.name} · ${rupees(order.total)} · ${order.items.length} line${order.items.length === 1 ? '' : 's'}`} actions={<Link className="ad-btn" href="/admin/orders">All orders</Link>} />

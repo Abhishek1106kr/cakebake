@@ -41,6 +41,7 @@ function OpeningInner({ progress, reduce }: { progress: MotionValue<number>; red
   const cueOpacity = useTransform(progress, [0, 0.12], [1, 0]);
   return (
     <div className="opening">
+      <h1 className="sr-only">Tresor, a bakery in Indiranagar, Bengaluru. Good things take time.</h1>
       <motion.div className="opening-media" initial={reduce ? false : { clipPath: 'inset(47% 0% 47% 0%)' }} animate={{ clipPath: 'inset(0% 0% 0% 0%)' }} transition={{ delay: HERO.media, duration: 1.5, ease: EASE_IMAGE }}>
         <motion.div className="opening-push" style={reduce ? undefined : { scale: push }}>
           <motion.div className="proving" initial={reduce ? false : { scale: 1.18 }} animate={{ scale: 1 }} transition={{ delay: HERO.media, duration: 2.4, ease: EASE_IMAGE }}>
