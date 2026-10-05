@@ -45,7 +45,7 @@ export function ActionRow({ action, now, onDone }: { action: ProposedAction; now
   );
 }
 
-type ModelReply = { state: 'idle' | 'loading' | 'done' | 'unavailable' | 'error'; answer?: string; model?: string; note?: string };
+type ModelReply = { state: 'idle' | 'loading' | 'done' | 'unavailable' | 'error'; answer?: string; model?: string; fallback?: boolean; note?: string };
 
 const MODEL_ERRORS: Record<string, string> = {
   rate_limited: 'The demo limit for model answers is reached for now.',
@@ -89,7 +89,7 @@ export function CopilotPanel({ now }: { now: Date }) {
         const res = await fetch('/api/ai/copilot', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: asked.q, context }) });
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
-        if (res.ok && data.answer) setModel({ state: 'done', answer: data.answer, model: data.model });
+        if (res.ok && data.answer) setModel({ state: 'done', answer: data.answer, model: data.model, fallback: Boolean(data.fallback) });
         else setModel({ state: 'error', note: MODEL_ERRORS[data.error] ?? 'The model is unavailable; showing the answer from the records.' });
       } catch {
         if (!cancelled) setModel({ state: 'error', note: 'The model is unavailable; showing the answer from the records.' });
@@ -113,7 +113,7 @@ export function CopilotPanel({ now }: { now: Date }) {
           {model.state === 'done' && (
             <div className="ad-model-answer">
               <p>{model.answer}</p>
-              <p className="ad-muted small"><Sparkles size={12} aria-hidden /> Written by a language model ({model.model}) from the figures below. Demo data; check the facts before acting.</p>
+              <p className="ad-muted small"><Sparkles size={12} aria-hidden /> Written by a language model ({model.model}{model.fallback ? ', a fallback because the main model was unavailable' : ''}) from the figures below. Demo data; check the facts before acting.</p>
             </div>
           )}
           {model.state === 'error' && <p className="ad-muted small">{model.note}</p>}

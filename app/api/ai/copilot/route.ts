@@ -9,13 +9,13 @@
 
 import { NextResponse } from 'next/server';
 import { checkLimits } from './limits';
+import { chatBody, modelRoute, nextRoute, retryable } from '@/lib/ai/openrouter';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const MAX_QUESTION = 400;
 const MAX_CONTEXT = 16_000;
-const DEFAULT_MODEL = 'anthropic/claude-haiku-4.5';
 
 const SYSTEM = [
   'You are the operations copilot inside the admin of Tresor, a bakery in Bengaluru.',
@@ -44,7 +44,8 @@ function sameOrigin(req: Request) {
 /** Whether the model is configured (the UI hides the model answer when it isn't). */
 export async function GET() {
   const key = process.env.OPENROUTER_API_KEY;
-  return json({ enabled: Boolean(key), model: key ? (process.env.OPENROUTER_MODEL || DEFAULT_MODEL) : null });
+  const route = modelRoute({ OPENROUTER_MODEL: process.env.OPENROUTER_MODEL, OPENROUTER_FALLBACK_MODELS: process.env.OPENROUTER_FALLBACK_MODELS });
+  return json({ enabled: Boolean(key), model: key ? route.primary : null, fallbacks: key ? route.fallbacks : [] });
 }
 
 export async function POST(req: Request) {
@@ -64,39 +65,48 @@ export async function POST(req: Request) {
   const limit = checkLimits(clientId(req));
   if (!limit.ok) return json({ error: 'rate_limited', retryAfterSeconds: limit.retryAfter }, 429, { 'Retry-After': String(limit.retryAfter) });
 
-  const model = process.env.OPENROUTER_MODEL || DEFAULT_MODEL;
+  // Model routing: OpenRouter tries the primary, then each fallback in order (see lib/ai/openrouter.ts).
+  const route = modelRoute({ OPENROUTER_MODEL: process.env.OPENROUTER_MODEL, OPENROUTER_FALLBACK_MODELS: process.env.OPENROUTER_FALLBACK_MODELS });
+  const user = `Context (JSON):\n${context}\n\nQuestion: ${question}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 20_000);
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      signal: controller.signal,
-      headers: {
-        Authorization: `Bearer ${key}`,
-        'Content-Type': 'application/json',
-        'X-Title': 'Tresor demo admin copilot',
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 350,
-        temperature: 0.2,
-        messages: [
-          { role: 'system', content: SYSTEM },
-          { role: 'user', content: `Context (JSON):\n${context}\n\nQuestion: ${question}` },
-        ],
-      }),
-    });
-    if (!res.ok) {
+    // OpenRouter falls back between models and providers on outages, rate limits and refusals.
+    // The app adds one second attempt within the same 20 s deadline: the same route again after
+    // network trouble or a server-side error, or the next route (first fallback promoted) when
+    // OpenRouter rejects the request, e.g. a mistyped primary model id.
+    let current = route;
+    let res: Response | null = null;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          signal: controller.signal,
+          headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', 'X-Title': 'Tresor demo admin copilot' },
+          body: JSON.stringify(chatBody(current, SYSTEM, user, { maxTokens: 350, temperature: 0.2 })),
+        });
+      } catch (e) {
+        if ((e as Error).name === 'AbortError' || attempt === 2) throw e;
+        res = null;
+      }
+      if (res?.ok || attempt === 2) break;
+      const status = res ? res.status : null;
+      if (status === 400 && current.fallbacks.length) current = nextRoute(current);
+      else if (!retryable(status)) break;
+      await new Promise((r) => setTimeout(r, 600));
+    }
+    if (!res || !res.ok) {
       // Provider details stay in the server log; the browser gets a generic status.
-      console.error('[copilot] OpenRouter error', res.status);
-      return json({ error: res.status === 429 ? 'provider_busy' : 'provider_error' }, 502);
+      console.error('[copilot] OpenRouter error', res?.status ?? 'network');
+      return json({ error: res?.status === 429 ? 'provider_busy' : 'provider_error' }, 502);
     }
     const data = (await res.json()) as { choices?: { message?: { content?: string } }[]; model?: string };
     const answer = data.choices?.[0]?.message?.content?.trim();
     if (!answer) return json({ error: 'empty_answer' }, 502);
     // Plain text for the panel: drop markdown emphasis and heading marks if the model adds them anyway.
     const plain = answer.replace(/\*\*|__/g, '').replace(/^#{1,6}\s+/gm, '');
-    return json({ answer: plain.slice(0, 2000), model: data.model ?? model });
+    const used = data.model ?? route.primary;
+    return json({ answer: plain.slice(0, 2000), model: used, fallback: !used.startsWith(route.primary) });
   } catch (e) {
     console.error('[copilot] request failed', (e as Error).name);
     return json({ error: (e as Error).name === 'AbortError' ? 'timeout' : 'provider_error' }, 504);
