@@ -699,7 +699,7 @@
   "route": "/admin/staff",
   "width": 430,
   "status": 200,
-  "overflowPx": 173,
+  "overflowPx": 0,
   "h1": "Staff",
   "errors": []
  },
@@ -843,7 +843,7 @@
   "route": "/admin/staff",
   "width": 390,
   "status": 200,
-  "overflowPx": 213,
+  "overflowPx": 0,
   "h1": "Staff",
   "errors": []
  },
@@ -987,7 +987,7 @@
   "route": "/admin/staff",
   "width": 375,
   "status": 200,
-  "overflowPx": 228,
+  "overflowPx": 0,
   "h1": "Staff",
   "errors": []
  },

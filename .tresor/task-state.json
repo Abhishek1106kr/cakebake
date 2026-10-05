@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-10-04T23:00:00Z",
-  "current_task_id": "TRESOR-PERF",
+  "updated_at": "2026-10-05T01:45:00Z",
+  "current_task_id": "TRESOR-ADMIN-OS",
   "tasks": [
     {
       "id": "TRESOR-COMMERCE-ORDERS",
@@ -520,6 +520,41 @@
         "visual diff 94/102 identical (differences = DEC-016 + icon antialiasing)",
         "reduced motion 84/84 identical",
         "story CLS 0.028 -> 0"
+      ],
+      "blockers": []
+    },
+    {
+      "id": "TRESOR-ADMIN-OS",
+      "title": "Admin command centre + bakery management system",
+      "description": "Mock-first, backend-ready admin: 18 screens, one audited action path, permissions, domain events, repositories, snapshots, live catalogue reaching the shop.",
+      "status": "completed",
+      "priority": "high",
+      "dependencies": [
+        "TRESOR-ADMIN"
+      ],
+      "files": [
+        "app/admin/",
+        "components/admin/",
+        "lib/admin/",
+        "lib/catalog/live.ts",
+        "lib/config/business.ts",
+        "lib/orders.ts",
+        "lib/inventory.ts",
+        "lib/cake/",
+        "components/store-provider.tsx",
+        "engine/intelligence/",
+        "tests/admin/",
+        ".tresor/admin/"
+      ],
+      "started_at": "2026-10-04T15:00:00Z",
+      "completed_at": "2026-10-05T01:45:00Z",
+      "validation": [
+        "245 unit tests pass, typecheck clean",
+        "admin e2e 63/63",
+        "visual QA 18 routes x 7 widths, 0 overflow, 0 console errors",
+        "100-client stress: all admin checks pass (94 clean, 5 pre-existing storefront, 1 flaky timeout)",
+        "scale 19/19 at 309 orders",
+        "weight: JS before load 263 vs 256 KB home; idle work 1-5 ms vs 316-627 ms"
       ],
       "blockers": []
     }

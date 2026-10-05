@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-10-05T01:45:00Z",
+  "agent": "claude-code",
+  "type": "task_completed",
+  "task_id": "TRESOR-ADMIN-OS",
+  "summary": "Admin command centre: 18 screens on the shop's own records, audited actions, verified at volume",
+  "details": {
+    "unit_tests": 245,
+    "admin_e2e": "63/63",
+    "visual_qa": "18 routes x 7 widths, 0 overflow, 0 console errors",
+    "stress": "100 clients: all admin checks pass; 94 clean; pre-existing CLIENT-016, -028, -047, -053, -060; CLIENT-066 timeout",
+    "scale": "19/19 at 309 orders; status change 54 ms; custom cakes page 1094 ms",
+    "weight_js_before_load_kb": {
+      "home": 256,
+      "admin": [
+        263,
+        268
+      ]
+    },
+    "weight_idle_task_ms_4s": {
+      "home": [
+        316,
+        627
+      ],
+      "admin": [
+        1,
+        5
+      ]
+    },
+    "notes": "stress run split in two after a low-memory stop at 69"
+  },
+  "files": [
+    "app/admin/",
+    "components/admin/",
+    "lib/admin/",
+    "tests/admin/",
+    ".tresor/admin/ADMIN_REPORT.md"
+  ],
+  "status": "completed"
+}

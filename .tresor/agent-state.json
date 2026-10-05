@@ -5,16 +5,16 @@
     "session_id": "session_011gAotvzZtmvMeDbDfgTpSd",
     "status": "idle",
     "started_at": null,
-    "last_updated_at": "2026-10-04T18:30:00Z"
+    "last_updated_at": "2026-10-05T01:45:00Z"
   },
   "project": {
     "name": "Tresor",
-    "phase": "v2 storefront: intelligence engine",
-    "current_objective": "Engine phases 1-10 complete; real imagery and cinematic propagation remain"
+    "phase": "v2: admin command centre",
+    "current_objective": "Admin complete and verified; real imagery, server persistence and server-side authorization remain"
   },
   "current_activity": {
-    "task_id": "TRESOR-CAKE-PLAYGROUND",
-    "description": "Cake Playground shipped; 176 tests passing",
+    "task_id": "TRESOR-ADMIN-OS",
+    "description": "Admin command centre shipped and verified (e2e, visual, stress, scale, weight)",
     "stage": "done",
     "current_file": null,
     "current_action": null
@@ -27,8 +27,8 @@
     "files_deleted": 0
   },
   "validation": {
-    "last_test_command": "npm test && npx tsc --noEmit",
-    "tests_passed": 176,
+    "last_test_command": "npm test && npx tsc --noEmit; tests/admin/*.py; tests/stress/run_clients.py",
+    "tests_passed": 245,
     "tests_failed": 0,
     "lint_status": "not configured",
     "typecheck_status": "passed",
@@ -40,7 +40,8 @@
   "risks": [
     "Inventory levels, recipes and delivery fee are sample values to confirm with the café.",
     "Orders and admin data live per browser (frontend-only by requirement); admin only sees orders placed in the same browser.",
-    "CLAUDE.md (sage palette, Framer Motion, v3 routes) conflicts with the chosen v2 design; not imported into this repo pending the owner’s call."
+    "CLAUDE.md (sage palette, Framer Motion, v3 routes) conflicts with the chosen v2 design; not imported into this repo pending the owner’s call.",
+    "Admin permissions are enforced in the browser only; server-side authorization with the same permission names is required before real use."
   ],
   "next_actions": [
     "Owner visual review of v2 at http://localhost:3002 and /admin",

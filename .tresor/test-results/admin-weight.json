@@ -1,0 +1,112 @@
+{
+ "/@1440": {
+  "loadScriptMs": 299,
+  "loadLayoutMs": 125,
+  "idleTaskMs": 316,
+  "idleScriptMs": 19,
+  "runningAnimations": 1,
+  "jsLoadKB": 256,
+  "jsKB": 304,
+  "domNodes": 992,
+  "heapMB": 12.9
+ },
+ "/admin@1440": {
+  "loadScriptMs": 172,
+  "loadLayoutMs": 140,
+  "idleTaskMs": 1,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 263,
+  "jsKB": 401,
+  "domNodes": 573,
+  "heapMB": 6.1
+ },
+ "/admin/orders@1440": {
+  "loadScriptMs": 160,
+  "loadLayoutMs": 110,
+  "idleTaskMs": 1,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 268,
+  "jsKB": 401,
+  "domNodes": 487,
+  "heapMB": 5.9
+ },
+ "/admin/kitchen@1440": {
+  "loadScriptMs": 139,
+  "loadLayoutMs": 99,
+  "idleTaskMs": 1,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 265,
+  "jsKB": 401,
+  "domNodes": 391,
+  "heapMB": 5.4
+ },
+ "/admin/analytics@1440": {
+  "loadScriptMs": 149,
+  "loadLayoutMs": 133,
+  "idleTaskMs": 2,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 264,
+  "jsKB": 401,
+  "domNodes": 613,
+  "heapMB": 6.0
+ },
+ "/@390": {
+  "loadScriptMs": 529,
+  "loadLayoutMs": 244,
+  "idleTaskMs": 627,
+  "idleScriptMs": 32,
+  "runningAnimations": 1,
+  "jsLoadKB": 256,
+  "jsKB": 273,
+  "domNodes": 984,
+  "heapMB": 9.9
+ },
+ "/admin@390": {
+  "loadScriptMs": 353,
+  "loadLayoutMs": 262,
+  "idleTaskMs": 2,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 263,
+  "jsKB": 401,
+  "domNodes": 558,
+  "heapMB": 6.0
+ },
+ "/admin/orders@390": {
+  "loadScriptMs": 330,
+  "loadLayoutMs": 228,
+  "idleTaskMs": 5,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 268,
+  "jsKB": 401,
+  "domNodes": 490,
+  "heapMB": 5.8
+ },
+ "/admin/kitchen@390": {
+  "loadScriptMs": 298,
+  "loadLayoutMs": 188,
+  "idleTaskMs": 5,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 265,
+  "jsKB": 401,
+  "domNodes": 384,
+  "heapMB": 5.4
+ },
+ "/admin/analytics@390": {
+  "loadScriptMs": 320,
+  "loadLayoutMs": 258,
+  "idleTaskMs": 3,
+  "idleScriptMs": 0,
+  "runningAnimations": 0,
+  "jsLoadKB": 264,
+  "jsKB": 401,
+  "domNodes": 603,
+  "heapMB": 5.9
+ }
+}

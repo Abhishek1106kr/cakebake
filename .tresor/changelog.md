@@ -31,6 +31,12 @@
 - **Invoices** snapshot the customer and tax. Regenerating keeps the number and adds a revision.
 - **The admin no longer renders the shop header and footer** (DEC-023).
 
+### Verified (2026-10-05, admin)
+- 245 unit tests, typecheck clean, admin end-to-end 63/63, visual QA 18 routes × 7 widths with no overflow or console errors.
+- 100-client stress: all admin checks passed; 94 clients clean, 5 pre-existing storefront issues, 1 known flaky timeout.
+- 309 orders in one browser: 19/19, counts match the records, status change 54 ms.
+- Admin vs homepage: same JavaScript before load (263 vs 256 KB), near-zero idle work (1–5 ms vs 316–627 ms per 4 s), half the DOM and heap.
+
 
 ### Performance (2026-10-04, smoothness pass; measured: `.tresor/perf/PERFORMANCE_REPORT.md`)
 - **One scroll source** (`components/scroll-progress.ts`) replaces per-element `useScroll({ target })`. Framer re-measured each target on every scroll frame. Interleaved measurement of main-thread script during one scroll: home 482 → 242 ms (1440) and 604 → 233 ms (390); Our Story 730 → 326 ms and 962 → 383 ms. Pixel-identical frames.

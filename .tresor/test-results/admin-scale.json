@@ -1,0 +1,113 @@
+{
+ "orders": 300,
+ "timingsMs": {
+  "orders": 195,
+  "statusChangeMs": 54,
+  "overview": 108,
+  "customCakes": 1094,
+  "customers": 98,
+  "analytics": 103,
+  "automations": 87,
+  "kitchen": 119,
+  "searchMs": 10
+ },
+ "passed": 19,
+ "total": 19,
+ "checks": [
+  {
+   "name": "accumulated orders in one browser",
+   "ok": true,
+   "detail": "309"
+  },
+  {
+   "name": "order filter counts match the records",
+   "ok": true,
+   "detail": "{'All': (309, 309), 'Active': (91, 91), 'Preparing': (25, 25), 'Delivered': (191, 191), 'Cancelled': (27, 27), 'Refund pending': (19, 19), 'Ready': (14, 14)}"
+  },
+  {
+   "name": "orders table stays paginated (25 rows, not all)",
+   "ok": true,
+   "detail": "25"
+  },
+  {
+   "name": "pager shows the full total",
+   "ok": true,
+   "detail": "309 orders \u00b7 page 1 of 13"
+  },
+  {
+   "name": "orders page DOM stays small",
+   "ok": true,
+   "detail": "1062"
+  },
+  {
+   "name": "search by customer finds every order",
+   "ok": true,
+   "detail": "('13 orders', 13)"
+  },
+  {
+   "name": "search by order number finds exactly one",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "status change at volume responds quickly (< 1 s)",
+   "ok": true,
+   "detail": "54"
+  },
+  {
+   "name": "dashboard revenue and orders today match the records",
+   "ok": true,
+   "detail": "(72555, 72555, 105, 105)"
+  },
+  {
+   "name": "dashboard active count matches",
+   "ok": true,
+   "detail": "91"
+  },
+  {
+   "name": "live orders table capped (8 newest)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "custom cake list shows every custom job",
+   "ok": true,
+   "detail": "(101, 101)"
+  },
+  {
+   "name": "custom cake list scrolls in its own panel",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "one customer per phone number",
+   "ok": true,
+   "detail": "('66 customers \u00b7 page 1 of 3', 66)"
+  },
+  {
+   "name": "analytics 7-day orders match the records",
+   "ok": true,
+   "detail": "(244, 244)"
+  },
+  {
+   "name": "automations page renders at volume",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "kitchen board renders at volume",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "global search returns at volume",
+   "ok": true,
+   "detail": "10"
+  },
+  {
+   "name": "no uncaught page errors",
+   "ok": true,
+   "detail": "[]"
+  }
+ ]
+}

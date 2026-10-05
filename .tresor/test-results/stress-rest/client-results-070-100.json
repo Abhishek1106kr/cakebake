@@ -1,0 +1,2635 @@
+[
+ {
+  "clientId": "CLIENT-070",
+  "seed": 20807415,
+  "persona": "saves-design",
+  "journeyType": "saved",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 7,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "design_reopened",
+    "design_saved",
+    "message_added",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 17.6
+  },
+  "eventsExpected": [
+   "customizer_opened",
+   "design_reopened",
+   "design_saved"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "design_reopened",
+   "design_saved",
+   "message_added",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-071",
+  "seed": 20815334,
+  "persona": "saves-design",
+  "journeyType": "saved",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 6,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "design_reopened",
+    "design_saved",
+    "message_added",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 22.0
+  },
+  "eventsExpected": [
+   "customizer_opened",
+   "design_reopened",
+   "design_saved"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "design_reopened",
+   "design_saved",
+   "message_added",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-072",
+  "seed": 20823253,
+  "persona": "invalid-combination",
+  "journeyType": "invalid-custom",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 9,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "add blocked at tampered config: ['Heart tins come in 6 to 10 inch.']"
+  ],
+  "metrics": {
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "custom_cake_abandoned",
+    "custom_cake_added_to_cart",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view",
+    "recommendation_shown"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 20.0
+  },
+  "eventsExpected": [
+   "customizer_opened"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "custom_cake_abandoned",
+   "custom_cake_added_to_cart",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view",
+   "recommendation_shown"
+  ]
+ },
+ {
+  "clientId": "CLIENT-073",
+  "seed": 20831172,
+  "persona": "first-time",
+  "journeyType": "standard",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "refresh-checkout",
+   "refresh-confirmation"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 670,
+    "items": 1,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 25,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "checkout form fields are not persisted across refresh (by design)"
+  ],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_view",
+    "recommendation_shown",
+    "search_completed",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 17.1
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "search_completed"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "recommendation_shown",
+   "search_completed",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-074",
+  "seed": 20839091,
+  "persona": "payment-failure",
+  "journeyType": "payment-failure",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {
+   "payment": "fail-once"
+  },
+  "chaos": [],
+  "journey": "completed-after-retry",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 245,
+    "items": 1,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 25,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "order_created",
+    "page_view",
+    "payment_failure",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_view",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 12.8
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "payment_failure",
+   "payment_started"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_failure",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-075",
+  "seed": 20847010,
+  "persona": "impatient",
+  "journeyType": "standard",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 2140,
+    "items": 2,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 24,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "checkout form fields are not persisted across refresh (by design)"
+  ],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_view",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 17.1
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_success",
+   "product_added",
+   "product_view"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-076",
+  "seed": 20854929,
+  "persona": "invalid-upload",
+  "journeyType": "invalid-upload",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 6,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 5.6
+  },
+  "eventsExpected": [
+   "customizer_opened"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-077",
+  "seed": 20862848,
+  "persona": "long-message",
+  "journeyType": "custom",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "admin-realtime"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 1410,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 33,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "message \"very-long\": ",
+   "add blocked at /customize: ['Your message is too long for a 4 inch cake. Try shortening it to 16 characters.']",
+   "validation asked: ['Your message is too long for a 4 inch cake. Try shortening it to 16 characters.']"
+  ],
+  "metrics": {
+   "message": "very-long",
+   "cakes": [
+    {
+     "config": {
+      "size": "4in",
+      "shape": "square",
+      "sponge": "vanilla",
+      "filling": "ganache",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "gift"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 1410,
+     "shown": 1410,
+     "hours": 24
+    },
+    {
+     "config": {
+      "size": "4in",
+      "shape": "square",
+      "sponge": "vanilla",
+      "filling": "ganache",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "gift"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 1410,
+     "shown": 1410,
+     "hours": 24
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 38.2
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-078",
+  "seed": 20870767,
+  "persona": "invalid-combination",
+  "journeyType": "invalid-custom",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 9,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "add blocked at tampered config: ['Heart tins come in 6 to 10 inch.']"
+  ],
+  "metrics": {
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "custom_cake_abandoned",
+    "custom_cake_added_to_cart",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view",
+    "recommendation_shown"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 20.3
+  },
+  "eventsExpected": [
+   "customizer_opened"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "custom_cake_abandoned",
+   "custom_cake_added_to_cart",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view",
+   "recommendation_shown"
+  ]
+ },
+ {
+  "clientId": "CLIENT-079",
+  "seed": 20878686,
+  "persona": "celebration",
+  "journeyType": "custom",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 5220,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 31,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "message": "medium",
+   "cakes": [
+    {
+     "config": {
+      "size": "12in",
+      "shape": "square",
+      "sponge": "coffee",
+      "filling": "hazelnut",
+      "frosting": "buttercream",
+      "finish": "ruffled",
+      "color": "cream",
+      "packaging": "standard"
+     },
+     "toppings": [
+      {
+       "id": "macarons",
+       "qty": 2
+      }
+     ],
+     "decorations": [
+      "ribbon"
+     ],
+     "print": false,
+     "expected": 5220,
+     "shown": 5220,
+     "hours": 42
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 26.4
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-080",
+  "seed": 20886605,
+  "persona": "resets-repeatedly",
+  "journeyType": "edit-reset",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 9,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "two tabs: saved draft is size=6in sponge=red-velvet (last writer wins; tabs do not merge)"
+  ],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "custom_cake_abandoned",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 33.4
+  },
+  "eventsExpected": [
+   "cake_started",
+   "customizer_opened",
+   "option_selected"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "custom_cake_abandoned",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-081",
+  "seed": 20894524,
+  "persona": "long-message",
+  "journeyType": "custom",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "status-flow"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3730,
+    "items": 1,
+    "custom": true,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 36,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "message \"very-long\": ",
+   "add blocked at /customize: ['Your message is too long for a 10 inch cake. Try shortening it to 42 characters.']",
+   "validation asked: ['Your message is too long for a 10 inch cake. Try shortening it to 42 characters.']",
+   "status flow ['PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED']"
+  ],
+  "metrics": {
+   "message": "very-long",
+   "cakes": [
+    {
+     "config": {
+      "size": "10in",
+      "shape": "heart",
+      "sponge": "chocolate",
+      "filling": "berry",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "blush",
+      "packaging": "standard"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3730,
+     "shown": 3730,
+     "hours": 36
+    },
+    {
+     "config": {
+      "size": "10in",
+      "shape": "heart",
+      "sponge": "chocolate",
+      "filling": "berry",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "blush",
+      "packaging": "standard"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3730,
+     "shown": 3730,
+     "hours": 36
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "delivery_status_changed",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 47.1
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "delivery_status_changed",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-082",
+  "seed": 20902443,
+  "persona": "returning",
+  "journeyType": "standard",
+  "device": {
+   "kind": "desktop",
+   "width": 1280,
+   "height": 800
+  },
+  "faults": {},
+  "chaos": [
+   "admin-realtime",
+   "two-cakes"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 510,
+    "items": 1,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 24,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_view",
+    "recommendation_shown",
+    "search_completed",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 17.9
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "search_completed"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "recommendation_shown",
+   "search_completed",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-083",
+  "seed": 20910362,
+  "persona": "custom-cake",
+  "journeyType": "custom",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "double-click"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3110,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 33,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "message": "medium",
+   "cakes": [
+    {
+     "config": {
+      "size": "8in",
+      "shape": "round",
+      "sponge": "vanilla",
+      "filling": "salted-caramel",
+      "frosting": "whipped",
+      "finish": "semi-naked",
+      "color": "chocolate",
+      "packaging": "standard"
+     },
+     "toppings": [
+      {
+       "id": "cookies",
+       "qty": 1
+      },
+      {
+       "id": "hazelnuts",
+       "qty": 1
+      },
+      {
+       "id": "curls",
+       "qty": 1
+      }
+     ],
+     "decorations": [
+      "shards"
+     ],
+     "print": false,
+     "expected": 3110,
+     "shown": 3110,
+     "hours": 48
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 32.5
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-084",
+  "seed": 20918281,
+  "persona": "unavailable-option",
+  "journeyType": "custom",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {
+   "invoice": "fail-always"
+  },
+  "chaos": [
+   "resize",
+   "admin-realtime"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3460,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": false,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 29,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "message \"very-long\": ",
+   "add blocked at /customize: ['Your message is too long for a 10 inch cake. Try shortening it to 42 characters.']",
+   "validation asked: ['Your message is too long for a 10 inch cake. Try shortening it to 42 characters.']"
+  ],
+  "metrics": {
+   "message": "very-long",
+   "cakes": [
+    {
+     "config": {
+      "size": "10in",
+      "shape": "square",
+      "sponge": "red-velvet",
+      "filling": "berry",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "standard"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3460,
+     "shown": 3460,
+     "hours": 36
+    },
+    {
+     "config": {
+      "size": "10in",
+      "shape": "square",
+      "sponge": "red-velvet",
+      "filling": "berry",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "standard"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3460,
+     "shown": 3460,
+     "hours": 36
+    }
+   ],
+   "invoiceGenerated": false,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 39.0
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-085",
+  "seed": 20926200,
+  "persona": "uploads-image",
+  "journeyType": "print",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "resize"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3680,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 34,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "message": "emoji",
+   "uploadMs": 136,
+   "cakes": [
+    {
+     "config": {
+      "size": "8in",
+      "shape": "rectangle",
+      "sponge": "coffee",
+      "filling": "vanilla-cream",
+      "frosting": "cream-cheese",
+      "finish": "textured",
+      "color": "chocolate",
+      "packaging": "window"
+     },
+     "toppings": [],
+     "decorations": [
+      "shards"
+     ],
+     "print": true,
+     "expected": 3680,
+     "shown": 3680,
+     "hours": 36
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "image_uploaded",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 25.8
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "image_uploaded",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "image_uploaded",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-086",
+  "seed": 20934119,
+  "persona": "abandons-customizer",
+  "journeyType": "abandon",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "abandoned",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 4,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "custom_cake_abandoned",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view",
+    "recommendation_shown"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 6.4
+  },
+  "eventsExpected": [
+   "cake_started",
+   "custom_cake_abandoned",
+   "customizer_opened"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "custom_cake_abandoned",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view",
+   "recommendation_shown"
+  ]
+ },
+ {
+  "clientId": "CLIENT-087",
+  "seed": 20942038,
+  "persona": "resets-repeatedly",
+  "journeyType": "edit-reset",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 9,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "two tabs: saved draft is size=6in sponge=red-velvet (last writer wins; tabs do not merge)"
+  ],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "custom_cake_abandoned",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 52.4
+  },
+  "eventsExpected": [
+   "cake_started",
+   "customizer_opened",
+   "option_selected"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "custom_cake_abandoned",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-088",
+  "seed": 20949957,
+  "persona": "cake-only",
+  "journeyType": "standard",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "double-click",
+   "back-button",
+   "status-flow"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 2890,
+    "items": 2,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 27,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "status flow ['PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED']"
+  ],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "delivery_status_changed",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_view",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 25.5
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_success",
+   "product_added",
+   "product_view"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "delivery_status_changed",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-089",
+  "seed": 20957876,
+  "persona": "share-link",
+  "journeyType": "share",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 7,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "design_shared",
+    "message_added",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 10.4
+  },
+  "eventsExpected": [
+   "customizer_opened",
+   "design_shared"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "design_shared",
+   "message_added",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-090",
+  "seed": 20965795,
+  "persona": "returning",
+  "journeyType": "standard",
+  "device": {
+   "kind": "mobile",
+   "width": 430,
+   "height": 932
+  },
+  "faults": {
+   "invoice": "fail-once"
+  },
+  "chaos": [
+   "back-button",
+   "status-flow",
+   "duplicate-trigger"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 230,
+    "items": 1,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 29,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "status flow ['PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED']"
+  ],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "delivery_status_changed",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_view",
+    "recommendation_shown",
+    "search_completed",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 27.6
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "search_completed"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "delivery_status_changed",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "recommendation_shown",
+   "search_completed",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-091",
+  "seed": 20973714,
+  "persona": "invalid-combination",
+  "journeyType": "invalid-custom",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 9,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "add blocked at tampered config: ['Heart tins come in 6 to 10 inch.']"
+  ],
+  "metrics": {
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "custom_cake_abandoned",
+    "custom_cake_added_to_cart",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view",
+    "recommendation_shown"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 20.4
+  },
+  "eventsExpected": [
+   "customizer_opened"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "custom_cake_abandoned",
+   "custom_cake_added_to_cart",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view",
+   "recommendation_shown"
+  ]
+ },
+ {
+  "clientId": "CLIENT-092",
+  "seed": 20981633,
+  "persona": "invalid-upload",
+  "journeyType": "invalid-upload",
+  "device": {
+   "kind": "tablet",
+   "width": 768,
+   "height": 1024
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 6,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 5.0
+  },
+  "eventsExpected": [
+   "customizer_opened"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-093",
+  "seed": 20989552,
+  "persona": "celebration",
+  "journeyType": "custom",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "slow-payment",
+   "resize"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3230,
+    "items": 1,
+    "custom": true,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 33,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "message \"long\": ",
+   "add blocked at /customize: ['Your message is too long for an 8 inch cake. Try shortening it to 34 characters.']",
+   "validation asked: ['Your message is too long for an 8 inch cake. Try shortening it to 34 characters.']"
+  ],
+  "metrics": {
+   "message": "long",
+   "cakes": [
+    {
+     "config": {
+      "size": "8in",
+      "shape": "heart",
+      "sponge": "red-velvet",
+      "filling": "hazelnut",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "gift"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3230,
+     "shown": 3230,
+     "hours": 24
+    },
+    {
+     "config": {
+      "size": "8in",
+      "shape": "heart",
+      "sponge": "red-velvet",
+      "filling": "hazelnut",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "gift"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3230,
+     "shown": 3230,
+     "hours": 24
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 39.5
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-094",
+  "seed": 20997471,
+  "persona": "share-link",
+  "journeyType": "share",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 7,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "design_shared",
+    "image_uploaded",
+    "message_added",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 19.1
+  },
+  "eventsExpected": [
+   "customizer_opened",
+   "design_shared"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "design_shared",
+   "image_uploaded",
+   "message_added",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-095",
+  "seed": 21005390,
+  "persona": "unavailable-option",
+  "journeyType": "custom",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "refresh-checkout",
+   "refresh-confirmation"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3550,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 31,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "message": "tamil",
+   "cakes": [
+    {
+     "config": {
+      "size": "10in",
+      "shape": "heart",
+      "sponge": "red-velvet",
+      "filling": "vanilla-cream",
+      "frosting": "whipped",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "standard"
+     },
+     "toppings": [
+      {
+       "id": "cookies",
+       "qty": 1
+      },
+      {
+       "id": "macarons",
+       "qty": 1
+      },
+      {
+       "id": "flowers",
+       "qty": 1
+      }
+     ],
+     "decorations": [],
+     "print": false,
+     "expected": 3550,
+     "shown": 3550,
+     "hours": 36
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 26.8
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-096",
+  "seed": 21013309,
+  "persona": "saves-design",
+  "journeyType": "saved",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 6,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "customizer_opened",
+    "design_reopened",
+    "design_saved",
+    "message_added",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 16.5
+  },
+  "eventsExpected": [
+   "customizer_opened",
+   "design_reopened",
+   "design_saved"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "customizer_opened",
+   "design_reopened",
+   "design_saved",
+   "message_added",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-097",
+  "seed": 21021228,
+  "persona": "surprise-me",
+  "journeyType": "custom",
+  "device": {
+   "kind": "desktop",
+   "width": 1024,
+   "height": 768
+  },
+  "faults": {
+   "whatsapp": "fail-always"
+  },
+  "chaos": [
+   "refresh-checkout"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 2450,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": false,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 30,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "cakes": [
+    {
+     "config": {
+      "size": "6in",
+      "shape": "round",
+      "sponge": "chocolate",
+      "filling": "berry",
+      "frosting": "ganache",
+      "finish": "ruffled",
+      "color": "blush",
+      "packaging": "standard"
+     },
+     "toppings": [
+      {
+       "id": "flowers",
+       "qty": 5
+      }
+     ],
+     "decorations": [],
+     "print": false,
+     "expected": 2450,
+     "shown": 2450,
+     "hours": 30
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": false,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 21.7
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-098",
+  "seed": 21029147,
+  "persona": "resets-repeatedly",
+  "journeyType": "edit-reset",
+  "device": {
+   "kind": "desktop",
+   "width": 1440,
+   "height": 900
+  },
+  "faults": {},
+  "chaos": [],
+  "journey": "completed",
+  "orderCreated": false,
+  "orders": [],
+  "invoiceGenerated": null,
+  "whatsappMockSent": null,
+  "adminOrderVisible": null,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 9,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "two tabs: saved draft is size=6in sponge=red-velvet (last writer wins; tabs do not merge)"
+  ],
+  "metrics": {
+   "eventsActual": [
+    "cake_started",
+    "custom_cake_abandoned",
+    "customizer_opened",
+    "design_reopened",
+    "option_selected",
+    "page_view"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 0,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 50.6
+  },
+  "eventsExpected": [
+   "cake_started",
+   "customizer_opened",
+   "option_selected"
+  ],
+  "eventsActual": [
+   "cake_started",
+   "custom_cake_abandoned",
+   "customizer_opened",
+   "design_reopened",
+   "option_selected",
+   "page_view"
+  ]
+ },
+ {
+  "clientId": "CLIENT-099",
+  "seed": 21037066,
+  "persona": "exploratory",
+  "journeyType": "standard",
+  "device": {
+   "kind": "mobile",
+   "width": 390,
+   "height": 844
+  },
+  "faults": {},
+  "chaos": [
+   "status-flow"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 2410,
+    "items": 2,
+    "custom": false,
+    "payment": "PAID"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 28,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [
+   "status flow ['PREPARING', 'READY', 'OUT_FOR_DELIVERY', 'DELIVERED']"
+  ],
+  "metrics": {
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "checkout_started",
+    "delivery_status_changed",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "payment_success",
+    "product_added",
+    "product_removed",
+    "product_view",
+    "recommendation_shown",
+    "search_completed",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 0
+   },
+   "durationSec": 31.4
+  },
+  "eventsExpected": [
+   "checkout_started",
+   "order_created",
+   "page_view",
+   "payment_success",
+   "product_added",
+   "product_view",
+   "search_completed"
+  ],
+  "eventsActual": [
+   "checkout_started",
+   "delivery_status_changed",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "payment_success",
+   "product_added",
+   "product_removed",
+   "product_view",
+   "recommendation_shown",
+   "search_completed",
+   "tracking_viewed"
+  ]
+ },
+ {
+  "clientId": "CLIENT-100",
+  "seed": 21044985,
+  "persona": "edits-repeatedly",
+  "journeyType": "custom",
+  "device": {
+   "kind": "mobile",
+   "width": 375,
+   "height": 812
+  },
+  "faults": {
+   "whatsapp": "timeout-once"
+  },
+  "chaos": [
+   "back-button"
+  ],
+  "journey": "completed",
+  "orderCreated": true,
+  "orders": [
+   {
+    "id": "TRS-1042",
+    "total": 3330,
+    "items": 1,
+    "custom": true,
+    "payment": "DUE"
+   }
+  ],
+  "invoiceGenerated": true,
+  "whatsappMockSent": true,
+  "adminOrderVisible": true,
+  "frontendScore": 100,
+  "automationScore": 100,
+  "criticalFailures": [],
+  "warnings": [],
+  "checksRun": 31,
+  "checksFailed": 0,
+  "failedChecks": [],
+  "notes": [],
+  "metrics": {
+   "message": "spaces",
+   "cakes": [
+    {
+     "config": {
+      "size": "10in",
+      "shape": "round",
+      "sponge": "red-velvet",
+      "filling": "salted-caramel",
+      "frosting": "buttercream",
+      "finish": "smooth",
+      "color": "cream",
+      "packaging": "standard"
+     },
+     "toppings": [],
+     "decorations": [],
+     "print": false,
+     "expected": 3330,
+     "shown": 3330,
+     "hours": 36
+    }
+   ],
+   "invoiceGenerated": true,
+   "whatsappSent": true,
+   "adminVisible": true,
+   "eventsActual": [
+    "cake_completed",
+    "cake_started",
+    "checkout_started",
+    "custom_cake_added_to_cart",
+    "custom_cake_ordered",
+    "customizer_opened",
+    "message_added",
+    "option_selected",
+    "order_created",
+    "page_view",
+    "payment_started",
+    "recommendation_shown",
+    "tracking_viewed"
+   ],
+   "eventsMissing": [],
+   "eventCounts": {
+    "order_created": 1,
+    "custom_cake_added_to_cart": 1
+   },
+   "durationSec": 28.4
+  },
+  "eventsExpected": [
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created"
+  ],
+  "eventsActual": [
+   "cake_completed",
+   "cake_started",
+   "checkout_started",
+   "custom_cake_added_to_cart",
+   "custom_cake_ordered",
+   "customizer_opened",
+   "message_added",
+   "option_selected",
+   "order_created",
+   "page_view",
+   "payment_started",
+   "recommendation_shown",
+   "tracking_viewed"
+  ]
+ }
+]

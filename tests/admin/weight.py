@@ -20,8 +20,6 @@ async def run(browser, base, path, width):
     cdp = await ctx.new_cdp_session(page)
     await cdp.send('Performance.enable')
     await cdp.send('Emulation.setCPUThrottlingRate', {'rate': 4 if width < 800 else 2})
-    js_bytes = {'n': 0}
-    page.on('response', lambda r: js_bytes.__setitem__('n', js_bytes['n'] + int(r.headers.get('content-length', '0') or 0)) if r.request.resource_type == 'script' else None)
     await page.goto(base + path, wait_until='load')
     await page.wait_for_timeout(1500)
     m0 = {x['name']: x['value'] for x in (await cdp.send('Performance.getMetrics'))['metrics']}
@@ -29,11 +27,19 @@ async def run(browser, base, path, width):
     m1 = {x['name']: x['value'] for x in (await cdp.send('Performance.getMetrics'))['metrics']}
     anims = await page.evaluate('document.getAnimations().filter(a => a.playState === "running").length')
     dom = await page.evaluate('document.getElementsByTagName("*").length')
+    # Resource Timing, not content-length: the server streams chunked responses.
+    # jsLoadKB is what arrives before the load event; jsKB adds idle-time route prefetches.
+    js, js_load = await page.evaluate("""() => {
+      const e = performance.getEntriesByType('resource').filter(x => x.initiatorType === 'script' || x.name.endsWith('.js'));
+      const load = performance.getEntriesByType('navigation')[0].loadEventEnd;
+      const sum = (xs) => xs.reduce((n, x) => n + (x.encodedBodySize || 0), 0);
+      return [sum(e), sum(e.filter(x => x.startTime <= load))];
+    }""")
     await ctx.close()
     return {
         'loadScriptMs': round(m0['ScriptDuration'] * 1000), 'loadLayoutMs': round(m0['LayoutDuration'] * 1000),
         'idleTaskMs': round((m1['TaskDuration'] - m0['TaskDuration']) * 1000), 'idleScriptMs': round((m1['ScriptDuration'] - m0['ScriptDuration']) * 1000),
-        'runningAnimations': anims, 'jsKB': round(js_bytes['n'] / 1024), 'domNodes': dom, 'heapMB': round(m1['JSHeapUsedSize'] / 1048576, 1),
+        'runningAnimations': anims, 'jsLoadKB': round(js_load / 1024), 'jsKB': round(js / 1024), 'domNodes': dom, 'heapMB': round(m1['JSHeapUsedSize'] / 1048576, 1),
     }
 
 
