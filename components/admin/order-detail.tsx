@@ -9,6 +9,8 @@ import { canCancel, type Order } from '@/lib/orders';
 import { auditFor } from '@/lib/admin/audit';
 import { deliverBy, dueState, hasCustom, minutesInStatus, orderTimeline, priorityOf, requiredBy } from '@/lib/admin/order-ops';
 import { maskEmail, maskPhone } from '@/lib/admin/permissions';
+import { PAYMENT_STATUS_LABEL } from '@/lib/admin/payments';
+import { ISSUE_CATEGORY_LABEL, ISSUE_STATUS_LABEL, isOpenIssue } from '@/lib/admin/issues';
 import { useAdmin } from './admin-provider';
 import { AdvanceButton, useOrderActions } from './order-actions';
 import { useInvoiceActions } from './invoice-actions';
@@ -31,6 +33,9 @@ export function OrderDetail({ order }: { order: Order }) {
   const timeline = orderTimeline(order, admin.automation.log, auditFor(admin.audit, order.id));
   const p = priorityOf(order, now);
   const due = requiredBy(order);
+  const payments = admin.payments.filter((x) => x.orderId === order.id).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.attempt - b.attempt);
+  const issues = admin.issues.filter((x) => x.orderId === order.id);
+  const customer = admin.customerByPhone.get(order.customer.phone);
 
   const retry = (id: string) => admin.act({
     permission: 'automations.retry', action: 'automation.retried', entity: { type: 'automation', id, label: order.id }, before: { status: 'failed' }, after: { status: 'retrying' },
@@ -69,7 +74,7 @@ export function OrderDetail({ order }: { order: Order }) {
         <section>
           <h3 className="ad-section-title">Customer</h3>
           <dl className="ad-dl">
-            <dt>Name</dt><dd>{order.customer.name}</dd>
+            <dt>Name</dt><dd>{order.customer.name}{customer && <span className="ad-sub"><Link className="ad-link" href={`/admin/customers?q=${encodeURIComponent(order.customer.name)}` as Route}>{customer.id}</Link> · {customer.orderCount} order{customer.orderCount === 1 ? '' : 's'} · {rupees(customer.totalSpend)} lifetime</span>}</dd>
             <dt>Phone</dt><dd>{pii ? <a href={`tel:${order.customer.phone}`}>{order.customer.phone}</a> : maskPhone(order.customer.phone)}</dd>
             <dt>Email</dt><dd>{order.customer.email ? (pii ? order.customer.email : maskEmail(order.customer.email)) : <span className="ad-muted">—</span>}</dd>
             <dt>Address</dt><dd>{pii ? `${order.address}, ${order.city} ${order.pin}` : `${order.city} ${order.pin.slice(0, 3)}•••`}</dd>
@@ -123,6 +128,33 @@ export function OrderDetail({ order }: { order: Order }) {
             <dt>Slot</dt><dd>{order.slot}</dd>
             <dt>Address</dt><dd>{pii ? `${order.address}, ${order.city}` : order.city}</dd>
           </dl>
+        </section>
+      </div>
+
+      <div className="ad-detail-grid">
+        <section>
+          <h3 className="ad-section-title">Payment records</h3>
+          {payments.length === 0 ? <p className="ad-muted small">No payment records.</p> : (
+            <ul className="ad-lines">{payments.map((x) => (
+              <li key={x.id}>
+                <span><Link className="ad-link ad-mono" href={`/admin/payments?payment=${x.id}` as Route}>{x.id}</Link> · {x.method === 'COD' ? 'pay at door' : `attempt ${x.attempt}`}{x.failureReason && <span className="ad-sub">{x.failureReason}</span>}
+                  {x.refunds.map((r) => <span key={r.id} className="ad-sub">{r.id}: {rupees(r.amount)} refund {r.status === 'PROCESSED' ? 'processed' : 'pending'}</span>)}</span>
+                <span><Badge tone={x.status === 'FAILED' ? 'bad' : x.status === 'CAPTURED' ? 'ok' : x.status.includes('REFUND') ? 'warn' : 'neutral'}>{PAYMENT_STATUS_LABEL[x.status]}</Badge></span>
+              </li>
+            ))}</ul>
+          )}
+        </section>
+        <section>
+          <h3 className="ad-section-title">Issues</h3>
+          {issues.length === 0 ? <p className="ad-muted small">No issues reported.</p> : (
+            <ul className="ad-lines">{issues.map((x) => (
+              <li key={x.id}>
+                <span><Link className="ad-link ad-mono" href={`/admin/issues?issue=${x.id}&view=all` as Route}>{x.id}</Link> · {ISSUE_CATEGORY_LABEL[x.category]}<span className="ad-sub">{x.description}</span></span>
+                <span><Badge tone={isOpenIssue(x) ? 'warn' : 'ok'}>{ISSUE_STATUS_LABEL[x.status]}</Badge></span>
+              </li>
+            ))}</ul>
+          )}
+          {admin.can('issues.manage') && <Link className="ad-btn ad-btn-sm ad-no-print" href={`/admin/issues?new=1&order=${order.id}` as Route}>Report an issue…</Link>}
         </section>
       </div>
 

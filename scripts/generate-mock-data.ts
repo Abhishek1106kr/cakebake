@@ -669,6 +669,24 @@ const DETAIL_FROM = ANCHOR.getTime() - 56 * DAY;
 DAYS.forEach((day, di) => {
   const isAnchorDay = day.getTime() === ANCHOR_DAY.getTime();
   const lastDays = ANCHOR_DAY.getTime() - day.getTime() < 6 * DAY;
+  // Planned lows: the last delivery before the final six days is sized so that normal use
+  // (counter estimate plus the online orders actually placed) ends near the planned level today.
+  if (ANCHOR_DAY.getTime() - day.getTime() === 6 * DAY) {
+    for (const i of ING.filter((x) => END_LOW[x.id])) {
+      let expected = 0;
+      for (let k = 0; k < 6; k += 1) {
+        const d2 = new Date(day.getTime() + k * DAY);
+        expected += i.reorderPoint * 0.34 * (DOW[parts(d2).dow] / 1.05) + (needsFor((ordersByDay.get(dayKey(d2)) ?? []).flatMap((o) => o.items))[i.id] ?? 0);
+      }
+      expected += i.reorderPoint * 0.34 * ((ANCHOR.getTime() - ANCHOR_DAY.getTime()) / DAY) + (needsFor((ordersByDay.get(dayKey(ANCHOR_DAY)) ?? []).flatMap((o) => o.items))[i.id] ?? 0);
+      const amount = round3(Math.max(0, i.reorderPoint * END_LOW[i.id] + expected - level.get(i.id)!));
+      if (amount > 0) {
+        mv({ at: iso(new Date(day.getTime() + 8 * HOUR)), ingredientId: i.id, delta: amount, reason: 'Restock', note: 'Supplier delivery (smaller lot: supplier short)', actor: 'staff-manager' });
+        level.set(i.id, round3(level.get(i.id)! + amount));
+      }
+      restockDue.set(i.id, false);
+    }
+  }
   // Morning deliveries for anything that ran low yesterday.
   for (const i of ING) {
     if (!restockDue.get(i.id)) continue;
@@ -693,12 +711,8 @@ DAYS.forEach((day, di) => {
     const seasonal = i.id === 'mango-pulp' ? (inSeason('mango-danish', day) ? 1 : 0) : i.id === 'dried-fruit' ? (inSeason('plum-cake', day) ? 1.6 : 0.6) : 1;
     let counter = round3(i.reorderPoint * 0.34 * dowF * seasonal * (0.8 + rnd() * 0.4) * endOfUsage);
     const on = round3(online[i.id] ?? 0);
-    if (END_LOW[i.id] && lastDays) {
-      // Land at the planned level on the anchor: the remaining days use what's needed to get there.
-      const daysLeft = (ANCHOR.getTime() - day.getTime()) / DAY;
-      const target = i.reorderPoint * END_LOW[i.id];
-      counter = round3(Math.max(0, (level.get(i.id)! - target) / Math.max(1, daysLeft) - on));
-    }
+    // Planned lows never run out: the last day's use stops short of empty (still realistic: rationed).
+    if (END_LOW[i.id] && lastDays) counter = round3(Math.max(0, Math.min(counter, level.get(i.id)! - on - i.reorderPoint * 0.15)));
     if (on > level.get(i.id)!) {
       // The shop never takes an order it can't make: the kitchen tops up the same morning.
       const topUp = round3(i.reorderPoint * 3 - level.get(i.id)! + on);

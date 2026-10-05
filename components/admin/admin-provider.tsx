@@ -23,11 +23,12 @@ import { buildCatalog, type ProductRecord } from '@/lib/admin/catalog';
 import { buildCakeCatalog, type CakeOverrides } from '@/lib/admin/cake-builder';
 import { attentionThresholds, type SettingsValues } from '@/lib/admin/settings';
 import { buildCustomers, type Customer, type CustomerProfile } from '@/lib/admin/customers';
-import { deriveAttention, withStates, type AttentionItem, type AttentionState } from '@/lib/admin/attention';
+import { deriveAttention, seedAttention, withStates, type AttentionItem, type AttentionState } from '@/lib/admin/attention';
 import type { Announcement, Campaign, ContentSlot } from '@/lib/admin/marketing';
 import type { MediaOverlay } from '@/lib/admin/media-library';
 import { announceCatalogChange } from '@/lib/catalog/live';
 import { registerSeedJobs, retryJob } from '@/lib/automation/runner';
+import { registerRecordedUsage } from '@/engine/intelligence';
 import type { Invoice, Job, AutomationEvent } from '@/lib/automation/automation';
 import type { CakeCatalog } from '@/lib/cake/config';
 
@@ -164,6 +165,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const payments = useMemo(() => paymentsView(store.orders, store.seed?.payments ?? [], store.isShippedOrder), [store.orders, store.seed, store.isShippedOrder]);
   const customerByPhone = useMemo(() => new Map((store.seed?.customers ?? []).map((c) => [c.phone, c])), [store.seed]);
   useEffect(() => { if (store.seed) registerSeedJobs(store.seed.automations.jobs); }, [store.seed]);
+  // Forecasts use the recorded daily stock use (online and counter), not online orders alone.
+  useEffect(() => {
+    if (!store.seed) return;
+    const sales = store.seed.inventory.movements.filter((m) => m.reason === 'Sale' && m.period === 'day');
+    registerRecordedUsage((now, days) => {
+      const start = new Date(now); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - (days - 1));
+      const out: Record<string, number[]> = {};
+      for (const m of sales) {
+        const idx = Math.floor((Date.parse(m.at) - start.getTime()) / 86_400_000);
+        if (idx < 0 || idx >= days) continue;
+        (out[m.ingredientId] ??= new Array(days).fill(0))[idx] += -m.delta;
+      }
+      return out;
+    });
+    return () => registerRecordedUsage(null);
+  }, [store.seed]);
   const events = useEvents();
 
   const staff = staffList.find((s) => s.id === sessionId) ?? staffList.find((s) => s.role === 'OWNER') ?? null;
@@ -256,7 +273,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     orders: store.orders, inventory: store.inventory, jobs: automation.jobs, events, now, thresholds,
     newSince: seen || new Date(now.getTime() - 3600000).toISOString(), storageWarning: storageProblem(),
   }), [store.orders, store.inventory, automation.jobs, events, now, thresholds, seen]);
-  const attention = useMemo(() => withStates(attentionItems, attentionStates), [attentionItems, attentionStates]);
+  const seedNotes = useMemo(() => seedAttention(store.seed?.notifications ?? []), [store.seed]);
+  // Live alerts plus the shipped history; a state changed here wins over the shipped one.
+  const attention = useMemo(() => [
+    ...withStates(attentionItems, attentionStates),
+    ...seedNotes.map(({ seedState, ...item }) => ({ ...item, state: attentionStates[item.id] ?? seedState })),
+  ].sort((a, b) => b.at.localeCompare(a.at)), [attentionItems, attentionStates, seedNotes]);
   const unread = attention.filter((a) => a.state === 'UNREAD').length;
 
   const setAttentionState = useCallback((ids: string[], state: AttentionState) => {

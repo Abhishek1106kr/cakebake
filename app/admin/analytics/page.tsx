@@ -9,12 +9,12 @@ import { useStore } from '@/components/store-provider';
 import { useAdmin } from '@/components/admin/admin-provider';
 import { Chips, Empty, Guard, Kpi, PageHeader, Panel, rupees } from '@/components/admin/ui';
 import { cakeAnalytics, confidenceLabel, funnel, operationStats, productPerformance, searchAnalytics, stockOutlook } from '@/engine/intelligence';
-import { analyticsCsvRows, categoryPerformance, checkoutStats, comparePeriods, dailySeries, delta, deliveryStages, notificationStats, paymentStats, recommendationStats } from '@/lib/admin/analytics';
+import { analyticsCsvRows, attemptStats, cakeChoices, categoryPerformance, checkoutStats, comparePeriods, dailySeries, delta, deliveryStages, notificationStats, paymentStats, recommendationStats, seedTraffic } from '@/lib/admin/analytics';
 import { campaignPerformance, effectiveStatus } from '@/lib/admin/marketing';
 import { toCsv, downloadText, stamp } from '@/lib/admin/csv';
 
-type Range = '1' | '7' | '30';
-const RANGES: { id: Range; label: string }[] = [{ id: '1', label: 'Today' }, { id: '7', label: '7 days' }, { id: '30', label: '30 days' }];
+type Range = '1' | '7' | '30' | '90';
+const RANGES: { id: Range; label: string }[] = [{ id: '1', label: 'Today' }, { id: '7', label: '7 days' }, { id: '30', label: '30 days' }, { id: '90', label: '90 days' }];
 const STEP_LABEL = { product_view: 'Viewed a product', product_added: 'Added to bag', checkout_started: 'Started checkout', order_created: 'Placed an order' } as const;
 const pct = (n: number | null) => (n === null ? '—' : `${Math.round(n * 100)}%`);
 const vs = (d: number | null) => (d === null ? 'no earlier data' : `${d >= 0 ? '+' : ''}${d}% vs previous`);
@@ -24,7 +24,7 @@ export default function AnalyticsPage() {
 }
 
 function Analytics() {
-  const { orders, inventory } = useStore();
+  const { orders, inventory, seed } = useStore();
   const admin = useAdmin();
   const { now, events } = admin;
   const [range, setRange] = useState<Range>('7');
@@ -34,16 +34,57 @@ function Analytics() {
   const from = now.getTime() - days * 86400000;
   const inRange = useMemo(() => orders.filter((o) => Date.parse(o.createdAt) >= from), [orders, from]);
   const eventsInRange = useMemo(() => events.filter((e) => Date.parse(e.timestamp) >= from), [events, from]);
-  const steps = useMemo(() => funnel(eventsInRange), [eventsInRange]);
-  const search = useMemo(() => searchAnalytics(eventsInRange), [eventsInRange]);
-  const cakes = useMemo(() => cakeAnalytics(eventsInRange), [eventsInRange]);
+  // Visits: the demo's modelled traffic (from the orders) plus anything recorded in this browser.
+  const traffic = useMemo(() => (seed ? seedTraffic(seed.analytics.days, from) : null), [seed, from]);
+  const liveSteps = useMemo(() => funnel(eventsInRange), [eventsInRange]);
+  const steps = useMemo(() => {
+    if (!traffic) return liveSteps;
+    const placed = inRange.length;
+    const modelled: Record<string, number> = { product_view: Math.round(traffic.sessions * 0.58), product_added: traffic.addToCart, checkout_started: traffic.checkoutStarted, order_created: placed };
+    const merged = liveSteps.map((x) => ({ ...x, sessions: x.sessions + (modelled[x.step] ?? 0) }));
+    const first = merged[0].sessions;
+    return merged.map((x) => ({ ...x, rate: first ? Math.round((x.sessions / first) * 100) / 100 : null }));
+  }, [liveSteps, traffic, inRange]);
+  const liveSearch = useMemo(() => searchAnalytics(eventsInRange), [eventsInRange]);
+  const search = useMemo(() => {
+    if (!traffic || !seed || liveSearch.searches > 0) return liveSearch;
+    // Modelled: the period's searches split by the shipped top-search shares.
+    const total = seed.analytics.topSearches.reduce((sum, x) => sum + x.count, 0) || 1;
+    const share = traffic.searches * 0.6 / total;
+    const top = seed.analytics.topSearches.map((x) => ({ query: x.term, count: Math.round(x.count * share), avgResults: x.resultCount })).filter((x) => x.count > 0);
+    const zero = top.filter((x) => x.avgResults === 0);
+    return { ...liveSearch, searches: traffic.searches, zeroResultRate: traffic.searches ? zero.reduce((sum, x) => sum + x.count, 0) / traffic.searches : 0, topQueries: top.slice(0, 10), zeroResultQueries: zero.map((x) => ({ query: x.query, count: x.count })) };
+  }, [liveSearch, traffic, seed]);
+  const liveCakes = useMemo(() => cakeAnalytics(eventsInRange), [eventsInRange]);
+  const chosen = useMemo(() => (seed ? cakeChoices(seed.customCakes, from) : null), [seed, from]);
+  const cakes = useMemo(() => {
+    if (!traffic || !chosen) return liveCakes;
+    const ordered = liveCakes.ordered + inRange.filter((o) => o.status !== 'CANCELLED').reduce((sum, o) => sum + o.items.filter((l) => l.custom).length, 0);
+    const opened = liveCakes.opened + traffic.cakePlaygroundSessions;
+    const added = liveCakes.added + traffic.customCakeAdds;
+    return {
+      ...liveCakes, opened, started: liveCakes.started + Math.round(traffic.cakePlaygroundSessions * 0.7), added, ordered, conversion: opened ? added / opened : 0,
+      popular: liveCakes.popular.length ? liveCakes.popular : chosen.popular, combos: liveCakes.combos.length ? liveCakes.combos : chosen.combos,
+      withMessage: liveCakes.withMessage || chosen.withMessage,
+    };
+  }, [liveCakes, traffic, chosen, inRange]);
   const perf = useMemo(() => productPerformance(inRange, eventsInRange).slice(0, 10), [inRange, eventsInRange]);
   const cats = useMemo(() => categoryPerformance(inRange), [inRange]);
-  const checkout = useMemo(() => checkoutStats(eventsInRange), [eventsInRange]);
+  const liveCheckout = useMemo(() => checkoutStats(eventsInRange), [eventsInRange]);
+  const attempts = useMemo(() => attemptStats(admin.payments, from), [admin.payments, from]);
+  const checkout = useMemo(() => {
+    if (!traffic) return liveCheckout;
+    const started = liveCheckout.started + traffic.checkoutStarted;
+    return { ...liveCheckout, started, paymentStarted: attempts.attempts, paid: attempts.paid, failed: attempts.failed, completion: started ? inRange.length / started : 0 };
+  }, [liveCheckout, traffic, attempts, inRange]);
   const pay = useMemo(() => paymentStats(inRange, eventsInRange), [inRange, eventsInRange]);
   const stages = useMemo(() => deliveryStages(inRange), [inRange]);
   const notes = useMemo(() => notificationStats(admin.automation.jobs.filter((j) => Date.parse(j.createdAt) >= from)), [admin.automation.jobs, from]);
-  const recs = useMemo(() => recommendationStats(eventsInRange), [eventsInRange]);
+  const recs = useMemo(() => {
+    const live = recommendationStats(eventsInRange);
+    if (!traffic || !traffic.recommendationImpressions) return live;
+    return [...live, { surface: 'Menu, product pages and bag (modelled)', shown: traffic.recommendationImpressions, clicked: traffic.recommendationClicks, ctr: traffic.recommendationClicks / traffic.recommendationImpressions }];
+  }, [eventsInRange, traffic]);
   const outlook = useMemo(() => stockOutlook(inventory, orders, now), [inventory, orders, now]);
   const health = useMemo(() => Object.entries(operationStats()), [events, orders]); // eslint-disable-line react-hooks/exhaustive-deps
   const name = (id: string) => products.find((p) => p.id === id)?.name ?? admin.catalog.find((p) => p.id === id)?.name ?? id;
@@ -52,7 +93,7 @@ function Analytics() {
 
   return (
     <div>
-      <PageHeader eyebrow="Insight" title="Analytics" description="From the orders, visits and jobs recorded in this browser. Each section says how many records it counts."
+      <PageHeader eyebrow="Insight" title="Analytics" description="Orders, payments and jobs are the demo’s records; visits, views and searches are modelled from those orders (about 2–3% of sessions order), plus anything recorded in this browser."
         actions={admin.can('analytics.export') && <button type="button" className="ad-btn" onClick={() => downloadText(`tresor-analytics-${range}d-${stamp()}.csv`, toCsv(analyticsCsvRows(series)))}>Export daily ({series.length} days) <ArrowUpRight size={14} /></button>} />
       <div className="ad-toolbar"><Chips label="Period" items={RANGES} value={range} onChange={setRange} /><span className="ad-muted small">Compared with the {days === 1 ? 'day' : `${days} days`} before.</span></div>
       <div className="ad-kpis">
@@ -103,8 +144,8 @@ function Analytics() {
           </dl>
           <div className="ad-section-title">By method</div>
           {pay.byMethod.length === 0 ? <p className="ad-muted small">No orders.</p> : <ul className="ad-lines">{pay.byMethod.map((m) => <li key={m.method}><span>{m.method === 'COD' ? 'Cash on delivery' : `${m.method} (simulated)`}</span><span className="ad-num">{m.orders} · {rupees(m.revenue)}</span></li>)}</ul>}
-          {pay.failures.length > 0 && <><div className="ad-section-title">Failed attempts</div><ul className="ad-lines">{pay.failures.map((f) => <li key={f.reason}><span>{f.reason}</span><span className="ad-num">{f.count}</span></li>)}</ul></>}
-          <p className="ad-muted small">Failed payments never create an order; they’re counted from payment events.</p>
+          {(attempts.reasons.length > 0 || pay.failures.length > 0) && <><div className="ad-section-title">Failed attempts</div><ul className="ad-lines">{[...attempts.reasons, ...pay.failures].map((f, k) => <li key={`${f.reason}-${k}`}><span>{f.reason}</span><span className="ad-num">{f.count}</span></li>)}</ul></>}
+          <p className="ad-muted small">From the payment records: a failed attempt never creates an order. <Link className="ad-link" href="/admin/payments?status=FAILED">See failed payments</Link></p>
         </Panel>
         <Panel title="Delivery">
           <table className="table ad-cards"><thead><tr><th>Step</th><th className="num">Median</th><th className="num">Slowest 10%</th><th className="num">Orders</th></tr></thead>
@@ -151,8 +192,8 @@ function Analytics() {
         </Panel>
         <Panel title="Campaigns">
           {admin.campaigns.filter((x) => !x.archived).length === 0 ? <Empty>No campaigns yet.</Empty> : (
-            <table className="table ad-cards"><thead><tr><th>Campaign</th><th>Status</th><th className="num">Views / clicks</th><th className="num">Featured revenue</th></tr></thead>
-              <tbody>{admin.campaigns.filter((x) => !x.archived).map((cmp2) => { const r = campaignPerformance(cmp2, events, orders); return <tr key={cmp2.id}><td data-label="Campaign"><Link className="ad-rowlink" href={`/admin/campaigns?c=${cmp2.id}` as Route}>{cmp2.name}</Link></td><td data-label="Status">{effectiveStatus(cmp2, now).toLowerCase()}</td><td data-label="Views / clicks" className="num">{r.views} / {r.clicks}</td><td data-label="Featured revenue" className="num">{rupees(r.featuredRevenue)}</td></tr>; })}</tbody></table>
+            <table className="table ad-cards"><thead><tr><th>Campaign</th><th>Status</th><th className="num">Orders</th><th className="num">Featured revenue</th></tr></thead>
+              <tbody>{admin.campaigns.filter((x) => !x.archived).map((cmp2) => { const r = campaignPerformance(cmp2, events, orders); return <tr key={cmp2.id}><td data-label="Campaign"><Link className="ad-rowlink" href={`/admin/campaigns?c=${cmp2.id}` as Route}>{cmp2.name}</Link></td><td data-label="Status">{effectiveStatus(cmp2, now).toLowerCase()}</td><td data-label="Orders" className="num">{orders.filter((o) => o.status !== 'CANCELLED' && o.createdAt >= cmp2.start && o.createdAt <= cmp2.end && o.items.some((l) => cmp2.featuredProductIds.includes(l.product.id))).length}</td><td data-label="Featured revenue" className="num">{rupees(r.featuredRevenue)}</td></tr>; })}</tbody></table>
           )}
         </Panel>
       </div>

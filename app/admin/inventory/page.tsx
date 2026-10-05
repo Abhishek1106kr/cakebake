@@ -118,7 +118,7 @@ function Inventory() {
 }
 
 function IngredientDrawer({ item, outlook, onClose }: { item: Ingredient; outlook?: StockOutlook; onClose: () => void }) {
-  const { orders, movements, recordMovement, setReorderPoint } = useStore();
+  const { orders, movementHistory, recordMovement, setReorderPoint } = useStore();
   const admin = useAdmin();
   const { now } = admin;
   const [reason, setReason] = useState<MovementReason>('Restock');
@@ -127,10 +127,17 @@ function IngredientDrawer({ item, outlook, onClose }: { item: Ingredient; outloo
   const [reorder, setReorder] = useState<number | null>(item.reorderPoint);
   const [error, setError] = useState('');
   const usage = useMemo(() => usageBreakdown(item.id, orders, now), [item.id, orders, now]);
-  const trend = useMemo(() => dailyConsumption(orders, now, 14)[item.id] ?? new Array(14).fill(0), [orders, now, item.id]);
+  const itemHistory = useMemo(() => movementHistory.filter((m) => m.ingredientId === item.id), [movementHistory, item.id]);
+  // Daily use for the last 14 days: recorded sales (online and counter) where the history has them, else online orders.
+  const trend = useMemo(() => {
+    const days = [...Array(14)].map((_, i) => { const d = new Date(now); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (13 - i)); return d.getTime(); });
+    const sales = itemHistory.filter((m) => m.reason === 'Sale' && Date.parse(m.at) >= days[0]);
+    if (!sales.length) return dailyConsumption(orders, now, 14)[item.id] ?? new Array(14).fill(0);
+    return days.map((start) => Math.round(-sales.filter((m) => Date.parse(m.at) >= start && Date.parse(m.at) < start + 86_400_000).reduce((sum, m) => sum + m.delta, 0) * 1000) / 1000);
+  }, [itemHistory, orders, now, item.id]);
   const consuming = useMemo(() => ordersConsuming(item.id, orders), [item.id, orders]);
-  const history = movements.filter((m) => m.ingredientId === item.id).slice(0, 20);
-  const why = whyLow(item, usage, outlook);
+  const history = itemHistory.slice(0, 20);
+  const why = whyLow(item, usage, outlook, itemHistory, now);
   const canAdjust = admin.can('inventory.adjust');
 
   const submit = async () => {
@@ -214,10 +221,10 @@ function IngredientDrawer({ item, outlook, onClose }: { item: Ingredient; outloo
         </section>
       </div>
 
-      <h3 className="ad-section-title">Movement history</h3>
-      {history.length === 0 ? <p className="ad-muted small">No manual movements yet.</p> : (
+      <h3 className="ad-section-title">Stock movements {itemHistory.length > 20 && <span className="ad-muted small">(latest 20 of {itemHistory.length.toLocaleString('en-IN')})</span>}</h3>
+      {history.length === 0 ? <p className="ad-muted small">No movements yet.</p> : (
         <table className="table"><thead><tr><th>When</th><th>Type</th><th className="num">Change</th><th>By</th><th>Note</th></tr></thead>
-          <tbody>{history.map((m) => <tr key={m.id}><td>{dateTime(m.at)}</td><td>{m.reason}</td><td className="num">{m.reason === 'Reserve' || m.reason === 'Release' ? `${m.reason === 'Reserve' ? '+' : '−'}${formatQty(Math.abs(m.delta), item.unit)} reserved` : `${m.delta >= 0 ? '+' : '−'}${formatQty(Math.abs(m.delta), item.unit)}`}</td><td>{m.actor ?? '—'}</td><td className="ad-muted">{m.note ?? ''}</td></tr>)}</tbody>
+          <tbody>{history.map((m) => <tr key={m.id}><td>{dateTime(m.at)}</td><td>{m.reason === 'Sale' ? 'Used (sales)' : m.reason}</td><td className="num">{m.reason === 'Reserve' || m.reason === 'Release' ? `${m.reason === 'Reserve' ? '+' : '−'}${formatQty(Math.abs(m.delta), item.unit)} reserved` : `${m.delta >= 0 ? '+' : '−'}${formatQty(Math.abs(m.delta), item.unit)}`}</td><td>{m.actor ? admin.staffName(m.actor) : '—'}</td><td className="ad-muted">{m.note ?? ''}</td></tr>)}</tbody>
         </table>
       )}
     </Drawer>

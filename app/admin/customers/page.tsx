@@ -27,18 +27,17 @@ function Customers() {
   const [query, setQuery] = useUrlParam('q', '');
   const [openId, setOpenId] = useUrlParam('c', '');
   const [sort, setSort] = useState<Sort>('recent');
-  const [hideSamples, setHideSamples] = useState(false);
   const [page, setPage] = useState(1);
   const pii = admin.can('customers.pii');
   const f = (FILTERS.some((x) => x.id === filter) ? filter : 'ALL') as LF;
-  const base = admin.customers.filter((c) => !hideSamples || !c.sample);
+  const base = admin.customers;
   const shown = useMemo(() => {
     const list = searchCustomers(base, pii ? query : query.replace(/\d{3,}/g, '')).filter((c) => f === 'ALL' || c.lifecycle === f);
     return [...list].sort((a, b) => (sort === 'spend' ? b.totalSpend - a.totalSpend : sort === 'orders' ? b.orderCount - a.orderCount : b.lastOrderAt.localeCompare(a.lastOrderAt)));
   }, [base, query, f, sort, pii]);
   const counts = Object.fromEntries(FILTERS.map((x) => [x.id, base.filter((c) => x.id === 'ALL' || c.lifecycle === x.id).length])) as Record<LF, number>;
   const paged = paginate(shown, page, 30);
-  useEffect(() => { setPage(1); }, [f, query, sort, hideSamples]);
+  useEffect(() => { setPage(1); }, [f, query, sort]);
   const open = admin.customers.find((c) => c.id === openId);
   const totalSpend = base.reduce((s, c) => s + c.totalSpend, 0);
 
@@ -57,7 +56,6 @@ function Customers() {
         <div className="ad-toolbar"><Chips label="Lifecycle" items={FILTERS} value={f} onChange={setFilter} counts={counts} /></div>
         <div className="ad-toolbar">
           <select className="ad-select" value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sort customers"><option value="recent">Last order</option><option value="spend">Total spend</option><option value="orders">Orders</option></select>
-          <label className="ad-toggle small"><input type="checkbox" checked={hideSamples} onChange={(e) => setHideSamples(e.target.checked)} /> Hide sample customers</label>
           <SearchField value={query} onChange={setQuery} placeholder={pii ? 'Name, phone, email or order number' : 'Name or order number'} label="Search customers" />
         </div>
         {!pii && <p className="ad-muted small"><Lock size={12} aria-hidden /> Phone numbers and emails are hidden for your role.</p>}
@@ -67,7 +65,7 @@ function Customers() {
               <thead><tr><th>Customer</th><th>Phone</th><th>Email</th><th className="num">Orders</th><th className="num">Total spend</th><th className="num">Avg order</th><th>Last order</th><th>Status</th></tr></thead>
               <tbody>{paged.items.map((c) => (
                 <tr key={c.id}>
-                  <td data-label="Customer"><button type="button" className="ad-link ad-rowlink" onClick={() => setOpenId(c.id)}>{c.name}</button>{c.sample && <span className="ad-sub">sample</span>}</td>
+                  <td data-label="Customer"><button type="button" className="ad-link ad-rowlink" onClick={() => setOpenId(c.id)}>{c.name}</button><span className="ad-sub">{admin.customerByPhone.get(c.phone)?.id ?? 'New in this browser'}</span></td>
                   <td data-label="Phone">{pii ? c.phone : maskPhone(c.phone)}</td>
                   <td data-label="Email">{c.email ? (pii ? c.email : maskEmail(c.email)) : <span className="ad-muted">—</span>}</td>
                   <td data-label="Orders" className="num">{c.orderCount}</td>
@@ -91,7 +89,15 @@ function CustomerDrawer({ customer: c, onClose }: { customer: Customer; onClose:
   const admin = useAdmin();
   const pii = admin.can('customers.pii');
   const canEdit = admin.can('customers.edit');
-  const profile = admin.profiles[c.id] ?? { id: c.id, prefs: DEFAULT_PREFS, notes: '', updatedAt: '' };
+  const seed = admin.customerByPhone.get(c.phone);
+  // Offers opted into at checkout are the starting point until a change is recorded here.
+  const startPrefs = seed ? { ...DEFAULT_PREFS, whatsappMarketing: seed.marketingOptIn, emailMarketing: seed.marketingOptIn && Boolean(seed.email) } : DEFAULT_PREFS;
+  const profile = admin.profiles[c.id] ?? { id: c.id, prefs: startPrefs, notes: seed?.notes ?? '', updatedAt: '' };
+  const orderIds = new Set(c.orders.map((o) => o.id));
+  const issues = admin.issues.filter((i) => orderIds.has(i.orderId));
+  const invoices = c.orders.map((o) => admin.automation.invoices[o.id]).filter(Boolean);
+  const payments = admin.payments.filter((x) => orderIds.has(x.orderId));
+  const refunded = payments.reduce((sum, x) => sum + x.refundedAmount, 0);
   const [notes, setNotes] = useState(profile.notes);
   useEffect(() => { setNotes(profile.notes); }, [profile.notes]);
   const rule = LIFECYCLE_RULES.find((r) => r.id === c.lifecycle)!;
@@ -111,7 +117,7 @@ function CustomerDrawer({ customer: c, onClose }: { customer: Customer; onClose:
     <Drawer open onClose={onClose} wide title={c.name} subtitle={<><Badge tone={TONE[c.lifecycle]}>{LIFECYCLE_LABEL[c.lifecycle]}</Badge><span title={rule.rule}>{rule.rule}</span></>}>
       <div className="ad-kpis">
         <Kpi label="Orders" value={c.orderCount} meta={c.orders.length > c.orderCount ? `${c.orders.length - c.orderCount} cancelled` : undefined} />
-        <Kpi label="Total spend" value={rupees(c.totalSpend)} />
+        <Kpi label="Total spend" value={rupees(c.totalSpend)} meta={refunded ? `${rupees(refunded)} refunded · net ${rupees(c.totalSpend - refunded)}` : undefined} />
         <Kpi label="Average order" value={rupees(c.averageOrder)} />
         <Kpi label="Last purchase" value={new Date(c.lastOrderAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} meta={`First ${new Date(c.firstOrderAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`} />
         <Kpi label="Top category" value={c.topCategory ?? '—'} />
@@ -120,6 +126,9 @@ function CustomerDrawer({ customer: c, onClose }: { customer: Customer; onClose:
         <section>
           <h3 className="ad-section-title">Profile</h3>
           <dl className="ad-dl">
+            <dt>Customer ID</dt><dd className="ad-mono">{seed?.id ?? 'New in this browser'}</dd>
+            {seed && <><dt>Customer since</dt><dd>{new Date(seed.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</dd><dt>Area</dt><dd>{seed.locality} {seed.pin}</dd></>}
+            {seed && seed.tags.length > 0 && <><dt>Tags</dt><dd>{seed.tags.join(' · ')}</dd></>}
             <dt>Phone</dt><dd>{pii ? c.phone : maskPhone(c.phone)}</dd>
             <dt>Email</dt><dd>{c.email ? (pii ? c.email : maskEmail(c.email)) : '—'}</dd>
             <dt>Last address</dt><dd>{pii ? c.address : 'Hidden for your role'}</dd>
@@ -146,6 +155,18 @@ function CustomerDrawer({ customer: c, onClose }: { customer: Customer; onClose:
       <table className="table ad-cards"><thead><tr><th>Order</th><th>Placed</th><th>Items</th><th>Status</th><th className="num">Total</th></tr></thead>
         <tbody>{c.orders.map((o) => <tr key={o.id}><td data-label="Order"><Link className="ad-rowlink" href={`/admin/orders/${o.id}` as Route}>{o.id}</Link></td><td data-label="Placed">{dateTime(o.createdAt)}</td><td data-label="Items" className="cell-items">{o.items.map((l) => `${l.qty} × ${l.product.name}`).join(', ')}</td><td data-label="Status"><OrderStatusBadge status={o.status} /></td><td data-label="Total" className="num">{rupees(o.total)}</td></tr>)}</tbody>
       </table>
+      <div className="ad-detail-grid">
+        <section>
+          <h3 className="ad-section-title">Issues ({issues.length})</h3>
+          {issues.length === 0 ? <p className="ad-muted small">No issues reported.</p> : <ul className="ad-lines">{issues.map((i) => <li key={i.id}><span><Link className="ad-link ad-mono" href={`/admin/issues?issue=${i.id}&view=all` as Route}>{i.id}</Link> · {i.description}</span><span className="ad-muted small">{i.status.toLowerCase().replace('_', ' ')}</span></li>)}</ul>}
+        </section>
+        <section>
+          <h3 className="ad-section-title">Invoices ({invoices.length})</h3>
+          {invoices.length === 0 ? <p className="ad-muted small">None issued.</p> : <ul className="ad-lines">{invoices.slice(0, 8).map((inv) => <li key={inv!.invoiceNumber}><Link className="ad-link ad-mono" href={`/admin/invoices?order=${inv!.orderId}` as Route}>{inv!.invoiceNumber}</Link><span className="ad-num">{rupees(inv!.total)}</span></li>)}</ul>}
+          {invoices.length > 8 && <p className="ad-muted small">and {invoices.length - 8} more</p>}
+          <p className="small"><Link className="ad-link" href={`/admin/payments?q=${encodeURIComponent(seed?.id ?? c.name)}` as Route}>{payments.length} payment record{payments.length === 1 ? '' : 's'} →</Link></p>
+        </section>
+      </div>
       <h3 className="ad-section-title">Custom cakes ({c.customCakes})</h3>
       {cakes.length === 0 ? <p className="ad-muted small">None yet.</p> : <ul className="ad-lines">{cakes.flatMap((o) => o.items.filter((l) => l.custom).map((l) => <li key={`${o.id}:${l.lineId}`}><Link className="ad-rowlink" href={`/admin/custom-cakes?order=${o.id}` as Route}>{l.custom!.title}</Link><span className="ad-muted small">{o.id} · {rupees(l.unitPrice)}</span></li>))}</ul>}
     </Drawer>

@@ -37,7 +37,10 @@ export function usageBreakdown(ingredientId: string, orders: Order[], now: Date)
 }
 
 /** Sentences explaining a low level, each traceable to a number shown beside it. */
-export function whyLow(item: Ingredient, usage: UsageBreakdown, outlook: StockOutlook | undefined): string[] {
+/** A stock movement as the explanation needs it (shipped history or this browser's). */
+export type HistoryMovement = { at: string; delta: number; reason: string; online?: number; counter?: number };
+
+export function whyLow(item: Ingredient, usage: UsageBreakdown, outlook: StockOutlook | undefined, history: HistoryMovement[] = [], now = new Date()): string[] {
   const level = stockLevel(item);
   const out: string[] = [];
   if (level === 'HEALTHY') return ['Above its reorder point.'];
@@ -51,6 +54,15 @@ export function whyLow(item: Ingredient, usage: UsageBreakdown, outlook: StockOu
     out.push(`${usage.thisWeek} ${item.unit} used in the last 7 days${top ? `, ${Math.round(top.share * 100)}% by ${top.name.toLowerCase()}` : ''}.`);
   } else {
     out.push('No orders used it in the last 7 days: the level is low from the starting stock or manual movements, not demand.');
+  }
+  // The last delivery and everything used since (online orders and the counter).
+  const lastDelivery = history.find((m) => m.reason === 'Restock');
+  if (lastDelivery) {
+    const days = Math.max(0, Math.round((now.getTime() - Date.parse(lastDelivery.at)) / 86_400_000));
+    const since = history.filter((m) => m.at > lastDelivery.at && m.delta < 0);
+    const used = Math.round(-since.reduce((s, m) => s + m.delta, 0) * 1000) / 1000;
+    const online = Math.round(since.reduce((s, m) => s + (m.online ?? 0), 0) * 1000) / 1000;
+    out.push(`Last delivery ${days === 0 ? 'today' : days === 1 ? 'yesterday' : `${days} days ago`} (+${Math.round(lastDelivery.delta * 1000) / 1000} ${item.unit}); ${used} ${item.unit} used since${online ? `, ${online} by online orders, the rest at the counter` : ''}. The next delivery isn’t booked yet.`);
   }
   if (outlook?.daysOfCover !== null && outlook?.daysOfCover !== undefined) out.push(`At about ${outlook.forecastDaily} ${item.unit} a day, it lasts ${outlook.daysOfCover} days.`);
   if (item.reserved && item.reserved >= item.onHand / 2) out.push('More than half of what’s on hand is reserved.');

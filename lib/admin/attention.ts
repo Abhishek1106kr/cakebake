@@ -7,8 +7,9 @@ import { stockLevel, availableQty, type Ingredient } from '@/lib/inventory';
 import type { Job } from '@/lib/automation/automation';
 import type { TresorEvent } from '@/engine/intelligence';
 import { dueState, hasCustom, requiredBy, customHours } from './order-ops';
+import type { SeedNotification } from '@/lib/mock-data/types';
 
-export type AttentionKind = 'NEW_ORDER' | 'LATE_ORDER' | 'LOW_STOCK' | 'CUSTOM_CAKE_DUE' | 'INVOICE_FAILED' | 'WHATSAPP_FAILED' | 'PAYMENT_FAILED' | 'DELIVERY_DELAY' | 'REFUND_PENDING' | 'SYSTEM_ISSUE';
+export type AttentionKind = 'NEW_ORDER' | 'LATE_ORDER' | 'LOW_STOCK' | 'CUSTOM_CAKE_DUE' | 'INVOICE_FAILED' | 'WHATSAPP_FAILED' | 'PAYMENT_FAILED' | 'DELIVERY_DELAY' | 'REFUND_PENDING' | 'SYSTEM_ISSUE' | 'ISSUE_CREATED';
 export type AttentionSeverity = 'critical' | 'warning' | 'info';
 export type AttentionState = 'UNREAD' | 'READ' | 'RESOLVED';
 
@@ -25,7 +26,7 @@ export type AttentionItem = {
 
 export const KIND_LABEL: Record<AttentionKind, string> = {
   NEW_ORDER: 'New order', LATE_ORDER: 'Late order', LOW_STOCK: 'Low stock', CUSTOM_CAKE_DUE: 'Custom cake due', INVOICE_FAILED: 'Invoice failed',
-  WHATSAPP_FAILED: 'WhatsApp failed', PAYMENT_FAILED: 'Payment failed', DELIVERY_DELAY: 'Delivery delay', REFUND_PENDING: 'Refund pending', SYSTEM_ISSUE: 'System issue',
+  WHATSAPP_FAILED: 'WhatsApp failed', PAYMENT_FAILED: 'Payment failed', DELIVERY_DELAY: 'Delivery delay', REFUND_PENDING: 'Refund pending', SYSTEM_ISSUE: 'System issue', ISSUE_CREATED: 'Customer issue',
 };
 
 export type AttentionInput = {
@@ -101,4 +102,22 @@ export function deriveAttention(input: AttentionInput): AttentionItem[] {
 /** Visible items: resolved ones hidden, read ones kept but quieter. */
 export function withStates(items: AttentionItem[], states: Record<string, AttentionState>): (AttentionItem & { state: AttentionState })[] {
   return items.map((i) => ({ ...i, state: states[i.id] ?? 'UNREAD' })).filter((i) => i.state !== 'RESOLVED');
+}
+
+/**
+ * The shipped notification history as attention items. Unresolved low stock, failed jobs and cake
+ * deadlines are left out: the live checks above raise those from the current records.
+ */
+export function seedAttention(notes: SeedNotification[]): (AttentionItem & { seedState: AttentionState })[] {
+  const KIND: Record<SeedNotification['type'], AttentionKind> = {
+    PAYMENT_FAILURE: 'PAYMENT_FAILED', ORDER_URGENT: 'LATE_ORDER', LOW_STOCK: 'LOW_STOCK', ISSUE_CREATED: 'ISSUE_CREATED',
+    AUTOMATION_FAILURE: 'WHATSAPP_FAILED', CUSTOM_CAKE_DEADLINE: 'CUSTOM_CAKE_DUE', DELIVERY_DELAY: 'DELIVERY_DELAY',
+  };
+  const live = new Set<SeedNotification['type']>(['LOW_STOCK', 'AUTOMATION_FAILURE', 'CUSTOM_CAKE_DEADLINE', 'ORDER_URGENT']);
+  return notes
+    .filter((n) => n.state === 'RESOLVED' || !live.has(n.type))
+    .map((n) => ({
+      id: `seed:${n.id}`, kind: KIND[n.type], severity: n.type === 'ISSUE_CREATED' || n.type === 'DELIVERY_DELAY' || n.type === 'LOW_STOCK' ? 'warning' : 'info',
+      title: n.title, detail: n.body, href: n.href, at: n.createdAt, entityId: n.resourceId, seedState: n.state,
+    }));
 }

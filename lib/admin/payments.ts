@@ -78,7 +78,7 @@ export type PaymentFilter = { status: PaymentRecordStatus | 'ALL'; method: 'ALL'
 export function filterPayments(rows: SeedPayment[], f: PaymentFilter, names: (customerId: string, orderId: string) => string): SeedPayment[] {
   const q = f.query.trim().toLowerCase();
   return rows.filter((p) => (f.status === 'ALL' || p.status === f.status) && (f.method === 'ALL' || p.method === f.method) && (f.provider === 'ALL' || p.provider === f.provider)
-    && (!q || p.id.toLowerCase().includes(q) || p.orderId.toLowerCase().includes(q) || (p.reference ?? '').toLowerCase().includes(q) || names(p.customerId, p.orderId).toLowerCase().includes(q)));
+    && (!q || p.id.toLowerCase().includes(q) || p.orderId.toLowerCase().includes(q) || p.customerId.toLowerCase().includes(q) || (p.reference ?? '').toLowerCase().includes(q) || names(p.customerId, p.orderId).toLowerCase().includes(q)));
 }
 
 /** Headline figures over a period (successful payments only for value). */

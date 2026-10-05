@@ -58,6 +58,14 @@ export function dailyConsumption(orders: OrderForStock[], now: Date, days = 14):
   return out;
 }
 
+/**
+ * Recorded daily use (online orders plus counter sales), when the bakery has a stock history.
+ * Orders alone undercount ingredients that are mostly used at the counter. Registered by the admin.
+ */
+type RecordedUsage = (now: Date, days: number) => Record<string, number[]>;
+let recordedUsage: RecordedUsage | null = null;
+export function registerRecordedUsage(fn: RecordedUsage | null) { recordedUsage = fn; }
+
 export type StockOutlook = {
   ingredientId: string;
   name: string;
@@ -78,6 +86,12 @@ const roundUp = (n: number, unit: Ingredient['unit']) => (unit === 'pcs' ? Math.
 export function stockOutlook(inventory: Ingredient[], orders: OrderForStock[], now: Date, coverDays = 3): IntelligenceResult<StockOutlook[]> {
   return runOperation('forecast.stock', () => {
     const usage = dailyConsumption(orders, now);
+    // Prefer recorded use where it exists (it includes the counter), day by day.
+    const recorded = recordedUsage?.(now, 14) ?? {};
+    for (const [id, series] of Object.entries(recorded)) {
+      const fromOrders = usage[id] ?? new Array(14).fill(0);
+      usage[id] = series.map((x, i) => Math.max(x, fromOrders[i] ?? 0));
+    }
     const warnings: string[] = [];
     const rows: StockOutlook[] = [];
     let fallbackUsed = false;

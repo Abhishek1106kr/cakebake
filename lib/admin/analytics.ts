@@ -113,3 +113,48 @@ export function recommendationStats(events: TresorEvent[]) {
 export function analyticsCsvRows(series: { date: string; revenue: number; orders: number }[]): (string | number)[][] {
   return [['Date', 'Orders', 'Revenue', 'Average order'], ...series.map((d) => [d.date, d.orders, d.revenue, d.orders ? Math.round(d.revenue / d.orders) : 0])];
 }
+
+// ───────────── Demo dataset: modelled traffic and real records for a period ─────────────
+
+import type { SeedAnalyticsDay, SeedCustomCake, SeedPayment } from '@/lib/mock-data/types';
+
+export type Traffic = { sessions: number; productViews: number; addToCart: number; checkoutStarted: number; paymentFailures: number; searches: number; cakePlaygroundSessions: number; customCakeAdds: number; recommendationImpressions: number; recommendationClicks: number };
+
+/** Modelled visits for the days from `from` (ms) to now (the dataset's analytics.json). */
+export function seedTraffic(days: SeedAnalyticsDay[], from: number): Traffic {
+  const fromKey = new Date(from + 330 * 60000).toISOString().slice(0, 10);
+  const t: Traffic = { sessions: 0, productViews: 0, addToCart: 0, checkoutStarted: 0, paymentFailures: 0, searches: 0, cakePlaygroundSessions: 0, customCakeAdds: 0, recommendationImpressions: 0, recommendationClicks: 0 };
+  for (const d of days) {
+    if (d.date < fromKey) continue;
+    for (const k of Object.keys(t) as (keyof Traffic)[]) t[k] += d[k];
+  }
+  return t;
+}
+
+/** Payment attempts in a period from the payment records (failed attempts never become orders). */
+export function attemptStats(payments: SeedPayment[], from: number) {
+  const online = payments.filter((p) => p.method !== 'COD' && Date.parse(p.createdAt) >= from);
+  const failed = online.filter((p) => p.status === 'FAILED');
+  const reasons = new Map<string, number>();
+  for (const p of failed) reasons.set(p.failureReason ?? 'Unknown', (reasons.get(p.failureReason ?? 'Unknown') ?? 0) + 1);
+  return { attempts: online.length, failed: failed.length, paid: online.length - failed.length, reasons: [...reasons].map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count) };
+}
+
+/** What customers chose in the Cake Playground, from the custom cakes they actually ordered. */
+export function cakeChoices(cakes: SeedCustomCake[], from: number) {
+  const inRange = cakes.filter((c) => Date.parse(c.createdAt) >= from);
+  const counts = new Map<string, { group: string; optionId: string; count: number }>();
+  const bump = (group: string, optionId: string) => { const k = `${group}:${optionId}`; const x = counts.get(k) ?? { group, optionId, count: 0 }; x.count += 1; counts.set(k, x); };
+  const combos = new Map<string, number>();
+  for (const c of inRange) {
+    bump('sponge', c.config.sponge); bump('filling', c.config.filling); bump('frosting', c.config.frosting); bump('shape', c.config.shape);
+    const combo = `${c.config.size} · ${c.config.sponge} · ${c.config.filling}`;
+    combos.set(combo, (combos.get(combo) ?? 0) + 1);
+  }
+  return {
+    count: inRange.length,
+    popular: [...counts.values()].sort((a, b) => b.count - a.count).slice(0, 8),
+    combos: [...combos].map(([combo, count]) => ({ combo, count })).sort((a, b) => b.count - a.count).slice(0, 6),
+    withMessage: inRange.length ? inRange.filter((c) => c.message.trim()).length / inRange.length : 0,
+  };
+}
