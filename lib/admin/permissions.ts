@@ -1,12 +1,11 @@
-// Staff roles and an explicit permission matrix.
+// Staff roles and an explicit permission matrix, shared by the browser and the server.
 //
-// Three layers, kept apart on purpose:
+// Layers, kept apart on purpose:
 //   1. UI permission      – what a screen shows (nav items, buttons). Convenience only.
-//   2. Business permission – `authorize()`, checked by the admin action layer before any
-//                            mutation runs. In this frontend-only phase this is the guard.
-//   3. Server authorization – the future API re-checks every request with the same
-//                            permission names. Nothing here is a security boundary on its
-//                            own: anyone with devtools can edit browser storage.
+//   2. Server authorization – every server action and API route calls requirePermission()
+//                            (server/auth/rbac.ts) with these names. This is the boundary.
+//   3. Step-up            – STEP_UP permissions also need a second-factor check from the last
+//                            few minutes on the current session.
 
 export type Role = 'OWNER' | 'ADMIN' | 'MANAGER' | 'KITCHEN' | 'BAKER' | 'DELIVERY' | 'SUPPORT';
 export const ROLES: Role[] = ['OWNER', 'ADMIN', 'MANAGER', 'KITCHEN', 'BAKER', 'DELIVERY', 'SUPPORT'];
@@ -25,12 +24,14 @@ export const PERMISSIONS = [
   'media.view', 'media.edit',
   'analytics.view', 'analytics.export',
   'intelligence.view', 'intelligence.approve',
-  'automations.view', 'automations.retry',
+  'automations.view', 'automations.retry', 'automations.edit', 'automations.test',
   'invoices.view', 'invoices.regenerate',
-  'finance.refund',
+  'payments.view', 'payments.refund', 'payments.settings',
+  'issues.view', 'issues.manage', 'issues.assign',
+  'notifications.view',
   'staff.view', 'staff.manage',
-  'audit.view',
-  'settings.view', 'settings.edit',
+  'audit.view', 'audit.export',
+  'settings.view', 'settings.edit', 'settings.sensitive',
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
@@ -49,13 +50,28 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'inventory.view', 'inventory.adjust', 'customers.view', 'customers.pii', 'customers.edit',
     'campaigns.view', 'campaigns.edit', 'content.view', 'content.edit', 'media.view', 'media.edit',
     'analytics.view', 'analytics.export', 'intelligence.view', 'intelligence.approve',
-    'automations.view', 'automations.retry', 'invoices.view', 'audit.view', 'settings.view', 'staff.view',
+    'automations.view', 'automations.retry', 'automations.test', 'invoices.view', 'audit.view', 'settings.view', 'staff.view',
+    'payments.view', 'issues.view', 'issues.manage', 'issues.assign', 'notifications.view',
   ],
-  KITCHEN: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view'],
-  BAKER: ['overview.view', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view'],
-  DELIVERY: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view'],
-  SUPPORT: ['overview.view', 'orders.view', 'customers.view', 'customers.pii', 'customers.edit', 'invoices.view', 'automations.view', 'automations.retry', 'customCakes.view'],
+  KITCHEN: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view', 'issues.view', 'notifications.view'],
+  BAKER: ['overview.view', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view', 'notifications.view'],
+  DELIVERY: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view', 'issues.view', 'notifications.view'],
+  SUPPORT: [
+    'overview.view', 'orders.view', 'customers.view', 'customers.pii', 'customers.edit', 'invoices.view', 'automations.view', 'automations.retry', 'customCakes.view',
+    'payments.view', 'issues.view', 'issues.manage', 'issues.assign', 'notifications.view',
+  ],
 };
+
+/**
+ * High-risk permissions: the server also requires a fresh second-factor check (TOTP or a backup
+ * code) on the current session before the action runs. Refunds, staff and role changes, payment
+ * configuration, sensitive settings and every export.
+ */
+export const STEP_UP: readonly Permission[] = [
+  'payments.refund', 'staff.manage', 'payments.settings', 'settings.sensitive',
+  'orders.export', 'customers.export', 'analytics.export', 'audit.export',
+];
+export const needsStepUp = (permission: Permission) => STEP_UP.includes(permission);
 
 export const ROLE_LABEL: Record<Role, string> = {
   OWNER: 'Owner', ADMIN: 'Admin', MANAGER: 'Manager', KITCHEN: 'Kitchen', BAKER: 'Baker', DELIVERY: 'Delivery', SUPPORT: 'Support',
@@ -68,7 +84,7 @@ export const ROLE_SUMMARY: Record<Role, string> = {
   KITCHEN: 'Orders, kitchen board and custom cake production.',
   BAKER: 'Kitchen board and custom cake production sheets.',
   DELIVERY: 'Orders ready to leave and their delivery status.',
-  SUPPORT: 'Customers, their orders, invoices and message retries.',
+  SUPPORT: 'Customers, issues, payments (view), invoices and message retries.',
 };
 
 /**

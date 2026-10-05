@@ -1,0 +1,818 @@
+// Tresor: one database for the shop and the admin.
+//
+// Conventions
+// - Money is stored in paise (Int). Display code divides by 100.
+// - What a customer bought is frozen on the order (OrderItem.snapshot, Order.contact):
+//   catalogue changes never rewrite history.
+// - AuditLog is append-only: a trigger (see the init migration) rejects UPDATE and DELETE.
+// - Business changes that others react to write an OutboxEvent in the same transaction.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../server/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── Auth (Better Auth tables) ─────────────────────────────
+
+model User {
+  id               String      @id
+  name             String
+  email            String      @unique
+  emailVerified    Boolean     @default(false)
+  image            String?
+  twoFactorEnabled Boolean?    @default(false)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  sessions         Session[]
+  accounts         Account[]
+  twoFactors       TwoFactor[]
+  staff            Staff?
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stepUps   StepUpGrant[]
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model TwoFactor {
+  id                      String    @id
+  secret                  String
+  backupCodes             String
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean?  @default(true)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+model RateLimit {
+  id          String @id
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rateLimit")
+}
+
+// ───────────────────────────── Staff and authorization ─────────────────────────────
+
+enum Role {
+  OWNER
+  ADMIN
+  MANAGER
+  KITCHEN
+  BAKER
+  DELIVERY
+  SUPPORT
+}
+
+/// A provisioned admin account. Only users with an active Staff row can use /admin.
+model Staff {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role          Role
+  active        Boolean   @default(true)
+  invitedById   String?
+  lastSignInAt  DateTime?
+  deactivatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  assignedIssues Issue[]       @relation("IssueAssignee")
+  issueNotes     IssueNote[]
+  orderNotes     OrderNote[]
+  customerNotes  CustomerNote[]
+  tasks          Task[]
+}
+
+/// A recent second-factor check on a session, required by high-risk actions (refunds, roles, exports...).
+model StepUpGrant {
+  id        String   @id @default(cuid())
+  sessionId String
+  session   Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  method    String // "totp" | "backup_code"
+  grantedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([sessionId, expiresAt])
+}
+
+// ───────────────────────────── Customers ─────────────────────────────
+
+model Customer {
+  id             String         @id @default(cuid())
+  name           String
+  phone          String         @unique
+  email          String?
+  marketingOptIn Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  addresses      Address[]
+  orders         Order[]
+  issues         Issue[]
+  notes          CustomerNote[]
+  messages       OutboundMessage[]
+
+  @@index([email])
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  line       String
+  pin        String
+  label      String?
+  lastUsedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, line, pin])
+}
+
+/// Internal operational notes. Never shown to the customer.
+model CustomerNote {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     Staff    @relation(fields: [authorId], references: [id])
+  body       String
+  createdAt  DateTime @default(now())
+
+  @@index([customerId, createdAt])
+}
+
+// ───────────────────────────── Catalogue ─────────────────────────────
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+/// The bakery's menu. Prices here are what the server charges; the client never sets a price.
+model Product {
+  id             String        @id // the existing slug-like ids ("almond-croissant")
+  name           String
+  category       String
+  description    String
+  pricePaise     Int
+  compareAtPaise Int?
+  status         ProductStatus @default(ACTIVE)
+  available      Boolean       @default(true)
+  prepMinutes    Int           @default(5)
+  /// The rest of the admin product record: media, tags, dietary, SEO... (lib/admin/catalog.ts)
+  data           Json          @default("{}")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+/// Cake Builder configuration, versioned. The newest revision is live; orders keep the version they were priced with.
+model CakeConfigVersion {
+  revision    Int      @id @default(autoincrement())
+  overrides   Json
+  createdById String?
+  reason      String?
+  createdAt   DateTime @default(now())
+}
+
+/// Settings validated by lib/admin/settings.ts. Secrets never live here (environment only).
+model Setting {
+  key         String   @id
+  value       Json
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
+
+/// Campaigns, content slots, announcements and the media overlay: small documents edited in the admin.
+model ContentDocument {
+  key         String   @id
+  value       Json
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
+
+// ───────────────────────────── Inventory ─────────────────────────────
+
+model Ingredient {
+  id           String          @id
+  name         String
+  unit         String
+  onHand       Float
+  reserved     Float           @default(0)
+  reorderPoint Float
+  /// usePerDay and other display fields from lib/inventory.ts
+  data         Json            @default("{}")
+  updatedAt    DateTime        @updatedAt
+  movements    StockMovement[]
+}
+
+enum MovementReason {
+  RESERVE // order placed: held for it
+  RELEASE // order cancelled before preparation: hold returned
+  CONSUME // preparation started: held stock used
+  RESTOCK
+  WASTAGE
+  COUNT // stock count correction
+  ADJUST
+}
+
+model StockMovement {
+  id           String         @id @default(cuid())
+  ingredientId String
+  ingredient   Ingredient     @relation(fields: [ingredientId], references: [id])
+  reason       MovementReason
+  /// Change to on-hand stock (negative = used). RESERVE/RELEASE change `reserved` and leave this 0.
+  deltaOnHand  Float          @default(0)
+  /// Change to reserved stock.
+  deltaReserved Float         @default(0)
+  orderId      String?
+  note         String?
+  actorId      String?
+  createdAt    DateTime       @default(now())
+
+  @@index([ingredientId, createdAt])
+  @@index([orderId])
+}
+
+// ───────────────────────────── Orders ─────────────────────────────
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  UPI
+  CARD
+  COD
+}
+
+enum OrderChannel {
+  ONLINE
+  COUNTER
+}
+
+model Order {
+  id                String        @id @default(cuid())
+  /// Human number shown everywhere ("TRS-1042"), from the order_number sequence.
+  number            String        @unique
+  customerId        String
+  customer          Customer      @relation(fields: [customerId], references: [id])
+  status            OrderStatus   @default(NEW)
+  channel           OrderChannel  @default(ONLINE)
+  paymentMethod     PaymentMethod
+  /// Name, phone, email, address and pin as given at checkout (the order keeps them even if the customer changes).
+  contact           Json
+  slot              String
+  requiredBy        DateTime?
+  instructions      String?
+  subtotalPaise     Int
+  discountPaise     Int           @default(0)
+  deliveryFeePaise  Int
+  taxPaise          Int           @default(0)
+  totalPaise        Int
+  /// Tax rule at the time: { rate, inclusive, gstin }
+  tax               Json
+  catalogRevision   Int?
+  /// Unguessable token for the customer's tracking link (the order number alone is not enough).
+  trackingToken     String        @unique
+  kitchenPausedAt   DateTime?
+  kitchenPausedMs   Int           @default(0)
+  cancelledAt       DateTime?
+  cancelReason      String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  items    OrderItem[]
+  events   OrderEvent[]
+  payments Payment[]
+  refunds  Refund[]
+  invoice  Invoice?
+  issues   Issue[]
+  notes    OrderNote[]
+  messages OutboundMessage[]
+
+  @@index([status, createdAt])
+  @@index([customerId, createdAt])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id             String  @id @default(cuid())
+  orderId        String
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String?
+  name           String
+  size           String
+  qty            Int
+  unitPricePaise Int
+  lineTotalPaise Int
+  /// Product as sold (name, category, image, description).
+  snapshot       Json
+  /// Custom cake spec incl. its option-name and price snapshot (lib/orders.ts CustomCakeSpec).
+  custom         Json?
+  /// Stored print artwork for a custom cake (FileStorage key), if any.
+  printFileKey   String?
+
+  @@index([orderId])
+}
+
+/// The order timeline: every status change and notable event, with who did it.
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type      String // "status" | "payment" | "refund" | "invoice" | "note" | "issue" | "kitchen"
+  fromStatus String?
+  toStatus   String?
+  actorType String // "customer" | "staff" | "system" | "provider"
+  actorId   String?
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+/// Staff-only notes on an order, including custom cake production notes.
+model OrderNote {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    Staff    @relation(fields: [authorId], references: [id])
+  kind      String   @default("general") // "general" | "production"
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// ───────────────────────────── Payments, refunds, settlements ─────────────────────────────
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  CANCELLED
+  REFUND_PENDING
+  PARTIALLY_REFUNDED
+  REFUNDED
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  order             Order         @relation(fields: [orderId], references: [id])
+  /// "razorpay" | "simulated" | "cod"
+  provider          String
+  method            PaymentMethod
+  status            PaymentStatus @default(CREATED)
+  amountPaise       Int
+  refundedPaise     Int           @default(0)
+  currency          String        @default("INR")
+  providerOrderId   String?       @unique
+  providerPaymentId String?       @unique
+  /// Masked instrument only, e.g. { type: "card", network: "Visa", last4: "1111" } or { type: "upi", vpa: "ab***@okbank" }.
+  instrument        Json?
+  failureCode       String?
+  failureReason     String?
+  authorizedAt      DateTime?
+  capturedAt        DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  events            PaymentEvent[]
+  refunds           Refund[]
+
+  @@index([orderId])
+  @@index([status, createdAt])
+}
+
+/// Every provider callback and webhook, stored before it is acted on. Idempotent on (provider, providerEventId).
+model PaymentEvent {
+  id              String    @id @default(cuid())
+  provider        String
+  providerEventId String
+  type            String
+  paymentId       String?
+  payment         Payment?  @relation(fields: [paymentId], references: [id])
+  signatureValid  Boolean
+  /// Provider payload with card and personal data removed.
+  payload         Json
+  status          String    @default("received") // "received" | "processed" | "ignored" | "failed"
+  error           String?
+  receivedAt      DateTime  @default(now())
+  processedAt     DateTime?
+
+  @@unique([provider, providerEventId])
+  @@index([paymentId])
+  @@index([receivedAt])
+}
+
+enum RefundStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model Refund {
+  id               String       @id @default(cuid())
+  paymentId        String
+  payment          Payment      @relation(fields: [paymentId], references: [id])
+  orderId          String
+  order            Order        @relation(fields: [orderId], references: [id])
+  issueId          String?
+  issue            Issue?       @relation(fields: [issueId], references: [id])
+  amountPaise      Int
+  reason           String
+  status           RefundStatus @default(PENDING)
+  providerRefundId String?      @unique
+  idempotencyKey   String       @unique
+  requestedById    String
+  notifyCustomer   Boolean      @default(true)
+  failureReason    String?
+  createdAt        DateTime     @default(now())
+  processedAt      DateTime?
+
+  @@index([orderId])
+  @@index([status, createdAt])
+}
+
+model Settlement {
+  id                   String   @id @default(cuid())
+  provider             String
+  providerSettlementId String   @unique
+  amountPaise          Int
+  feesPaise            Int      @default(0)
+  taxPaise             Int      @default(0)
+  status               String
+  utr                  String?
+  settledAt            DateTime?
+  createdAt            DateTime @default(now())
+}
+
+// ───────────────────────────── Invoices ─────────────────────────────
+
+model Invoice {
+  id               String   @id @default(cuid())
+  /// "TRS-INV-2026-000123", from the invoice_number sequence. Never reused.
+  number           String   @unique
+  orderId          String   @unique
+  order            Order    @relation(fields: [orderId], references: [id])
+  revision         Int      @default(1)
+  customerSnapshot Json
+  lines            Json
+  totals           Json
+  tax              Json
+  paymentStatus    String
+  /// FileStorage key of the current revision's PDF, and its SHA-256.
+  pdfKey           String?
+  pdfSha256        String?
+  issuedAt         DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ───────────────────────────── Issues / support ─────────────────────────────
+
+enum IssueStatus {
+  OPEN
+  ACKNOWLEDGED
+  INVESTIGATING
+  WAITING_CUSTOMER
+  RESOLVED
+  CLOSED
+}
+
+enum IssuePriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum IssueCategory {
+  DELIVERY_DELAY
+  QUALITY
+  WRONG_ITEM
+  MISSING_ITEM
+  PAYMENT
+  REFUND_REQUEST
+  CUSTOM_CAKE
+  OTHER
+}
+
+model Issue {
+  id           String        @id @default(cuid())
+  number       String        @unique // "ISS-1001"
+  orderId      String?
+  order        Order?        @relation(fields: [orderId], references: [id])
+  customerId   String?
+  customer     Customer?     @relation(fields: [customerId], references: [id])
+  category     IssueCategory
+  priority     IssuePriority @default(NORMAL)
+  status       IssueStatus   @default(OPEN)
+  description  String
+  assignedToId String?
+  assignedTo   Staff?        @relation("IssueAssignee", fields: [assignedToId], references: [id])
+  resolution   String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  resolvedAt   DateTime?
+  notes        IssueNote[]
+  messages     IssueMessage[]
+  refunds      Refund[]
+
+  @@index([status, priority, createdAt])
+  @@index([orderId])
+  @@index([customerId])
+}
+
+/// Internal notes on an issue. Never shown to the customer.
+model IssueNote {
+  id        String   @id @default(cuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    Staff    @relation(fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([issueId, createdAt])
+}
+
+/// Messages exchanged with the customer about an issue.
+model IssueMessage {
+  id        String   @id @default(cuid())
+  issueId   String
+  issue     Issue    @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  direction String // "inbound" | "outbound"
+  channel   String // "email" | "whatsapp" | "phone" | "note"
+  body      String
+  authorId  String?
+  createdAt DateTime @default(now())
+
+  @@index([issueId, createdAt])
+}
+
+// ───────────────────────────── Notifications, messages, tasks ─────────────────────────────
+
+enum AdminNotificationType {
+  PAYMENT_FAILURE
+  ORDER_URGENT
+  LOW_STOCK
+  ISSUE_CREATED
+  AUTOMATION_FAILURE
+  CUSTOM_CAKE_DEADLINE
+  DELIVERY_DELAY
+}
+
+enum NotificationState {
+  UNREAD
+  READ
+  RESOLVED
+}
+
+model AdminNotification {
+  id           String                @id @default(cuid())
+  type         AdminNotificationType
+  title        String
+  body         String?
+  resourceType String?
+  resourceId   String?
+  state        NotificationState     @default(UNREAD)
+  /// One live notification per condition (e.g. "LOW_STOCK:flour").
+  dedupeKey    String?               @unique
+  createdAt    DateTime              @default(now())
+  readAt       DateTime?
+  resolvedAt   DateTime?
+  resolvedById String?
+
+  @@index([state, createdAt])
+}
+
+/// Outbound customer messages (email, WhatsApp) and how they went. Simulated sends say so.
+model OutboundMessage {
+  id                String    @id @default(cuid())
+  channel           String // "email" | "whatsapp"
+  provider          String // "resend" | "simulated-email" | "simulated-whatsapp"
+  simulated         Boolean
+  /// Masked recipient for display; the full address is only on the customer record.
+  toMasked          String
+  template          String
+  body              String
+  status            String // "sent" | "failed"
+  providerMessageId String?
+  error             String?
+  customerId        String?
+  customer          Customer? @relation(fields: [customerId], references: [id])
+  orderId           String?
+  order             Order?    @relation(fields: [orderId], references: [id])
+  workflowRunId     String?
+  createdAt         DateTime  @default(now())
+
+  @@index([orderId])
+  @@index([createdAt])
+}
+
+/// Development mailbox: emails captured when no email provider is configured (development only).
+model DevMail {
+  id        String   @id @default(cuid())
+  to        String
+  subject   String
+  text      String
+  createdAt DateTime @default(now())
+
+  @@index([to, createdAt])
+}
+
+model Task {
+  id           String    @id @default(cuid())
+  title        String
+  body         String?
+  assigneeId   String?
+  assignee     Staff?    @relation(fields: [assigneeId], references: [id])
+  resourceType String?
+  resourceId   String?
+  status       String    @default("OPEN") // "OPEN" | "DONE"
+  dueAt        DateTime?
+  createdAt    DateTime  @default(now())
+  doneAt       DateTime?
+
+  @@index([status, createdAt])
+}
+
+// ───────────────────────────── Outbox and automations ─────────────────────────────
+
+enum OutboxStatus {
+  PENDING
+  DISPATCHED
+  FAILED
+}
+
+/// Written in the same transaction as the change it describes; the worker moves it to the queue.
+model OutboxEvent {
+  id            String       @id @default(cuid())
+  type          String // "ORDER_CREATED", "PAYMENT_CAPTURED", ...
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0)
+  lastError     String?
+  availableAt   DateTime     @default(now())
+  dispatchedAt  DateTime?
+  createdAt     DateTime     @default(now())
+
+  @@index([status, availableAt])
+  @@index([aggregateType, aggregateId])
+}
+
+model Workflow {
+  id          String        @id @default(cuid())
+  key         String?       @unique // seeded workflows have a stable key
+  name        String
+  description String?
+  trigger     String
+  enabled     Boolean       @default(true)
+  /// Ordered steps: [{ action: "SEND_WHATSAPP", params: {...} }, { action: "CONDITION", ... }]
+  steps       Json
+  version     Int           @default(1)
+  updatedById String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  runs        WorkflowRun[]
+
+  @@index([trigger, enabled])
+}
+
+enum RunStatus {
+  PENDING
+  RUNNING
+  WAITING
+  SUCCEEDED
+  FAILED
+  SKIPPED
+}
+
+model WorkflowRun {
+  id              String            @id @default(cuid())
+  workflowId      String
+  workflow        Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflowVersion Int
+  /// The outbox event that triggered it (or "test:<id>" for a test run). With workflowId: the idempotency key.
+  eventId         String
+  trigger         String
+  testRun         Boolean           @default(false)
+  status          RunStatus         @default(PENDING)
+  context         Json
+  attempts        Int               @default(0)
+  error           String?
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  createdAt       DateTime          @default(now())
+  steps           WorkflowStepRun[]
+
+  @@unique([workflowId, eventId])
+  @@index([status, createdAt])
+}
+
+model WorkflowStepRun {
+  id         String      @id @default(cuid())
+  runId      String
+  run        WorkflowRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  index      Int
+  action     String
+  status     RunStatus   @default(PENDING)
+  attempts   Int         @default(0)
+  output     Json?
+  error      String?
+  logs       String[]
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@unique([runId, index])
+}
+
+// ───────────────────────────── Audit ─────────────────────────────
+
+/// Append-only. A database trigger rejects UPDATE and DELETE on this table.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorType  String // "staff" | "system" | "customer" | "provider"
+  actorId    String?
+  actorLabel String
+  action     String
+  resource   String
+  resourceId String?
+  metadata   Json     @default("{}")
+  ip         String?
+  sessionId  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([resource, resourceId])
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+}

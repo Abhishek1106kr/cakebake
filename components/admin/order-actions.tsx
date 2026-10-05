@@ -54,7 +54,7 @@ export function useOrderActions() {
     });
     if (!r.ok) return;
     admin.act({
-      permission: 'finance.refund', action: 'order.refunded', entity: { type: 'order', id: o.id }, before: { paymentStatus: o.paymentStatus }, after: { paymentStatus: 'REFUNDED' }, reason: r.reason,
+      permission: 'payments.refund', action: 'order.refunded', entity: { type: 'order', id: o.id }, before: { paymentStatus: o.paymentStatus }, after: { paymentStatus: 'REFUNDED' }, reason: r.reason,
       run: () => store.refund(o.id) || 'There is no pending refund on this order.', success: `Refund recorded for ${o.id}`,
     });
   };

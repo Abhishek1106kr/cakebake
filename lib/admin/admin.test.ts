@@ -37,9 +37,9 @@ describe('permissions', () => {
     for (const perm of ['orders.view', 'inventory.adjust', 'products.edit', 'analytics.view'] as const) expect(can(manager, perm)).toBe(true);
     expect(can(kitchen, 'settings.edit')).toBe(false);
     expect(can(baker, 'customers.view')).toBe(false);
-    expect(can(delivery, 'finance.refund')).toBe(false);
+    expect(can(delivery, 'payments.refund')).toBe(false);
     expect(can(support, 'customers.pii')).toBe(true);
-    expect(can(owner, 'finance.refund')).toBe(true);
+    expect(can(owner, 'payments.refund')).toBe(true);
   });
   it('authorize explains refusals, and inactive staff can do nothing', () => {
     expect(authorize(kitchen, 'products.price')).toMatchObject({ ok: false });

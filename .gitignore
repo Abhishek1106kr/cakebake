@@ -2,6 +2,7 @@ node_modules
 .next
 out
 .env*
+!.env.example
 .DS_Store
 npm-debug.log*
 *.tsbuildinfo
@@ -19,3 +20,7 @@ public/our-story/
 /tests/stress/__pycache__/
 /tests/perf/__pycache__/
 /tests/admin/__pycache__/
+
+# Generated Prisma client, local file storage
+/server/generated/
+/storage/
