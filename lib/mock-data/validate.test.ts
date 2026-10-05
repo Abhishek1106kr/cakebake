@@ -10,7 +10,7 @@ const read = (name: string) => JSON.parse(readFileSync(path.join(dir, `${name}.j
 const ds: MockDataset = {
   manifest: read('manifest'), customers: read('customers'), orders: read('orders'), products: read('products'), customCakes: read('custom-cakes'),
   payments: read('payments'), invoices: read('invoices'), issues: read('issues'), notifications: read('notifications'), automations: read('automations'),
-  inventory: read('inventory'), analytics: read('analytics'), staff: read('staff'), campaigns: read('campaigns'),
+  inventory: read('inventory'), analytics: read('analytics'), staff: read('staff'), campaigns: read('campaigns'), audit: read('audit'),
 };
 
 describe('shipped mock data', () => {

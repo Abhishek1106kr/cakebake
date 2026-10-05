@@ -8,10 +8,11 @@ import type { AutomationEvent, Invoice, Job } from '@/lib/automation/automation'
 import type { Campaign } from '@/lib/admin/marketing';
 import type { Role } from '@/lib/admin/permissions';
 import type { CakeConfiguration } from '@/lib/cake/types';
+import type { AuditRecord } from '@/lib/admin/audit';
 
 export const MOCK_DATA_FILES = [
   'manifest', 'customers', 'orders', 'products', 'custom-cakes', 'payments', 'invoices', 'issues',
-  'notifications', 'automations', 'inventory', 'analytics', 'staff', 'campaigns',
+  'notifications', 'automations', 'inventory', 'analytics', 'staff', 'campaigns', 'audit',
 ] as const;
 export type MockDataFile = (typeof MOCK_DATA_FILES)[number];
 
@@ -204,4 +205,6 @@ export type MockDataset = {
   analytics: SeedAnalytics;
   staff: SeedStaff[];
   campaigns: SeedCampaign[];
+  /** Staff actions over the dataset's history (status changes, refunds, stock, issues, campaigns). */
+  audit: AuditRecord[];
 };

@@ -4,6 +4,7 @@
 import { DEFAULT_RULES } from '@/lib/config/business';
 import { invoiceNumberFor } from '@/lib/automation/automation';
 import { needsFor } from '@/lib/inventory';
+import { ORDER_NUMBER_FLOOR } from '@/lib/orders';
 import type { MockDataset, SeedOrder } from './types';
 
 const near = (a: number, b: number, tol = 0.01) => Math.abs(a - b) <= tol;
@@ -211,6 +212,20 @@ export function validateDataset(ds: MockDataset): ValidationReport {
     for (const p of c.featuredProductIds) if (!productIds.has(p)) fail(`${c.id}: unknown product ${p}`);
   }
 
+  // ── Audit ──
+  const campaignIds = new Set(ds.campaigns.map((c) => c.id));
+  unique('audit', ds.audit.map((r) => r.id));
+  for (const r of ds.audit) {
+    if (r.actor.id !== 'system' && !staffIds.has(r.actor.id)) fail(`${r.id}: unknown staff ${r.actor.id}`);
+    const ok = r.entity.type === 'order' ? orderIds.has(r.entity.id) : r.entity.type === 'inventory' ? ingredientIds.has(r.entity.id)
+      : r.entity.type === 'issue' ? issueIds.has(r.entity.id) : r.entity.type === 'campaign' ? campaignIds.has(r.entity.id) : true;
+    if (!ok) fail(`${r.id}: unknown ${r.entity.type} ${r.entity.id}`);
+  }
+
+  // ── New orders continue after the shipped ones ──
+  const highest = Math.max(...ds.orders.map((o) => Number(o.id.replace(/\D/g, ''))));
+  if (highest !== ORDER_NUMBER_FLOOR) fail(`last shipped order is ${highest}, but new orders start after ORDER_NUMBER_FLOOR ${ORDER_NUMBER_FLOOR}`);
+
   // ── Manifest ──
   for (const id of ds.manifest.liveOrderIds) if (!orderIds.has(id)) fail(`manifest: unknown live order ${id}`);
   if (ds.manifest.counts.orders !== ds.orders.length) fail('manifest: order count disagrees');
@@ -221,7 +236,7 @@ export function validateDataset(ds: MockDataset): ValidationReport {
     stats: {
       orders: ds.orders.length, customers: ds.customers.length, products: ds.products.length, customCakes: ds.customCakes.length, payments: ds.payments.length,
       refunds: refundList.length, invoices: ds.invoices.length, issues: ds.issues.length, notifications: ds.notifications.length, jobs: ds.automations.jobs.length,
-      movements: ds.inventory.movements.length, campaigns: ds.campaigns.length, staff: ds.staff.length,
+      movements: ds.inventory.movements.length, campaigns: ds.campaigns.length, staff: ds.staff.length, audit: ds.audit.length,
     },
   };
 }

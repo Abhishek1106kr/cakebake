@@ -12,6 +12,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useStore } from '@/components/store-provider';
 import { useAutomation } from '@/components/use-automation';
 import { useEvents } from '@/components/admin/insights';
+import type { MockDataset } from '@/lib/mock-data/types';
 import { createBrowserRepositories, storageProblem, type AdminRepositories, type Repository, type InternalNote, type KitchenState } from '@/lib/admin/repositories';
 import { authorize, can, type Permission, type Staff } from '@/lib/admin/permissions';
 import { makeAudit, type AuditRecord, type AuditSource, type EntityType } from '@/lib/admin/audit';
@@ -24,7 +25,8 @@ import { deriveAttention, withStates, type AttentionItem, type AttentionState } 
 import type { Announcement, Campaign, ContentSlot } from '@/lib/admin/marketing';
 import type { MediaOverlay } from '@/lib/admin/media-library';
 import { announceCatalogChange } from '@/lib/catalog/live';
-import { retryJob } from '@/lib/automation/runner';
+import { registerSeedJobs, retryJob } from '@/lib/automation/runner';
+import type { Invoice, Job, AutomationEvent } from '@/lib/automation/automation';
 import type { CakeCatalog } from '@/lib/cake/config';
 
 export type Toast = { id: number; tone: 'success' | 'warning' | 'error' | 'info'; title: string; detail?: string; action?: { label: string; run: () => void } };
@@ -119,7 +121,9 @@ const EMPTY = { staff: [] as Staff[], audit: [] as AuditRecord[], obj: {} as Rec
 export function AdminProvider({ children }: { children: ReactNode }) {
   const store = useStore();
   const [repos, setRepos] = useState<AdminRepositories | null>(null);
-  useEffect(() => { setRepos(createBrowserRepositories()); }, []);
+  // The admin works on the shipped dataset plus this browser's changes: load it first.
+  useEffect(() => { store.ensureSeed(); }, [store.ensureSeed]);
+  useEffect(() => { if (store.seed) setRepos(createBrowserRepositories({ staff: store.seed.staff, campaigns: store.seed.campaigns })); }, [store.seed]);
 
   const staffList = useRepo(repos?.staff ?? null, EMPTY.staff);
   const sessionId = useRepo(repos?.session ?? null, null as string | null);
@@ -140,11 +144,15 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const attentionStates = useRepo(repos?.attention ?? null, EMPTY.obj as Record<string, AttentionState>);
   const kitchen = useRepo(repos?.kitchen ?? null, EMPTY.obj as Record<string, KitchenState>);
   const seen = useRepo(repos?.seen ?? null, '');
-  const automation = useAutomation();
+  const localAutomation = useAutomation();
+  const automation = useMemo(() => mergeAutomation(localAutomation, store.seed), [localAutomation, store.seed]);
+  // Shipped staff actions first, then this browser's (append-only either way), oldest to newest.
+  const audit = useMemo(() => (store.seed ? [...store.seed.audit, ...auditRepoValue] : auditRepoValue), [store.seed, auditRepoValue]);
+  useEffect(() => { if (store.seed) registerSeedJobs(store.seed.automations.jobs); }, [store.seed]);
   const events = useEvents();
 
   const staff = staffList.find((s) => s.id === sessionId) ?? staffList.find((s) => s.role === 'OWNER') ?? null;
-  const ready = Boolean(repos) && store.mounted && Boolean(settings) && Boolean(cakeOverrides);
+  const ready = Boolean(repos) && store.mounted && store.seedStatus === 'ready' && Boolean(settings) && Boolean(cakeOverrides);
 
   // A clock for due times and elapsed minutes (30 s is plenty for operations).
   const [now, setNow] = useState(() => new Date());
@@ -280,7 +288,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const value: AdminContext = {
     ready, repos, staff, staffList, can: (p) => can(staff, p), switchStaff, act, confirm, toast, toasts, dismissToast, announce, liveMessage, now,
-    audit: auditRepoValue, catalogRecords, catalog, saveProduct, cakeOverrides, cakeCatalog, saveCakeOverrides, settings, saveSettings,
+    audit, catalogRecords, catalog, saveProduct, cakeOverrides, cakeCatalog, saveCakeOverrides, settings, saveSettings,
     campaigns, saveCampaigns, slots, saveSlots, announcements, saveAnnouncements, mediaOverlay, saveMediaOverlay, notes, addNote,
     profiles, saveProfile, kitchen, saveKitchen, customers, attention, unread, setAttentionState, markAllRead, automation, events, lastDomainEvent,
   };
@@ -337,4 +345,18 @@ function ConfirmDialog({ state, onDone }: { state: ConfirmState; onDone: (r: { o
       </div>
     </div>
   );
+}
+
+/**
+ * Shipped automation records with this browser's on top: a job, invoice or log entry made here
+ * replaces the shipped one with the same id; newest first for the log.
+ */
+function mergeAutomation(local: ReturnType<typeof useAutomation>, seed: MockDataset | null): ReturnType<typeof useAutomation> {
+  if (!seed) return local;
+  const jobs = new Map<string, Job>(seed.automations.jobs.map((j) => [j.id, j]));
+  for (const j of local.jobs) jobs.set(j.id, j);
+  const invoices: Record<string, Invoice> = Object.fromEntries(seed.invoices.map((i) => [i.orderId, i]));
+  Object.assign(invoices, local.invoices);
+  const log: AutomationEvent[] = [...local.log, ...seed.automations.log].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  return { ...local, jobs: [...jobs.values()], invoices, log };
 }

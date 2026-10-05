@@ -25,6 +25,7 @@ import type { CakeConfiguration } from '../lib/cake/types';
 import { buildInvoice, maskPhone, newJob, NOTIFY_STATUSES, whatsappMessage, type AutomationEvent, type Invoice, type Job } from '../lib/automation/automation';
 import { deliverBy, requiredBy } from '../lib/admin/order-ops';
 import { BUILDINGS, EMAIL_DOMAINS, FIRST_NAMES, LAST_NAMES, LOCALITIES, MESSAGE_NAMES } from './mock-data/pools';
+import type { AuditRecord } from '../lib/admin/audit';
 import type {
   IssueCategory, IssuePriority, IssueStatus, MockDataset, NotificationType, SeedAnalyticsDay, SeedCampaign, SeedCustomCake, SeedCustomer,
   SeedIssue, SeedMovement, SeedNotification, SeedOrder, SeedPayment, SeedRefund, SeedStaff,
@@ -37,9 +38,9 @@ const VERSION = 'demo-2026-10-05.1';
 const IST = 330; // minutes ahead of UTC
 const ist = (y: number, m: number, d: number, h = 0, mi = 0) => new Date(Date.UTC(y, m, d, h, mi) - IST * 60000);
 const ANCHOR = ist(2026, 9, 5, 16, 0); // Mon 5 Oct 2026, 4 pm: "now" for the dataset
-const START = ist(2025, 5, 23); // Mon 23 Jun 2025
+const START = ist(2025, 7, 1); // Fri 1 Aug 2025
 const ORDER_TOTAL = 1000;
-const LIVE_COUNT = 12;
+const LIVE_COUNT = 8;
 const CUSTOMER_COUNT = 640;
 const MIN = 60000;
 const HOUR = 60 * MIN;
@@ -302,12 +303,10 @@ const drafts: Draft[] = [];
 for (let i = 0; i < ORDER_TOTAL - LIVE_COUNT; i += 1) { const day = sampleDay(); const basket = basketFor(day); drafts.push({ at: timeOfDay(day, basket), basket, live: false }); }
 // Today, relative to the anchor: three delivered this morning, the rest on the board now.
 const LIVE_PLAN: { minutesAgo: number; status: OrderStatus; basket: Basket }[] = [
-  { minutesAgo: 412, status: 'DELIVERED', basket: 'breakfast' }, { minutesAgo: 355, status: 'DELIVERED', basket: 'bread' },
-  { minutesAgo: 268, status: 'DELIVERED', basket: 'cafe' }, { minutesAgo: 121, status: 'DELIVERED', basket: 'treats' },
-  { minutesAgo: 74, status: 'OUT_FOR_DELIVERY', basket: 'cafe' }, { minutesAgo: 51, status: 'READY', basket: 'treats' },
-  { minutesAgo: 43, status: 'READY', basket: 'breakfast' }, { minutesAgo: 34, status: 'PREPARING', basket: 'wholecake' },
-  { minutesAgo: 22, status: 'PREPARING', basket: 'cafe' }, { minutesAgo: 13, status: 'PREPARING', basket: 'treats' },
-  { minutesAgo: 6, status: 'CONFIRMED', basket: 'breakfast' }, { minutesAgo: 2, status: 'CONFIRMED', basket: 'custom' },
+  { minutesAgo: 388, status: 'DELIVERED', basket: 'breakfast' }, { minutesAgo: 241, status: 'DELIVERED', basket: 'cafe' },
+  { minutesAgo: 68, status: 'OUT_FOR_DELIVERY', basket: 'treats' }, { minutesAgo: 47, status: 'READY', basket: 'breakfast' },
+  { minutesAgo: 31, status: 'PREPARING', basket: 'wholecake' }, { minutesAgo: 17, status: 'PREPARING', basket: 'cafe' },
+  { minutesAgo: 7, status: 'CONFIRMED', basket: 'treats' }, { minutesAgo: 2, status: 'CONFIRMED', basket: 'custom' },
 ];
 for (const l of LIVE_PLAN) drafts.push({ at: new Date(ANCHOR.getTime() - l.minutesAgo * MIN), basket: l.basket, live: true });
 drafts.sort((a, b) => a.at.getTime() - b.at.getTime());
@@ -825,7 +824,7 @@ function campaign(id: string, name: string, description: string, start: Date, en
   };
 }
 const campaigns: SeedCampaign[] = [
-  campaign('cmp-monsoon-2025', 'Monsoon chai and bakes', 'Masala chai, cardamom knots and paneer puffs for rainy evenings.', ist(2025, 6, 1), ist(2025, 7, 31, 23, 59), ['masala-chai', 'cardamom-knot', 'paneer-tikka-puff'], 'ENDED'),
+  campaign('cmp-monsoon-2025', 'Monsoon chai and bakes', 'Masala chai, cardamom knots and paneer puffs for rainy evenings.', ist(2025, 7, 1), ist(2025, 8, 15, 23, 59), ['masala-chai', 'cardamom-knot', 'paneer-tikka-puff'], 'ENDED'),
   campaign('cmp-diwali-2025', 'Diwali gift boxes', 'Festive boxes and macarons, delivered across the city.', ist(2025, 9, 1), ist(2025, 9, 23, 23, 59), ['festive-gift-box', 'macaron-box', 'cookie-tin'], 'ENDED', { cta: { label: 'See gift boxes', href: '/shop' }, priority: 1 }),
   campaign('cmp-christmas-2025', 'Christmas at Tresor', 'Plum cake, butter cookie tins and hot chocolate for December.', ist(2025, 10, 25), ist(2025, 11, 31, 23, 59), ['plum-cake', 'cookie-tin', 'hot-chocolate'], 'ENDED', { priority: 1 }),
   campaign('cmp-valentine-2026', 'Valentine’s: hearts by hand', 'Heart-shaped custom cakes and the Rose Chocolate Truffle.', ist(2026, 1, 1), ist(2026, 1, 14, 23, 59), ['rose-chocolate-truffle', 'macaron-box'], 'ENDED', { cta: { label: 'Design a cake', href: '/customize' } }),
@@ -836,6 +835,49 @@ const campaigns: SeedCampaign[] = [
   campaign('cmp-winter-draft', 'Winter warmers', 'Hot chocolate and plum cake for the cold months. Draft.', ist(2026, 11, 1), ist(2027, 0, 15, 23, 59), ['hot-chocolate', 'plum-cake'], 'DRAFT', { priority: 3 }),
 ];
 
+// ───────────────────────────── Audit: staff actions over the history ─────────────────────────────
+
+const staffById = new Map(STAFF.map((x) => [x.id, x]));
+const audit: AuditRecord[] = [];
+const actor = (id: string) => { const x = staffById.get(id)!; return { id: x.id, name: x.name, role: x.role }; };
+const record = (r: Omit<AuditRecord, 'id'>) => audit.push({ id: '', ...r });
+const STEP_ACTOR: Partial<Record<OrderStatus, string[]>> = {
+  PREPARING: ['staff-kitchen', 'staff-kitchen-am', 'staff-baker'], READY: ['staff-kitchen', 'staff-kitchen-am', 'staff-baker'],
+  OUT_FOR_DELIVERY: ['staff-delivery', 'staff-rider-2'], DELIVERED: ['staff-delivery', 'staff-rider-2'],
+};
+// Status changes by the team over the last 30 days.
+for (const o of orders.filter((x) => new Date(x.createdAt).getTime() >= ANCHOR.getTime() - 30 * DAY)) {
+  for (let i = 2; i < o.history.length; i += 1) {
+    const h = o.history[i];
+    if (h.status === 'CANCELLED') continue;
+    const custom = o.items.some((l) => l.custom) && (h.status === 'PREPARING' || h.status === 'READY');
+    record({ at: h.at, actor: actor(custom ? 'staff-baker-cakes' : pick(STEP_ACTOR[h.status] ?? ['staff-kitchen'])), action: 'order.status.changed', entity: { type: 'order', id: o.id }, before: { status: o.history[i - 1].status }, after: { status: h.status }, reason: null, source: 'admin-ui' });
+  }
+}
+// Cancellations and refunds.
+for (const o of orders.filter((x) => x.status === 'CANCELLED')) {
+  const h = o.history[o.history.length - 1];
+  record({ at: h.at, actor: actor(pick(['staff-manager', 'staff-support'])), action: 'order.status.changed', entity: { type: 'order', id: o.id }, before: { status: o.history[o.history.length - 2].status }, after: { status: 'CANCELLED' }, reason: cancelReasonByOrder.get(o.id) ?? null, source: 'admin-ui' });
+}
+for (const r of refunds.filter((x) => x.status === 'PROCESSED')) {
+  record({ at: r.processedAt!, actor: actor(r.by), action: 'order.refunded', entity: { type: 'order', id: r.orderId }, before: { refunded: 0 }, after: { refunded: r.amount, refund: r.id }, reason: r.reason, source: 'admin-ui' });
+}
+// Stock: deliveries, wastage and counts over the last 60 days.
+for (const m of movements.filter((x) => x.reason !== 'Sale' && x.actor && new Date(x.at).getTime() >= ANCHOR.getTime() - 60 * DAY)) {
+  record({ at: m.at, actor: actor(m.actor!), action: `inventory.${m.reason.toLowerCase()}`, entity: { type: 'inventory', id: m.ingredientId }, before: null, after: { delta: m.delta }, reason: m.note ?? null, source: 'admin-ui' });
+}
+// Issues: assignment and resolution.
+for (const x of issues) {
+  if (x.assignedTo) record({ at: x.messages[1]?.at ?? x.updatedAt, actor: actor(x.assignedTo), action: 'issue.assigned', entity: { type: 'issue', id: x.id, label: x.orderId }, before: { assignedTo: null }, after: { assignedTo: x.assignedTo }, reason: null, source: 'admin-ui' });
+  if (x.resolvedAt) record({ at: x.resolvedAt, actor: actor(x.assignedTo ?? 'staff-support'), action: 'issue.resolved', entity: { type: 'issue', id: x.id, label: x.orderId }, before: { status: 'INVESTIGATING' }, after: { status: x.status }, reason: x.resolution, source: 'admin-ui' });
+}
+// Campaigns: scheduled and published by the owner.
+for (const c of campaigns.filter((x) => x.status !== 'DRAFT')) {
+  record({ at: c.updatedAt, actor: actor('staff-owner'), action: 'campaign.published', entity: { type: 'campaign', id: c.id, label: c.name }, before: { status: 'DRAFT' }, after: { status: 'SCHEDULED' }, reason: 'Campaign calendar', source: 'admin-ui' });
+}
+audit.sort((a, b) => a.at.localeCompare(b.at));
+audit.forEach((r, i) => { r.id = `aud-seed-${pad(i + 1, 5)}`; });
+
 // ───────────────────────────── Write ─────────────────────────────
 
 const slim = (o: SeedOrder): SeedOrder => ({
@@ -845,7 +887,7 @@ const slim = (o: SeedOrder): SeedOrder => ({
 const dataset: MockDataset = {
   manifest: {
     version: VERSION, anchor: iso(ANCHOR), timezone: 'Asia/Kolkata', seed: SEED,
-    counts: { orders: orders.length, customers: customers.length, products: baseProducts.length, customCakes: designs.size, payments: payments.length, refunds: refunds.length, invoices: invoices.length, issues: issues.length, notifications: notifications.length, jobs: jobs.length, movements: movements.length, campaigns: campaigns.length, staff: STAFF.length },
+    counts: { orders: orders.length, customers: customers.length, products: baseProducts.length, customCakes: designs.size, payments: payments.length, refunds: refunds.length, invoices: invoices.length, issues: issues.length, notifications: notifications.length, jobs: jobs.length, movements: movements.length, campaigns: campaigns.length, staff: STAFF.length, audit: audit.length },
     liveOrderIds: orders.filter((o) => o.liveOffsetMin).map((o) => o.id),
     inventoryLevels: ingredients.map((i) => ({ id: i.id, onHand: i.onHand, reserved: 0 })),
     note: 'Demonstration data. Every person, phone number, email address and order is fictional.',
@@ -853,7 +895,7 @@ const dataset: MockDataset = {
   customers, orders: orders.map(slim), products: baseProducts.map((p) => ({ id: p.id, name: p.name, category: p.category, price: p.price, available: p.available !== false })),
   customCakes: [...designs.values()], payments, invoices, issues, notifications, automations: { jobs, log }, inventory: { ingredients, movements },
   analytics: { days: analyticsDays, topSearches, note: 'Sessions, views and searches are modelled from the orders (conversion about 2–3%); orders and revenue are exact.' },
-  staff: STAFF, campaigns,
+  staff: STAFF, campaigns, audit,
 };
 
 const out = path.join(process.cwd(), 'public', 'mock-data');
@@ -861,7 +903,7 @@ mkdirSync(out, { recursive: true });
 const files: [string, unknown][] = [
   ['manifest', dataset.manifest], ['customers', dataset.customers], ['orders', dataset.orders], ['products', dataset.products], ['custom-cakes', dataset.customCakes],
   ['payments', dataset.payments], ['invoices', dataset.invoices], ['issues', dataset.issues], ['notifications', dataset.notifications], ['automations', dataset.automations],
-  ['inventory', dataset.inventory], ['analytics', dataset.analytics], ['staff', dataset.staff], ['campaigns', dataset.campaigns],
+  ['inventory', dataset.inventory], ['analytics', dataset.analytics], ['staff', dataset.staff], ['campaigns', dataset.campaigns], ['audit', dataset.audit],
 ];
 for (const [name, data] of files) writeFileSync(path.join(out, `${name}.json`), JSON.stringify(data) + '\n');
 console.log(`Wrote public/mock-data (${VERSION})`);

@@ -8,7 +8,7 @@ import { describeChange, diff, filterAudit, type AuditRecord, type EntityType } 
 import { paginate } from '@/lib/admin/order-ops';
 import { toCsv, downloadText, stamp } from '@/lib/admin/csv';
 
-const TYPES: EntityType[] = ['order', 'inventory', 'product', 'cakeOption', 'cakeRule', 'printRules', 'customer', 'invoice', 'automation', 'campaign', 'content', 'media', 'staff', 'settings', 'customCake', 'notification', 'decision', 'session'];
+const TYPES: EntityType[] = ['order', 'inventory', 'product', 'cakeOption', 'cakeRule', 'printRules', 'customer', 'invoice', 'automation', 'campaign', 'content', 'media', 'staff', 'settings', 'customCake', 'notification', 'decision', 'session', 'issue', 'payment'];
 const show = (v: unknown) => (v === null || v === undefined ? '—' : typeof v === 'object' ? JSON.stringify(v) : String(v));
 
 export default function AuditPage() {
@@ -56,7 +56,7 @@ function Audit() {
           </table></div>
         )}
         <Pager page={paged.page} pages={paged.pages} total={paged.total} onPage={setPage} label="records" />
-        <p className="ad-muted small">Kept in this browser (newest {admin.audit.length.toLocaleString('en-IN')} of up to 5,000). In production the log is written server-side, where it can’t be changed from a browser.</p>
+        <p className="ad-muted small">{admin.audit.length.toLocaleString('en-IN')} records: the demo’s shipped history plus changes made in this browser. In production the log is written server-side, where it can’t be changed from a browser.</p>
       </Panel>
       {open && <AuditDrawer record={open} onClose={() => setOpenId(null)} />}
     </div>

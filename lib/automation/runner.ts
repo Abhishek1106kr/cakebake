@@ -105,8 +105,12 @@ export function onStatusChanged(order: Order, status: OrderStatus) {
 }
 
 /** A person retries a failed job from the admin. */
+/** Jobs from the shipped demo dataset (read-only). Retrying one copies it into this browser first. */
+const seedJobs = new Map<string, Job>();
+export function registerSeedJobs(jobs: Job[]) { seedJobs.clear(); for (const j of jobs) seedJobs.set(j.id, j); }
+
 export function retryJob(id: string, getOrder: () => Order | undefined) {
-  const job = readJobs().find((j) => j.id === id);
+  const job = readJobs().find((j) => j.id === id) ?? seedJobs.get(id);
   if (!job || job.status !== 'failed') return;
   saveJob({ ...job, status: 'retrying', attempts: 0, claimedAt: null });
   void run(id, getOrder);

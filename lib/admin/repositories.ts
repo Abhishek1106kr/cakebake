@@ -134,15 +134,17 @@ class BrowserInvoiceRepository implements InvoiceRepository {
 
 const isObj = (raw: unknown): raw is Record<string, unknown> => Boolean(raw) && typeof raw === 'object' && !Array.isArray(raw);
 
-export function createBrowserRepositories() {
+/** Browser repositories. `seed` supplies the shipped demo defaults (staff, campaigns) used until a visitor changes them. */
+export function createBrowserRepositories(seed: { staff?: Staff[]; campaigns?: Campaign[] } = {}) {
+  const defaultStaff = () => (seed.staff?.length ? seed.staff : seedStaff());
   return {
-    staff: new BrowserRepository<Staff[]>(ADMIN_KEYS.staff, () => seedStaff(), (raw) => { const list = recordsOnly<Staff>(raw, (s) => typeof s.id === 'string' && typeof s.name === 'string' && ROLES.includes(s.role as Role)); return list.length ? list : seedStaff(); }),
+    staff: new BrowserRepository<Staff[]>(ADMIN_KEYS.staff, defaultStaff, (raw) => { const list = recordsOnly<Staff>(raw, (s) => typeof s.id === 'string' && typeof s.name === 'string' && ROLES.includes(s.role as Role)); return list.length ? list : defaultStaff(); }),
     session: new BrowserRepository<string | null>(ADMIN_KEYS.session, () => 'staff-owner'),
     audit: new BrowserAuditRepository(),
     catalog: new BrowserRepository<Record<string, ProductRecord>>(ADMIN_KEYS.catalog, () => ({}), (raw) => (isObj(raw) ? (raw as Record<string, ProductRecord>) : {})),
     cake: new BrowserRepository<CakeOverrides>(ADMIN_KEYS.cake, () => normalizeOverrides(null), normalizeOverrides),
     settings: new BrowserRepository<SettingsValues>(ADMIN_KEYS.settings, () => normalizeSettings(null), normalizeSettings),
-    campaigns: new BrowserRepository<Campaign[]>(ADMIN_KEYS.campaigns, () => [], (raw) => (Array.isArray(raw) ? (raw as Campaign[]) : [])),
+    campaigns: new BrowserRepository<Campaign[]>(ADMIN_KEYS.campaigns, () => seed.campaigns ?? [], (raw) => (Array.isArray(raw) ? (raw as Campaign[]) : seed.campaigns ?? [])),
     slots: new BrowserRepository<ContentSlot[]>(ADMIN_KEYS.slots, () => DEFAULT_SLOTS, (raw) => (Array.isArray(raw) ? DEFAULT_SLOTS.map((d) => ({ ...d, ...((raw as ContentSlot[]).find((s) => s.id === d.id) ?? {}) })) : DEFAULT_SLOTS)),
     announcements: new BrowserRepository<Announcement[]>(ADMIN_KEYS.announcements, () => [], (raw) => (Array.isArray(raw) ? (raw as Announcement[]) : [])),
     media: new BrowserRepository<Record<string, MediaOverlay>>(ADMIN_KEYS.media, () => ({}), (raw) => (isObj(raw) ? (raw as Record<string, MediaOverlay>) : {})),

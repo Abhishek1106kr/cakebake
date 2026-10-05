@@ -7,7 +7,7 @@ import type { Role } from './permissions';
 
 export type EntityType =
   | 'order' | 'inventory' | 'product' | 'cakeOption' | 'cakeRule' | 'printRules' | 'customer' | 'invoice' | 'automation'
-  | 'campaign' | 'content' | 'media' | 'staff' | 'settings' | 'customCake' | 'notification' | 'decision' | 'session';
+  | 'campaign' | 'content' | 'media' | 'staff' | 'settings' | 'customCake' | 'notification' | 'decision' | 'session' | 'issue' | 'payment';
 
 export type AuditActor = { id: string; name: string; role: Role | 'SYSTEM' };
 export type AuditSource = 'admin-ui' | 'bulk' | 'copilot' | 'intelligence' | 'system' | 'import';

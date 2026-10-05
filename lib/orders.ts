@@ -204,10 +204,13 @@ export function markRefunded(order: Order): Order {
   return order.paymentStatus === 'REFUND_PENDING' ? { ...order, paymentStatus: 'REFUNDED' } : order;
 }
 
-/** Sequential TRS-#### ids; never collides with an order already on this device. */
-export function nextOrderId(orders: Order[]): string {
-  const highest = orders.reduce((max, order) => Math.max(max, Number(order.id.replace(/\D/g, '')) || 0), 1041);
-  return `TRS-${highest + 1}`;
+/** The last order number in the shipped demo dataset (TRS-09141); new orders continue after it. */
+export const ORDER_NUMBER_FLOOR = 9141;
+
+/** Sequential TRS-##### ids; never collides with a shipped order or one already on this device. */
+export function nextOrderId(orders: Order[], floor = ORDER_NUMBER_FLOOR): string {
+  const highest = orders.reduce((max, order) => Math.max(max, Number(order.id.replace(/\D/g, '')) || 0), floor);
+  return `TRS-${String(highest + 1).padStart(5, '0')}`;
 }
 
 export function createOrder(details: CheckoutDetails, lines: CartLine[], existing: Order[], at: Date, opts: { autoConfirm?: boolean } = {}): Order {

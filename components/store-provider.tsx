@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, ReactNode } from 'react';
 import { makeStatusEvent, publishStatus } from '@/lib/tracking/events';
 import { canTransition, type TrackingStatus } from '@/lib/tracking/status';
 import { onOrderCreated, onStatusChanged, resumePending } from '@/lib/automation/runner';
@@ -11,8 +11,10 @@ import { track } from '@/engine/intelligence/events/track';
 import {
   CartLine, CheckoutDetails, CheckoutErrors, MAX_QTY_PER_LINE, Order, OrderStatus, Size,
   advanceOrder, calcTotals, cancelOrder, cancelRestoresStock, canCancel, createOrder, lineIdFor,
-  makeLine, markRefunded, nextStatus, normalizeCart, normalizeOrder, seedOrders, validateCheckout, makeCustomLine,
+  makeLine, markRefunded, nextStatus, normalizeCart, normalizeOrder, validateCheckout, makeCustomLine,
 } from '@/lib/orders';
+import { loadDataset, loadManifest, migrateOverlays, resetDemoData } from '@/lib/mock-data/store';
+import type { MockDataset, SeedManifest, SeedMovement } from '@/lib/mock-data/types';
 import { validate as validateCake } from '@/lib/cake/engine';
 import type { CakeConfiguration } from '@/lib/cake/types';
 import {
@@ -20,9 +22,11 @@ import {
   initialInventory, mergeInventory, shortLines,
 } from '@/lib/inventory';
 
-// All business logic runs in the browser. State is saved to localStorage and
-// kept in sync across tabs, so an order placed in the shop appears in the
-// admin, and kitchen updates show on the customer's tracking page.
+// All business logic runs in the browser. The shipped demo dataset (lib/mock-data) is read-only;
+// what a visitor changes (new orders, status changes, stock movements) is saved to localStorage as
+// an overlay and kept in sync across tabs, so an order placed in the shop appears in the admin and
+// kitchen updates show on the customer's tracking page. The storefront loads only the small
+// manifest (stock levels); the full dataset loads when the admin asks for it (ensureSeed).
 
 const KEYS = {
   cart: 'tresor-cart',
@@ -48,6 +52,21 @@ function write(key: string, value: unknown) {
 
 function parseOrders(raw: unknown): Order[] {
   return Array.isArray(raw) ? raw.map(normalizeOrder).filter((o): o is Order => o !== null) : [];
+}
+
+/** Shipped orders with this browser's changes on top (same id wins), newest first. */
+function mergeSeed(seed: Order[], overlay: Order[]): Order[] {
+  const mine = new Map(overlay.map((o) => [o.id, o]));
+  const merged = seed.map((s) => mine.get(s.id) ?? s);
+  const known = new Set(seed.map((o) => o.id));
+  for (const o of overlay) if (!known.has(o.id)) merged.push(o);
+  return merged.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+/** The shipped stock levels applied to the ingredient list. */
+function levelsFrom(m: SeedManifest): Ingredient[] {
+  const at = new Map(m.inventoryLevels.map((l) => [l.id, l]));
+  return initialInventory.map((i) => (at.has(i.id) ? { ...i, onHand: at.get(i.id)!.onHand, reserved: at.get(i.id)!.reserved } : i));
 }
 
 export type PlaceOrderResult = { ok: true; order: Order } | { ok: false; errors: CheckoutErrors };
@@ -87,9 +106,16 @@ type StoreContextValue = {
   movements: Movement[];
   recordMovement: (ingredientId: string, delta: number, reason: MovementReason, meta?: { note?: string; actor?: string }) => void;
   setReorderPoint: (ingredientId: string, value: number) => void;
+  /** Removes every change made in this browser and restores the shipped demo data (reloads the page). */
   resetDemo: () => void;
   /** Bumps when the bakery's catalogue, Cake Builder or settings change (re-render menus and prices). */
   catalogRevision: number;
+  /** The shipped demo dataset, moved to today. Null until the admin asks for it with ensureSeed(). */
+  seed: MockDataset | null;
+  seedStatus: 'idle' | 'loading' | 'ready' | 'error';
+  ensureSeed: () => void;
+  /** Stock history: the shipped movements and this browser's own, newest first. */
+  movementHistory: (Movement | SeedMovement)[];
 };
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -102,6 +128,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [latestId, setLatestId] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [catalogRevision, setCatalogRevision] = useState(0);
+  const [seed, setSeed] = useState<MockDataset | null>(null);
+  const [seedStatus, setSeedStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const seedStatusRef = useRef<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  // Shipped orders by id: an order is saved as an overlay only when it is not the shipped object.
+  const seedRef = useRef<Map<string, Order>>(new Map());
+  // Stock is saved only after a change here; otherwise the shipped levels apply on every visit.
+  const inventoryDirty = useRef(false);
 
   // Load once, migrate data from the earlier version, then follow other tabs.
   useEffect(() => {
@@ -114,7 +147,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
     const stopCatalog = startLiveCatalog();
     const storedOrders = read<unknown[]>(KEYS.orders);
-    let loaded = storedOrders ? parseOrders(storedOrders) : seedOrders(new Date());
+    let loaded = storedOrders ? parseOrders(storedOrders) : [];
     let latest = read<string>(KEYS.latestId);
     const legacy = normalizeOrder(read(KEYS.legacyLatest));
     if (legacy && !loaded.some((o) => o.id === legacy.id)) {
@@ -125,20 +158,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     setCart(normalizeCart(read(KEYS.cart)));
     setOrders(loaded);
-    setInventory(mergeInventory(read(KEYS.inventory)));
+    const storedInventory = read(KEYS.inventory);
+    if (storedInventory) { inventoryDirty.current = true; setInventory(mergeInventory(storedInventory)); }
     setMovements(read<Movement[]>(KEYS.movements) ?? []);
     setLatestId(latest);
     setMounted(true);
     // Pick up automation jobs a closed tab left unfinished.
     resumePending((id) => loaded.find((o) => o.id === id));
+    // The shipped stock levels (tiny manifest). Overlays from an earlier dataset are cleared once.
+    loadManifest().then((m) => {
+      if (migrateOverlays(m.version)) {
+        inventoryDirty.current = false;
+        setOrders((current) => current.filter((o) => seedRef.current.get(o.id) === o));
+        setMovements([]);
+        setLatestId(null);
+        setInventory(levelsFrom(m));
+      } else if (!inventoryDirty.current) {
+        setInventory(levelsFrom(m));
+      }
+    }).catch(() => { /* offline: the code defaults stay */ });
 
     const onStorage = (event: StorageEvent) => {
       if (!event.key || !event.newValue) return;
       try {
         const value = JSON.parse(event.newValue);
         if (event.key === KEYS.cart) setCart(normalizeCart(value));
-        if (event.key === KEYS.orders) setOrders(parseOrders(value));
-        if (event.key === KEYS.inventory) setInventory(mergeInventory(value));
+        if (event.key === KEYS.orders) setOrders(seedRef.current.size ? mergeSeed([...seedRef.current.values()], parseOrders(value)) : parseOrders(value));
+        if (event.key === KEYS.inventory) { inventoryDirty.current = true; setInventory(mergeInventory(value)); }
         if (event.key === KEYS.movements && Array.isArray(value)) setMovements(value);
         if (event.key === KEYS.latestId) setLatestId(value);
       } catch {}
@@ -148,8 +194,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => { if (mounted) write(KEYS.cart, cart); }, [cart, mounted]);
-  useEffect(() => { if (mounted) write(KEYS.orders, orders); }, [orders, mounted]);
-  useEffect(() => { if (mounted) write(KEYS.inventory, inventory); }, [inventory, mounted]);
+  // Only this browser's orders and changes are saved; shipped orders stay in the dataset.
+  useEffect(() => { if (mounted) write(KEYS.orders, orders.filter((o) => seedRef.current.get(o.id) !== o)); }, [orders, mounted]);
+  useEffect(() => { if (mounted && inventoryDirty.current) write(KEYS.inventory, inventory); }, [inventory, mounted]);
   useEffect(() => { if (mounted) write(KEYS.movements, movements); }, [movements, mounted]);
   useEffect(() => { if (mounted) write(KEYS.latestId, latestId); }, [latestId, mounted]);
 
@@ -229,6 +276,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     for (const l of order.items) if (l.custom) emitDomain('customCake.created', order.id, { designId: l.custom.designId, productionHours: l.custom.productionHours });
     const after = applyLines(inventory, order.items, -1);
     setOrders((current) => [order, ...current]);
+    inventoryDirty.current = true;
     setInventory((current) => applyLines(current, order.items, -1));
     emitDomain('inventory.changed', order.id, { reason: 'order' });
     // Events carry ids and amounts only, never the customer's details.
@@ -260,7 +308,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const updated = to === 'CANCELLED' ? cancelOrder(order, now) : advanceOrder(order, now);
     if (updated.status !== to) return false;
     if (to === 'CANCELLED') {
-      if (cancelRestoresStock(order)) setInventory((current) => applyLines(current, order.items, 1));
+      if (cancelRestoresStock(order)) { inventoryDirty.current = true; setInventory((current) => applyLines(current, order.items, 1)); }
       track('order_cancelled', { orderId, stage: order.status, restoredStock: cancelRestoresStock(order) });
     } else {
       track('delivery_status_changed', { orderId, status: to });
@@ -333,6 +381,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const recordMovement = (ingredientId: string, delta: number, reason: MovementReason, meta: { note?: string; actor?: string } = {}) => {
     if (!delta) return;
     track('inventory_updated', { ingredientId, delta, reason });
+    inventoryDirty.current = true;
     setInventory((current) => applyMovement(current, ingredientId, delta, reason));
     const movement: Movement = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, at: new Date().toISOString(), ingredientId, delta, reason,
@@ -344,16 +393,37 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const setReorderPoint = (ingredientId: string, value: number) => {
     if (!(value >= 0 && Number.isFinite(value))) return;
+    inventoryDirty.current = true;
     setInventory((current) => current.map((i) => (i.id === ingredientId ? { ...i, reorderPoint: Math.round(value * 1000) / 1000 } : i)));
     emitDomain('inventory.changed', ingredientId, { reorderPoint: value });
   };
 
   const resetDemo = () => {
-    setOrders(seedOrders(new Date()));
-    setInventory(initialInventory);
-    setMovements([]);
-    setLatestId(null);
+    resetDemoData();
+    window.location.reload();
   };
+
+  /** Loads the shipped dataset once (the admin calls this), and merges this browser's changes on top. */
+  const ensureSeed = useCallback(() => {
+    if (seedStatusRef.current === 'loading' || seedStatusRef.current === 'ready') return;
+    seedStatusRef.current = 'loading';
+    setSeedStatus('loading');
+    loadDataset().then((ds) => {
+      seedRef.current = new Map(ds.orders.map((o) => [o.id, o]));
+      setOrders((current) => mergeSeed(ds.orders, current));
+      setSeed(ds);
+      seedStatusRef.current = 'ready';
+      setSeedStatus('ready');
+    }).catch(() => {
+      seedStatusRef.current = 'error';
+      setSeedStatus('error');
+    });
+  }, []);
+
+  const movementHistory = useMemo(
+    () => [...movements, ...(seed?.inventory.movements ?? [])].sort((a, b) => b.at.localeCompare(a.at)),
+    [movements, seed],
+  );
 
   const totals = calcTotals(cart);
   const myOrders = orders.filter((o) => o.source === 'online');
@@ -363,6 +433,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     cartCount: totals.itemCount, subtotal: totals.subtotal, deliveryFee: totals.delivery, total: totals.total, toFreeDelivery: totals.toFreeDelivery,
     orders, myOrders, latestOrder: orders.find((o) => o.id === latestId) ?? null, findOrder: (id) => orders.find((o) => o.id === id),
     placeOrder, advance, cancel, transition, refund, devSetStatus, inventory, movements, recordMovement, setReorderPoint, resetDemo, catalogRevision,
+    seed, seedStatus, ensureSeed, movementHistory,
   };
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

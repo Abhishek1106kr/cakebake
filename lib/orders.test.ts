@@ -91,7 +91,7 @@ describe('order lifecycle', () => {
 
   it('creates a confirmed order with totals and history', () => {
     const order = createOrder(details, lines, [], at);
-    expect(order.id).toBe('TRS-1042');
+    expect(order.id).toBe('TRS-09142'); // after the shipped demo orders
     expect(order.status).toBe('CONFIRMED');
     expect(order.history.map((h) => h.status)).toEqual(['NEW', 'CONFIRMED']);
     expect(order.subtotal).toBe(210 + 380);
@@ -154,7 +154,7 @@ describe('order lifecycle', () => {
   it('issues sequential ids that never collide', () => {
     const a = createOrder(details, lines, [], at);
     const b = createOrder(details, lines, [a], at);
-    expect(nextOrderId([a, b])).toBe('TRS-1044');
+    expect(nextOrderId([a, b])).toBe('TRS-09144');
   });
 
   it('targets the slowest item for prep time', () => {
