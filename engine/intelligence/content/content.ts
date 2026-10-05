@@ -39,10 +39,15 @@ export function orderShowcase(ctx: Pick<IntelligenceContext, 'timeOfDay' | 'seas
     let hidden = 0;
     const items: ShowcaseItem[] = [];
     for (const e of index.entries) {
-      const units = available(e.product);
+      // Off the menu (out of season, or switched off in the admin) counts as sold out.
+      const units = e.product.available === false ? 0 : available(e.product);
       if (units <= 0) { hidden += 1; continue; }
       const moment = moments.some((m) => e.signals.moments.includes(m));
-      const seasonal = season.temps.includes(e.signals.temperature) || season.flavours.some((f) => e.signals.flavours.includes(f));
+      // A flavour only counts for the season if the temperature doesn't fight it: iced coffee is
+      // not "warm for the rain", however much coffee it has.
+      const opposite: string[] = season.temps.includes('hot') ? ['cold', 'chilled'] : ['hot', 'warm'];
+      const seasonal = season.temps.includes(e.signals.temperature)
+        || (!opposite.includes(e.signals.temperature) && season.flavours.some((f) => e.signals.flavours.includes(f)));
       const novel = NOVEL_TAGS.has((e.product.tag ?? '').toLowerCase());
       const popular = (sold[e.product.id] ?? 0) / maxSold;
       const lowStock = e.signals.leadTime === 'today' && units < 3;

@@ -150,7 +150,9 @@ describe('search pipeline', () => {
     expect(names('nutty pastry')).toEqual(['almond-croissant']);
     expect(names('chocolate brownie')[0]).toBe('chocolate-brownie');
     expect(names('light and refreshing')[0]).toBe('citrus-tea');
-    expect(names('mango')).toEqual(['mango-passion']);
+    // Every hit is a mango item (the menu grows; the mango cake must always be among them).
+    expect(names('mango')).toContain('mango-passion');
+    for (const id of names('mango')) expect(`${byId(id).name} ${byId(id).searchTerms.join(' ')}`.toLowerCase()).toContain('mango');
   });
 
   it('corrects typos and says what it read', () => {
@@ -172,7 +174,8 @@ describe('search pipeline', () => {
   });
 
   it('respects budget, group size and urgency', () => {
-    expect(names('cake under 300')).toEqual(['pistachio-tart']);
+    expect(names('cake under 300')).toContain('pistachio-tart');
+    for (const id of names('cake under 300')) { expect(byId(id).category).toBe('Cake'); expect(byId(id).price).toBeLessThanOrEqual(300); }
     for (const id of names('birthday cake for 8')) expect(signalsFor(byId(id)).serves).toBeGreaterThanOrEqual(8);
     for (const id of names('cake today')) expect(signalsFor(byId(id)).leadTime).toBe('today');
   });

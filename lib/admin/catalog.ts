@@ -45,7 +45,7 @@ export type ProductRecord = {
   updatedAt: string | null;
 };
 
-export const CATEGORIES = ['Pastry', 'Cake', 'Dessert', 'Coffee', 'Drinks', 'Savoury'];
+export const CATEGORIES = ['Pastry', 'Bread', 'Cake', 'Dessert', 'Coffee', 'Drinks', 'Savoury'];
 
 const ALLERGEN_HINTS: [RegExp, string][] = [[/nut|almond|pistachio|hazelnut|praline/i, 'nuts'], [/flour|sponge|pastry|croissant|bread|sourdough|brownie|tart|sablé|cookie/i, 'gluten'], [/milk|cream|butter|cheese|yogurt|ricotta|latte|parmesan|chocolate/i, 'dairy'], [/egg/i, 'egg']];
 

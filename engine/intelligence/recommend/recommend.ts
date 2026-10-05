@@ -36,6 +36,7 @@ const COMPLEMENTS: Record<string, string[]> = {
   Drinks: ['Pastry', 'Savoury', 'Dessert'],
   Pastry: ['Coffee', 'Drinks'],
   Savoury: ['Drinks', 'Coffee'],
+  Bread: ['Coffee', 'Savoury', 'Pastry'],
   Dessert: ['Coffee', 'Drinks'],
   Cake: ['Coffee', 'Drinks'],
 };

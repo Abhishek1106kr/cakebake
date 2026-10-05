@@ -49,14 +49,18 @@ const TOPIC_WORDS: [CopilotTopic, RegExp][] = [
 const words = (s: string) => (s.toLowerCase().match(/[a-z]+/g) ?? []).filter((w) => w !== 'tresor');
 
 /** Finds an ingredient or product the question names, allowing small typos. */
+// Words that name a kind of thing, not one item: "cake" must not mean "Christmas Plum Cake",
+// nor "coffee" mean "Filter Coffee". Only distinctive words ("plum", "brownie") pick an item.
+const GENERIC_WORDS = new Set(['cake', 'cakes', 'coffee', 'coffees', 'bread', 'breads', 'loaf', 'loaves', 'slice', 'slices', 'tart', 'tarts', 'box', 'boxes', 'tin', 'jar', 'toast', 'danish', 'puff', 'cookie', 'cookies', 'drink', 'drinks', 'tea', 'pastry', 'pastries', 'dessert', 'desserts']);
+
 function mentioned<T extends { id: string; name: string }>(question: string, items: T[]): T | null {
   const q = ` ${question} `;
   const full = items.find((i) => q.includes(` ${i.name.toLowerCase()} `));
   if (full) return full;
-  const direct = items.find((i) => words(i.name).filter((w) => w.length > 3).some((w) => q.includes(` ${w} `)));
+  const direct = items.find((i) => words(i.name).filter((w) => w.length > 3 && !GENERIC_WORDS.has(w)).some((w) => q.includes(` ${w} `)));
   if (direct) return direct;
   const vocab = new Map<string, T>();
-  for (const i of items) for (const w of words(i.name)) if (w.length > 4) vocab.set(w, i);
+  for (const i of items) for (const w of words(i.name)) if (w.length > 4 && !GENERIC_WORDS.has(w)) vocab.set(w, i);
   for (const w of words(question).filter((x) => x.length >= 6)) {
     const c = correct(w, vocab.keys());
     if (c) return vocab.get(c.to) ?? null;

@@ -46,7 +46,7 @@ const SPELLING: Record<string, string> = {
   bday: 'birthday', b: 'b',
 };
 
-const CATEGORY_WORDS: Record<string, string[]> = { cake: ['Cake'], pastry: ['Pastry'], croissant: ['Pastry'], coffee: ['Coffee'], drink: ['Drinks', 'Coffee'], beverage: ['Drinks', 'Coffee'], savoury: ['Savoury'] };
+const CATEGORY_WORDS: Record<string, string[]> = { cake: ['Cake'], pastry: ['Pastry'], croissant: ['Pastry'], coffee: ['Coffee'], drink: ['Drinks', 'Coffee'], beverage: ['Drinks', 'Coffee'], savoury: ['Savoury'], bread: ['Bread'], loaf: ['Bread'], loaves: ['Bread'], sourdough: ['Bread'] };
 
 /** Flavour words specific enough to mean that ingredient, not just its family ("mango", not "anything fruity"). */
 const SPECIFIC = new Set(['almond', 'pistachio', 'hazelnut', 'praline', 'strawberry', 'mango', 'cherry', 'citrus', 'lemon', 'berry', 'matcha']);

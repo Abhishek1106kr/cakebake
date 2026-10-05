@@ -27,9 +27,12 @@ describe('content selection', () => {
   it('leans cold in summer and warm in the monsoon', () => {
     const summer = orderShowcase({ timeOfDay: 'afternoon', season: 'summer' }, { products }).result;
     const monsoon = orderShowcase({ timeOfDay: 'afternoon', season: 'monsoon' }, { products }).result;
-    const rank = (list: typeof summer, id: string) => list.findIndex((i) => i.product.id === id);
-    expect(rank(summer, 'cold-brew')).toBeLessThan(rank(monsoon, 'cold-brew'));
-    expect(rank(monsoon, 'tresor-latte')).toBeLessThan(rank(summer, 'tresor-latte'));
+    // Scores, not positions: positions depend on how many other items tie.
+    const score = (list: typeof summer, id: string) => list.find((i) => i.product.id === id)!.score;
+    expect(score(summer, 'cold-brew')).toBeGreaterThan(score(monsoon, 'cold-brew'));
+    expect(score(monsoon, 'tresor-latte')).toBeGreaterThan(score(summer, 'tresor-latte'));
+    // An iced drink is never "warm for the rain".
+    expect(monsoon.find((i) => i.product.id === 'cold-brew')!.reasons).not.toContain('warm for the rain');
   });
 
   it('leaves out sold-out items and lowers nearly-gone ones', () => {
@@ -37,7 +40,8 @@ describe('content selection', () => {
     expect(items.result.map((i) => i.product.id)).not.toContain('almond-croissant');
     const pain = items.result.find((i) => i.product.id === 'pain-au-chocolat')!;
     expect(pain.reasons).toContain('only a few left');
-    expect(items.evidence.find((e) => e.label === 'Hidden (sold out)')?.value).toBe(1);
+    // The croissant, plus anything off the menu (seasonal items out of season).
+    expect(items.evidence.find((e) => e.label === 'Hidden (sold out)')?.value).toBe(1 + products.filter((p) => p.available === false).length);
   });
 
   it('only suggests moods the search engine actually answers', () => {
