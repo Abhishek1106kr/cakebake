@@ -1,6 +1,7 @@
 import './globals.css';
 import { ReactNode } from 'react';
 import type { Metadata } from 'next';
+import { LOCAL_MEDIA } from '@/lib/local-media';
 import { StoreHeader } from '@/components/store-header';
 import { StoreFooter } from '@/components/store-footer';
 import { StoreProvider } from '@/components/store-provider';
@@ -28,8 +29,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={cakeScript.variable} data-scroll-behavior="smooth">
       <head>
-        {/* Local mock imagery (git-ignored public/mock-assets). Dev only: production never loads it. */}
-        {process.env.NODE_ENV === 'development' && <link rel="stylesheet" href="/mock-assets/mock.css" />}
+        {/* Local photos (git-ignored public/mock-assets): dev server, or a deployment made with them (NEXT_PUBLIC_LOCAL_MEDIA=1). */}
+        {LOCAL_MEDIA && <link rel="stylesheet" href="/mock-assets/mock.css" />}
       </head>
       <body>
         <StoreProvider>

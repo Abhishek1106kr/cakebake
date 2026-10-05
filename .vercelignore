@@ -1,0 +1,22 @@
+# What `vercel deploy` from this computer does NOT upload. The Vercel CLI does not read .gitignore,
+# only this file (plus its own defaults: .git, node_modules, .next, .env.local, .env.*.local ...).
+#
+# The photos in public/mock-assets and public/our-story ARE uploaded on purpose: the client preview
+# must look exactly like the local site. It is deployed from this computer (never via GitHub, where
+# the repo is public) and protected by SITE_PASSWORD.
+
+# Secrets: keys go into Vercel's environment variables, never into an upload.
+.env
+.env.*
+!.env.example
+
+# Local build output, server-branch leftovers, test artefacts, tooling
+.next-test
+server
+storage
+brag-output*
+.claude
+.tresor
+tests
+*.tsbuildinfo
+**/__pycache__

@@ -1,8 +1,9 @@
 // Responsive variants for local images (scripts/build-media-variants.ts writes the index).
-// Read only on the development server, where the git-ignored mock images exist: production and
-// other machines never request the index, so they keep the tone-gradient fallbacks.
+// Read where the local photos exist: the dev server, or a deployment made with them
+// (NEXT_PUBLIC_LOCAL_MEDIA=1). Other builds never request the index and keep the tone-gradient fallbacks.
 
 import { useEffect, useState } from 'react';
+import { LOCAL_MEDIA } from './local-media';
 
 export type MediaVariant = { width: number; height: number; avif: string[]; webp: string[]; thumb: string; placeholder: string };
 type Index = Record<string, MediaVariant>;
@@ -13,7 +14,7 @@ const listeners = new Set<() => void>();
 
 function load(): Promise<Index> {
   if (index) return Promise.resolve(index);
-  if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') return Promise.resolve((index = {}));
+  if (!LOCAL_MEDIA || typeof window === 'undefined') return Promise.resolve((index = {}));
   loading ??= fetch('/mock-assets/_v/variants.json')
     .then((r) => (r.ok ? (r.json() as Promise<Index>) : {}))
     .catch(() => ({}))
@@ -34,6 +35,6 @@ export function useMediaVariant(src: string | undefined): MediaVariant | null | 
     void load();
     return () => { listeners.delete(l); };
   }, []);
-  if (!index) return process.env.NODE_ENV === 'development' ? undefined : null;
+  if (!index) return LOCAL_MEDIA ? undefined : null;
   return src ? index[src] ?? null : null;
 }
