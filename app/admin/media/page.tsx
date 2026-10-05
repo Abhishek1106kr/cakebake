@@ -6,6 +6,7 @@ import { useAdmin } from '@/components/admin/admin-provider';
 import { Badge, Chips, Drawer, Empty, Guard, PageHeader, Panel, SearchField, useUrlParam } from '@/components/admin/ui';
 import { aspectLabel, libraryEntries, registryAssets, usageOf, type MediaEntry, type MediaOverlay, type MediaType } from '@/lib/admin/media-library';
 import { MEDIA_ROLES, type MediaRole } from '@/lib/admin/catalog';
+import { useMediaVariant } from '@/lib/media-variants';
 
 type TF = 'ALL' | MediaType | 'ARCHIVED' | 'UNUSED';
 const FILTERS: { id: TF; label: string }[] = [{ id: 'ALL', label: 'All' }, { id: 'image', label: 'Images' }, { id: 'video', label: 'Videos' }, { id: 'poster', label: 'Posters' }, { id: 'UNUSED', label: 'Not used by a product' }, { id: 'ARCHIVED', label: 'Archived' }];
@@ -16,10 +17,12 @@ export default function MediaPage() {
 
 function Thumb({ entry }: { entry: MediaEntry }) {
   const [failed, setFailed] = useState(false);
+  const variant = useMediaVariant(entry.desktop);
   if (!entry.desktop || entry.desktop.startsWith('none') || failed) return <span className="ad-thumb ad-thumb-missing"><ImageOff size={18} aria-hidden /><small>No file here</small></span>;
   if (entry.type === 'video') return <span className="ad-thumb ad-thumb-video"><Film size={18} aria-hidden /><small>Video</small></span>;
+  // Tables use the 160 px thumbnail when it exists; the full image only in the detail drawer.
   // eslint-disable-next-line @next/next/no-img-element
-  return <img className="ad-thumb" src={entry.desktop} alt={entry.alt} loading="lazy" onError={() => setFailed(true)} />;
+  return <img className="ad-thumb" src={variant?.thumb ?? entry.desktop} alt={entry.alt} loading="lazy" decoding="async" onError={() => setFailed(true)} />;
 }
 
 function Media() {

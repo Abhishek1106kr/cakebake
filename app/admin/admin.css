@@ -543,3 +543,7 @@ body.ad-locked { overflow: hidden; }
 .ad-note-item { background: #FCFCFB; border-left: 3px dashed var(--ad-mist); padding-left: 8px !important; }
 .ad-section-title svg { vertical-align: -2px; margin-right: 4px; }
 .cc-more { margin: 8px auto 4px; display: block; }
+.ad-thumb-sm { display: inline-block; flex: none; border-radius: 6px; overflow: hidden; vertical-align: middle; }
+.ad-thumb-sm img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cell-with-thumb { display: flex; align-items: center; gap: 10px; }
+.cell-with-thumb > span { display: grid; min-width: 0; }

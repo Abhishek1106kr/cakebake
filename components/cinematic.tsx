@@ -9,6 +9,7 @@ import type { MediaAsset } from '@/lib/media';
 import { EASE, EASE_IMAGE } from '@/lib/motion';
 import { browserContext, selectRendition, type IntelligenceContext } from '@/engine/intelligence';
 import { useElementScrollProgress } from './scroll-progress';
+import { useMediaVariant } from '@/lib/media-variants';
 
 /**
  * Reduced-motion preference, but only after mount. The server can't know it, so the
@@ -42,6 +43,9 @@ function useMediaContext() {
 export function Media({ asset, className = '', imgStyle, eager = false, sizes = '100vw' }: { asset: MediaAsset; className?: string; imgStyle?: MotionStyle; eager?: boolean; sizes?: string }) {
   const [failed, setFailed] = useState(!asset.src);
   const ctx = useMediaContext();
+  // AVIF/WebP at several widths and a blurred placeholder, when variants exist (development, local images).
+  const variant = useMediaVariant(asset.type === 'image' ? asset.src : undefined);
+  const mobileVariant = useMediaVariant(asset.mobile);
   // Before mount (and on the server) serve the safe default: a still image.
   const rendition = ctx ? selectRendition(asset, ctx, eager) : { mode: 'image' as const, src: asset.type === 'video' ? asset.poster ?? asset.src : asset.src, loading: eager || asset.priority === 'high' ? 'eager' as const : 'lazy' as const };
   if (rendition.mode === 'video' && !failed) {
@@ -64,9 +68,21 @@ export function Media({ asset, className = '', imgStyle, eager = false, sizes = 
       draggable={false}
     />
   );
+  const background = variant ? `center / cover no-repeat url("${variant.placeholder}"), linear-gradient(145deg, ${asset.tone[0]}, ${asset.tone[1]})` : `linear-gradient(145deg, ${asset.tone[0]}, ${asset.tone[1]})`;
+  const responsive = variant || mobileVariant;
+  // Development only: wait for the variant index so the original isn't downloaded first.
+  const pending = asset.type === 'image' && (variant === undefined || (asset.mobile !== undefined && mobileVariant === undefined));
   return (
-    <div className={`media ${className}`} style={{ background: `linear-gradient(145deg, ${asset.tone[0]}, ${asset.tone[1]})` }}>
-      {!failed && (asset.mobile ? <picture><source media="(max-width: 760px)" srcSet={asset.mobile} />{img}</picture> : img)}
+    <div className={`media ${className}`} style={{ background }}>
+      {!failed && !pending && (responsive || asset.mobile ? (
+        <picture>
+          {asset.mobile && (mobileVariant
+            ? <><source media="(max-width: 760px)" type="image/avif" srcSet={mobileVariant.avif.join(', ')} sizes={sizes} /><source media="(max-width: 760px)" type="image/webp" srcSet={mobileVariant.webp.join(', ')} sizes={sizes} /></>
+            : <source media="(max-width: 760px)" srcSet={asset.mobile} />)}
+          {variant && <><source type="image/avif" srcSet={variant.avif.join(', ')} sizes={sizes} /><source type="image/webp" srcSet={variant.webp.join(', ')} sizes={sizes} /></>}
+          {img}
+        </picture>
+      ) : img)}
     </div>
   );
 }

@@ -16,6 +16,7 @@ import type { StockLevel } from '@/lib/inventory';
 import type { DueState, Priority } from '@/lib/admin/order-ops';
 import type { Permission } from '@/lib/admin/permissions';
 import { useAdmin } from './admin-provider';
+import { useMediaVariant } from '@/lib/media-variants';
 
 export const rupees = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 export const clock = (iso: string | Date) => new Date(iso).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -260,4 +261,15 @@ export function useUrlParam(name: string, fallback = ''): [string, (v: string) =
     window.history.replaceState(window.history.state, '', url.toString());
   }, [name, fallback]);
   return [value, set];
+}
+
+/** A small product or media thumbnail for tables: the 160 px variant when it exists, else the tone swatch. */
+export function Thumb({ src, tone, alt, size = 40 }: { src?: string; tone: [string, string]; alt: string; size?: number }) {
+  const variant = useMediaVariant(src);
+  const [failed, setFailed] = useState(false);
+  return (
+    <span className="ad-thumb-sm" style={{ width: size, height: size, background: `linear-gradient(145deg, ${tone[0]}, ${tone[1]})` }} aria-hidden={variant ? undefined : true}>
+      {variant && !failed && <img src={variant.thumb} alt={alt} width={size} height={size} loading="lazy" decoding="async" onError={() => setFailed(true)} />}
+    </span>
+  );
 }
