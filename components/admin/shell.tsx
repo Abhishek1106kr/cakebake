@@ -129,6 +129,7 @@ function Shell({ children, className }: { children: ReactNode; className?: strin
             <Search size={15} aria-hidden /><span>Search orders, customers, products…</span><kbd>⌘K</kbd>
           </button>
           <div className="ad-top-right">
+            <Link href="/" className="ad-top-shop" aria-label="View the shop"><Store size={15} aria-hidden /><span>View shop</span></Link>
             <div className="ad-bell-wrap">
               <button type="button" className="ad-icon-btn ad-bell" onClick={() => setBellOpen((o) => !o)} aria-expanded={bellOpen} aria-label={`Notifications, ${admin.unread} unread`}>
                 <Bell size={18} aria-hidden />{admin.unread > 0 && <b>{admin.unread > 99 ? '99+' : admin.unread}</b>}

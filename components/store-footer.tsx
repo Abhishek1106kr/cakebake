@@ -12,7 +12,7 @@ export function StoreFooter() {
           <div className="footer-links-col"><div className="eyebrow">Order elsewhere</div><ExternalOrderButtons compact/><span className="small muted">For delivery options not routed through Tresor checkout.</span></div>
           <div className="footer-links-col"><div className="eyebrow">Visit</div><span>Indiranagar, Bengaluru</span><span>Mon–Sun · 8:00–22:00</span><a href="mailto:hello@tresor.cafe">hello@tresor.cafe <ArrowUpRight size={13}/></a></div>
         </div>
-        <div className="footer-bottom"><span>© 2026 Tresor Bakery</span><span>Built for fast ordering without the rushed feeling.</span></div>
+        <div className="footer-bottom"><span>© 2026 Tresor Bakery</span><span>Built for fast ordering without the rushed feeling.</span><Link href="/admin" className="footer-staff">Staff admin <ArrowUpRight size={12}/></Link></div>
       </div>
     </footer>
   );

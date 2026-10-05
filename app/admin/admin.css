@@ -56,6 +56,8 @@
 .ad-searchbtn span { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ad-searchbtn kbd, .ad-palette kbd { font-size: 10px; border: 1px solid var(--ad-line); border-radius: 4px; padding: 1px 5px; color: var(--ad-muted); font-family: inherit; }
 .ad-top-right { display: flex; align-items: center; gap: 8px; }
+.ad-top-shop { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border: 1px solid transparent; border-radius: 6px; color: var(--ad-deep); font-weight: 600; white-space: nowrap; }
+.ad-top-shop:hover { background: var(--ad-hover); border-color: var(--ad-line); }
 .ad-icon-btn { width: 34px; height: 34px; flex: none; display: inline-grid; place-items: center; border: 1px solid transparent; border-radius: 6px; background: transparent; }
 .ad-icon-btn:hover { background: var(--ad-hover); border-color: var(--ad-line); }
 .ad-bell-wrap { position: relative; }
@@ -295,6 +297,8 @@ a.ad-kpi:hover { border-color: var(--ad-mist); }
   .ad-crumbs { display: none; }
   .ad-searchbtn { width: auto; flex: 1; }
   .ad-searchbtn kbd { display: none; }
+  .ad-top-shop { width: 34px; padding: 0; justify-content: center; }
+  .ad-top-shop span { display: none; }
   .ad-staff select { max-width: 110px; }
   .ad-grid-3 { grid-template-columns: minmax(0, 1fr); }
   .ad-form { grid-template-columns: minmax(0, 1fr); }
