@@ -56,7 +56,7 @@ export default function CartPage() {
                 >
                   {item.custom
                     ? <Link href={`/customize?line=${encodeURIComponent(item.lineId)}` as Route} className="cart-thumb cart-thumb-cake" aria-label="Edit this cake"><CakePreview config={item.custom.config} /></Link>
-                    : <Link href={`/shop/${item.product.id}`} className={`cart-thumb ${item.product.image}`} />}
+                    : <Link href={`/shop/${item.product.id}`} className={`cart-thumb ${item.product.image} p-${item.product.id}`} />}
                   <div>
                     {item.custom ? (
                       <>

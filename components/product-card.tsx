@@ -27,7 +27,7 @@ export function ProductCard({ product, compact = false, note }: { product: Produ
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
     >
       <Link href={`/shop/${product.id}`} className="product-art-frame">
-        <motion.div className={`product-art ${product.image}`} whileHover={reduce ? undefined : { scale: 1.04 }} transition={{ duration: 0.5, ease: EASE }}>
+        <motion.div className={`product-art ${product.image} p-${product.id}`} whileHover={reduce ? undefined : { scale: 1.04 }} transition={{ duration: 0.5, ease: EASE }}>
           {product.tag && <span className="product-tag">{product.tag}</span>}
           <div className="product-visual-text"><span>{product.category}</span><strong>{product.name}</strong></div>
         </motion.div>

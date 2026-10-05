@@ -47,12 +47,23 @@ const productTones: Record<string, [string, string]> = {
   c9: ['#A9B7B6', '#3E4C4A'], c10: ['#F8F4EC', '#4A5957'], c11: ['#DDE3E1', '#3E4C4A'], c12: ['#C9D3D1', '#2E3938'],
 };
 
-export function productMedia(imageKey: string, name: string): MediaAsset {
+/** Products with their own photo at /mock-assets/products/<id>.jpg (local mock folder, class "p-<id>" in mock.css). */
+const productPhotos = new Set([
+  'baguette', 'berry-parfait', 'brioche-loaf', 'butter-croissant', 'cappuccino', 'cardamom-knot',
+  'carrot-walnut-slice', 'choc-chip-cookie', 'chocolate-brownie', 'citrus-tea', 'cold-brew', 'cookie-tin',
+  'country-sourdough', 'festive-gift-box', 'filter-coffee', 'hot-chocolate', 'kouign-amann', 'lemon-tart',
+  'macaron-box', 'mango-danish', 'masala-chai', 'matcha-cloud', 'multigrain-sourdough', 'mushroom-leek-quiche',
+  'mushroom-toast', 'pain-au-chocolat', 'pain-aux-raisins', 'paneer-tikka-puff', 'plum-cake', 'rosemary-focaccia',
+  'salted-caramel-eclair', 'spinach-feta-danish', 'tiramisu-jar', 'tresor-latte', 'truffle-fries',
+]);
+
+export function productMedia(imageKey: string, name: string, productId?: string): MediaAsset {
   if (imageKey.startsWith('cake:')) return cakeImage(imageKey.slice(5), 'product');
+  const own = productId && productPhotos.has(productId) ? `${MOCK}/products/${productId}.jpg` : undefined;
   return {
-    id: `product-${imageKey}`,
+    id: `product-${productId && own ? productId : imageKey}`,
     type: 'image',
-    src: productSources[imageKey] ?? '',
+    src: own ?? productSources[imageKey] ?? '',
     alt: name,
     aspect: '4 / 5',
     priority: 'normal',

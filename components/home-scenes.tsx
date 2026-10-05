@@ -128,7 +128,7 @@ function SignaturesInner({ progress }: { progress: MotionValue<number> }) {
       <div className="signature-stage">
         <AnimatePresence mode="popLayout" initial={false}>
           <motion.div key={product.id} className="signature-image" initial={{ opacity: 0, scale: 1.08, rotate: -3, clipPath: 'inset(8% 8% 8% 8% round 28px)' }} animate={{ opacity: 1, scale: 1, rotate: 0, clipPath: 'inset(0% 0% 0% 0% round 28px)' }} exit={{ opacity: 0, scale: 0.94, rotate: 3 }} transition={{ duration: 1.0, ease: EASE_IMAGE }}>
-            <Media asset={productMedia(product.image, product.name)} />
+            <Media asset={productMedia(product.image, product.name, product.id)} />
           </motion.div>
         </AnimatePresence>
       </div>
@@ -149,8 +149,8 @@ function SignatureMeta({ product }: { product: Product }) {
           <p className="signature-desc">{product.description}</p>
           <div className="signature-price display">₹{product.price}</div>
           <div className="signature-actions">
-            <motion.button whileTap={{ scale: 0.95 }} className="btn btn-brand" onClick={() => { if (addToCart(product) > 0) flyToBag(document.querySelector('.signature-image'), { src: productMedia(product.image, product.name).src, tone: productMedia(product.image, product.name).tone }); }}><Plus size={16} /> Add to bag</motion.button>
-            <button className="text-link" onClick={() => travelTo(`/shop/${product.id}`, document.querySelector('.signature-image'), { src: productMedia(product.image, product.name).src, tone: productMedia(product.image, product.name).tone })}>The details <ArrowRight size={14} /></button>
+            <motion.button whileTap={{ scale: 0.95 }} className="btn btn-brand" onClick={() => { if (addToCart(product) > 0) flyToBag(document.querySelector('.signature-image'), { src: productMedia(product.image, product.name, product.id).src, tone: productMedia(product.image, product.name, product.id).tone }); }}><Plus size={16} /> Add to bag</motion.button>
+            <button className="text-link" onClick={() => travelTo(`/shop/${product.id}`, document.querySelector('.signature-image'), { src: productMedia(product.image, product.name, product.id).src, tone: productMedia(product.image, product.name, product.id).tone })}>The details <ArrowRight size={14} /></button>
           </div>
         </motion.div>
       </AnimatePresence>
@@ -222,7 +222,7 @@ function DiscoveryItem({ product, index, reason }: { product: Product; index: nu
   const { addToCart } = useStore();
   const { flyToBag, travelTo } = useTransitions();
   const imgRef = useRef<HTMLDivElement>(null);
-  const asset = productMedia(product.image, product.name);
+  const asset = productMedia(product.image, product.name, product.id);
   const visual = { src: asset.src, tone: asset.tone };
   return (
     <motion.article className={`discovery-item size-${SIZES[index % SIZES.length]}`} whileHover="hover" initial="rest" animate="rest">

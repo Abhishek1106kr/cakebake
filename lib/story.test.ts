@@ -32,8 +32,9 @@ describe('story content', () => {
 
   it('never shows placeholder reviews in production', () => {
     expect(reviews.every((r) => r.mock)).toBe(true); // no real reviews supplied yet
-    expect(visibleReviews('production')).toEqual([]);
-    expect(visibleReviews('development').length).toBe(reviews.length);
+    expect(visibleReviews('production', false)).toEqual([]);
+    expect(visibleReviews('development', false).length).toBe(reviews.length);
+    expect(visibleReviews('production', true).length).toBe(reviews.length); // labelled client preview
   });
 
   it('attributes no quote to a named person', () => {

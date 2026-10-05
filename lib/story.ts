@@ -98,9 +98,12 @@ export const reviews: Review[] = [
   { id: 'review-005', quote: 'Bought it for a colleague. Kept one slice.', author: 'Customer', moment: 'Gift', product: null, rating: null, image: null, date: null, featured: false, mock: true },
 ];
 
-/** Reviews safe to show: real ones always; placeholders only in development. */
-export function visibleReviews(env = process.env.NODE_ENV): Review[] {
-  return reviews.filter((r) => !r.mock || env === 'development');
+/**
+ * Reviews safe to show: real ones always; placeholders only in development or in the labelled
+ * client preview (NEXT_PUBLIC_LOCAL_MEDIA=1), where the page says they are sample words.
+ */
+export function visibleReviews(env = process.env.NODE_ENV, preview = process.env.NEXT_PUBLIC_LOCAL_MEDIA === '1'): Review[] {
+  return reviews.filter((r) => !r.mock || env === 'development' || preview);
 }
 
 export const love = {

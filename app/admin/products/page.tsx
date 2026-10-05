@@ -104,7 +104,7 @@ function Products() {
                   return (
                     <tr key={r.id} className={selected.has(r.id) ? 'is-selected' : ''}>
                       <td data-label=""><input type="checkbox" className="ad-check" checked={selected.has(r.id)} onChange={() => setSelected((s) => { const n = new Set(s); if (n.has(r.id)) n.delete(r.id); else n.add(r.id); return n; })} aria-label={`Select ${r.name}`} /></td>
-                      <td data-label="Product" className="cell-with-thumb"><Thumb src={productMedia(r.image, r.name).src} tone={productMedia(r.image, r.name).tone} alt={r.name} /><span><button type="button" className="ad-link ad-rowlink" onClick={() => setOpenId(r.id)}>{r.name || 'Untitled product'}</button><span className="ad-sub ad-mono">{r.id}</span></span></td>
+                      <td data-label="Product" className="cell-with-thumb"><Thumb src={productMedia(r.image, r.name, r.id).src} tone={productMedia(r.image, r.name, r.id).tone} alt={r.name} /><span><button type="button" className="ad-link ad-rowlink" onClick={() => setOpenId(r.id)}>{r.name || 'Untitled product'}</button><span className="ad-sub ad-mono">{r.id}</span></span></td>
                       <td data-label="Category">{r.category}</td>
                       <td data-label="Price" className="num">{rupees(r.price)}{r.compareAtPrice && <span className="ad-sub"><s>{rupees(r.compareAtPrice)}</s></span>}</td>
                       <td data-label="Status"><Badge tone={STATUS_TONE[r.status]}>{STATUS_LABEL[r.status]}</Badge></td>

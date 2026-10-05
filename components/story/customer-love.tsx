@@ -58,7 +58,7 @@ export function CustomerLove({ variant = 'full' }: { variant?: 'full' | 'compact
           </Reveal>
         ))}
       </div>
-      {hasMock && <p className="love-mock-note container">Development preview: sample words for layout. Replace with real customer reviews in lib/story.ts before launch.</p>}
+      {hasMock && <p className="love-mock-note container">Sample words for this demo, to be replaced with real customer reviews before launch.</p>}
       {compact && (
         <div className="container love-more"><Link href="/about" className="love-link">Read the Tresor story <ArrowRight size={15} /></Link></div>
       )}
