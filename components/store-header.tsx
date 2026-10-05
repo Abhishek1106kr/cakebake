@@ -26,7 +26,11 @@ export function StoreHeader() {
     <>
       <header className="header">
         <div className="container nav">
-          <Link href="/" className="logo">Tresor<span>•</span></Link>
+          <div className="logo-wrap">
+            <Link href="/" className="logo">Tresor<span>•</span></Link>
+            {/* Persistent, restrained reminder that this deployment is a demonstration. */}
+            <span className="demo-chip" title="Demonstration website: mock data, no real orders or payments"><span className="demo-chip-long">Demo environment</span><span className="demo-chip-short" aria-hidden="true">Demo</span></span>
+          </div>
           <nav className="nav-links" aria-label="Primary navigation">
             <Link href="/shop">Menu</Link>
             <Link href="/customize">Customize cake</Link>

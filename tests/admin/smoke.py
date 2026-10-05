@@ -7,6 +7,11 @@ scroll, at a desktop and a phone width. Screenshots go to the git-ignored
 import argparse, asyncio, json, os
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..', '..')
 SHOTS = os.path.join(ROOT, '.tresor', 'test-results', 'screenshots', 'admin')
@@ -28,6 +33,7 @@ async def main():
         browser = await p.chromium.launch(channel='chrome')
         for w in [int(x) for x in a.widths.split(',')]:
             ctx = await browser.new_context(viewport={'width': w, 'height': 900 if w > 800 else 844}, device_scale_factor=1)
+            await ctx.add_init_script(DEMO_INIT)
             page = await ctx.new_page()
             errors = []
             page.on('console', lambda m: errors.append(m.text) if m.type == 'error' else None)

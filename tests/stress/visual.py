@@ -5,6 +5,11 @@ overflow checks. Screenshots go to .tresor/test-results/screenshots/visual/
 import argparse, asyncio, json, os
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'test-results')
 SHOTS = os.path.join(OUT, 'screenshots', 'visual')
@@ -29,6 +34,7 @@ async def main():
         b = await p.chromium.launch()
         for kind, w, h in WIDTHS:
             ctx = await b.new_context(viewport={'width': w, 'height': h}, is_mobile=kind == 'mobile', has_touch=kind != 'desktop')
+            await ctx.add_init_script(DEMO_INIT)
             page = await ctx.new_page()
             async def shot(name, path=None, prep=None):
                 if path:

@@ -12,6 +12,11 @@ import argparse, asyncio, json, os, re, sys, time
 from datetime import datetime, timedelta
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'test-results')
 CHECKS = []
@@ -85,6 +90,7 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(channel='chrome')
         ctx = await browser.new_context(viewport={'width': 1440, 'height': 900})
+        await ctx.add_init_script(DEMO_INIT)
         page = await ctx.new_page()
         errors = []
         page.on('pageerror', lambda e: errors.append(str(e)))

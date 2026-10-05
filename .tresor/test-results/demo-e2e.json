@@ -1,0 +1,357 @@
+[
+ {
+  "name": "robots.txt disallows everything",
+  "ok": true,
+  "detail": "User-Agent: *\nDisallow: /"
+ },
+ {
+  "name": "X-Robots-Tag on /",
+  "ok": true,
+  "detail": "noindex, nofollow, noarchive, nosnippet"
+ },
+ {
+  "name": "robots meta noindex on /",
+  "ok": true,
+  "detail": "noindex, nofollow, noarchive, nosnippet"
+ },
+ {
+  "name": "X-Robots-Tag on /shop",
+  "ok": true,
+  "detail": "noindex, nofollow, noarchive, nosnippet"
+ },
+ {
+  "name": "robots meta noindex on /shop",
+  "ok": true,
+  "detail": "noindex, nofollow, noarchive, nosnippet"
+ },
+ {
+  "name": "X-Robots-Tag on /admin/login",
+  "ok": true,
+  "detail": "noindex, nofollow, noarchive, nosnippet"
+ },
+ {
+  "name": "robots meta noindex on /admin/login",
+  "ok": true,
+  "detail": "noindex, nofollow, noarchive, nosnippet"
+ },
+ {
+  "name": "admin pages are not cached (no-store)",
+  "ok": true,
+  "detail": "no-store, max-age=0"
+ },
+ {
+  "name": "first visit shows the demo warning",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "warning says it is a demonstration and not to enter real data",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "warning is labelled for assistive tech",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "focus starts on \"I understand\"",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "focus stays inside the warning",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "Escape does not dismiss without acknowledgement",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "the page behind is inert while it shows",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "Enter on the button acknowledges",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "acknowledgement is stored",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "page is usable again (inert removed)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "reload does not show the warning again",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "other pages do not show it again",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "storage blocked: warning still shows",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "storage blocked: warning dismisses for this view",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "storage blocked: no crash from the warning",
+  "ok": true,
+  "detail": "[]"
+ },
+ {
+  "name": "unauthenticated /admin redirects to login",
+  "ok": true,
+  "detail": "/admin/login"
+ },
+ {
+  "name": "no admin data rendered for /admin while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unauthenticated /admin/orders redirects to login",
+  "ok": true,
+  "detail": "/admin/login?next=%2Fadmin%2Forders"
+ },
+ {
+  "name": "no admin data rendered for /admin/orders while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unauthenticated /admin/settings redirects to login",
+  "ok": true,
+  "detail": "/admin/login?next=%2Fadmin%2Fsettings"
+ },
+ {
+  "name": "no admin data rendered for /admin/settings while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unauthenticated /admin/inventory redirects to login",
+  "ok": true,
+  "detail": "/admin/login?next=%2Fadmin%2Finventory"
+ },
+ {
+  "name": "no admin data rendered for /admin/inventory while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unauthenticated /admin/custom-cakes redirects to login",
+  "ok": true,
+  "detail": "/admin/login?next=%2Fadmin%2Fcustom-cakes"
+ },
+ {
+  "name": "no admin data rendered for /admin/custom-cakes while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unauthenticated /admin/analytics redirects to login",
+  "ok": true,
+  "detail": "/admin/login?next=%2Fadmin%2Fanalytics"
+ },
+ {
+  "name": "no admin data rendered for /admin/analytics while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "unauthenticated /admin/orders/abc redirects to login",
+  "ok": true,
+  "detail": "/admin/login?next=%2Fadmin%2Forders%2Fabc"
+ },
+ {
+  "name": "no admin data rendered for /admin/orders/abc while signed out",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "login page shows demo labelling and credentials",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "incorrect credentials fail with a message",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "failed login stores nothing",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "wrong email fails too",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "correct credentials succeed and return to the requested page",
+  "ok": true,
+  "detail": "http://localhost:3004/admin/orders/abc"
+ },
+ {
+  "name": "stored sign-in holds no password",
+  "ok": true,
+  "detail": "{\"v\":1,\"email\":\"test@omni.com\",\"signedInAt\":\"2026-10-05T05:26:37.786Z\"}"
+ },
+ {
+  "name": "admin works after login (Command Centre)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "admin header is labelled demo",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "role switcher is labelled as a demo role",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "signed in as Owner by default",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "refresh keeps the demo sign-in",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "switching to Kitchen hides Staff and Settings",
+  "ok": true,
+  "detail": "TodayOverviewOrdersKitchenCustom CakesCatalogueInventory"
+ },
+ {
+  "name": "switching back to Owner restores them",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "next=https%3A%2F%2Fevil.example is ignored (stays in the admin)",
+  "ok": true,
+  "detail": "http://localhost:3004/admin"
+ },
+ {
+  "name": "next=%2F%2Fevil.example is ignored (stays in the admin)",
+  "ok": true,
+  "detail": "http://localhost:3004/admin"
+ },
+ {
+  "name": "next=%2Fshop is ignored (stays in the admin)",
+  "ok": true,
+  "detail": "http://localhost:3004/admin"
+ },
+ {
+  "name": "logout goes to the login page",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logout clears the demo sign-in",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logout keeps demo orders",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "after logout the admin is protected again",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "signing in again starts as Owner",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logging out in another tab signs this tab out too",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "storefront home renders",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "public header shows the demo indicator",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "cart works (product added)",
+  "ok": true,
+  "detail": "1"
+ },
+ {
+  "name": "Cake Playground still adds a custom cake",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "checkout places the order",
+  "ok": true,
+  "detail": "TRS-1042"
+ },
+ {
+  "name": "order tracking shows the order",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "admin (after login) sees the new order",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "login fits a phone (no sideways scroll)",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "admin header fits a phone",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "logout is reachable on a phone",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "public demo chip shows on a phone",
+  "ok": true,
+  "detail": ""
+ },
+ {
+  "name": "no uncaught page errors",
+  "ok": true,
+  "detail": "[]"
+ }
+]

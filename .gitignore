@@ -19,3 +19,9 @@ public/our-story/
 /tests/stress/__pycache__/
 /tests/perf/__pycache__/
 /tests/admin/__pycache__/
+
+# Third-party Claude Code skills installed locally (brag: launch videos). Bundled music licence
+# is unverified upstream, so the skills are not committed. Reinstall from github.com/latent-spaces/brag.
+/.claude/skills/brag/
+/.claude/skills/brag-slim/
+/brag-output*/

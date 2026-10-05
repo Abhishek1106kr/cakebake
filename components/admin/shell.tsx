@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   BarChart3, Bell, Bot, Boxes, BrainCircuit, CakeSlice, ChefHat, ClipboardList, FileText, Image as ImageIcon, LayoutDashboard, LayoutTemplate,
-  Megaphone, Menu, PackageSearch, ScrollText, Search, Settings, Shield, SlidersHorizontal, Store, Users, X, Check, CheckCheck,
+  Megaphone, Menu, PackageSearch, ScrollText, Search, Settings, Shield, SlidersHorizontal, Store, Users, X, Check, CheckCheck, LogOut,
 } from 'lucide-react';
 import { useStore } from '@/components/store-provider';
 import { AdminProvider, useAdmin } from './admin-provider';
@@ -14,6 +14,8 @@ import { ago } from './ui';
 import { adminSearch, TYPE_LABEL, type SearchResult } from '@/lib/admin/search';
 import { KIND_LABEL } from '@/lib/admin/attention';
 import { ROLE_LABEL, type Permission } from '@/lib/admin/permissions';
+import { logoutMockAdmin } from '@/lib/admin/mock-auth';
+import { ADMIN_KEYS } from '@/lib/admin/repositories';
 
 type NavItem = { href: string; label: string; icon: typeof LayoutDashboard; permission: Permission };
 const NAV: { group: string; items: NavItem[] }[] = [
@@ -88,7 +90,7 @@ function Shell({ children, className }: { children: ReactNode; className?: strin
     <div className={`ad-shell ${className ?? ''}`}>
       <a href="#ad-main" className="ad-skip">Skip to content</a>
       <aside className={`ad-side ${navOpen ? 'is-open' : ''}`} aria-label="Admin navigation">
-        <div className="ad-brand"><Link href="/admin">Tresor</Link><span>Command centre</span>
+        <div className="ad-brand"><Link href="/admin">Tresor</Link><span>Demo · Command centre</span>
           <button type="button" className="ad-icon-btn ad-side-close" onClick={() => setNavOpen(false)} aria-label="Close navigation"><X size={18} /></button>
         </div>
         <nav className="ad-nav">
@@ -139,6 +141,7 @@ function Shell({ children, className }: { children: ReactNode; className?: strin
               {bellOpen && <NotificationPanel onClose={() => setBellOpen(false)} />}
             </div>
             <StaffSwitcher />
+            <LogoutButton />
           </div>
         </header>
         <main id="ad-main" className="ad-main" tabIndex={-1}>{children}</main>
@@ -159,18 +162,33 @@ function Shell({ children, className }: { children: ReactNode; className?: strin
   );
 }
 
+// The staff switcher demonstrates the role permissions (RBAC). It is a demo control, not a
+// sign-in: it says so on screen.
 function StaffSwitcher() {
   const { staff, staffList, switchStaff } = useAdmin();
   if (!staff) return null;
   return (
-    <label className="ad-staff" title="Demo sign-in: switch to see what each role can do">
+    <label className="ad-staff ad-staff-wrap" title="Demo staff role: switch to see what each role can do">
+      <span className="ad-staff-label">Demo role</span>
       <span className="ad-avatar" aria-hidden>{staff.role.slice(0, 1)}</span>
-      <span className="ad-sr">Signed in as</span>
-      <select value={staff.id} onChange={(e) => switchStaff(e.target.value)} aria-label="Signed in as (demo staff switcher)">
+      <select value={staff.id} onChange={(e) => switchStaff(e.target.value)} aria-label="Demo staff role">
         {staffList.filter((s) => s.active).map((s) => <option key={s.id} value={s.id}>{s.name} · {ROLE_LABEL[s.role]}</option>)}
       </select>
     </label>
   );
+}
+
+// Mock frontend authentication for demonstration only.
+// This must be replaced with backend/session authentication before production.
+// Signing out clears the demo sign-in and the chosen demo role; orders and admin data stay.
+function LogoutButton() {
+  const router = useRouter();
+  const signOut = () => {
+    try { window.localStorage.removeItem(ADMIN_KEYS.session); } catch { /* storage blocked */ }
+    logoutMockAdmin();
+    router.replace('/admin/login');
+  };
+  return <button type="button" className="ad-logout" onClick={signOut} aria-label="Log out of the demo admin"><LogOut size={15} aria-hidden /><span>Log out</span></button>;
 }
 
 function NotificationPanel({ onClose }: { onClose: () => void }) {

@@ -15,6 +15,11 @@ Requires Python Playwright with Chromium. Run tests/stress/make_fixtures.py and
 import argparse, asyncio, base64, datetime as dt, json, os, random, re, time, traceback
 from playwright.async_api import async_playwright, Page, BrowserContext
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 FIX = os.path.join(HERE, 'fixtures')
@@ -748,6 +753,7 @@ async def j_share(page, base, rec, r, c, browser):
     decoded = json.loads(base64.urlsafe_b64decode(code + '=' * (-len(code) % 4)).decode('utf-8'))
     rec.check('share link never carries the private photo', decoded['print']['assetId'] is None and decoded['print']['enabled'] is False, 'P1', detail=json.dumps(decoded['print']))
     fresh = await browser.new_context(viewport={'width': 390, 'height': 844})
+    await fresh.add_init_script(DEMO_INIT)
     p2 = await fresh.new_page()
     await p2.goto(link, wait_until='domcontentloaded'); await p2.wait_for_timeout(1500)
     title = await p2.text_content('.shared-title') if await p2.locator('.shared-title').count() else None
@@ -946,6 +952,7 @@ async def run_client(browser, base, c):
     r = random.Random(c['seed'])
     dev = c['device']
     ctx = await browser.new_context(viewport={'width': dev['width'], 'height': dev['height']}, is_mobile=dev['kind'] == 'mobile', has_touch=dev['kind'] != 'desktop', device_scale_factor=1)
+    await ctx.add_init_script(DEMO_INIT)
     await ctx.add_init_script(f"""
       if (!localStorage.getItem('tresor-harness-init')) {{
         localStorage.setItem('tresor-client-id', JSON.stringify({json.dumps(c['clientId'])}));

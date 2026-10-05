@@ -14,6 +14,11 @@ import numpy as np
 from PIL import Image
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'perf')
 SHOTS = os.path.join(HERE, '..', '..', '.tresor', 'test-results', 'screenshots', 'perf-visual')
@@ -32,6 +37,7 @@ async def shoot(browser, base, path, width, stops, reduced):
     mobile = width <= 430
     ctx = await browser.new_context(viewport={'width': width, 'height': 844 if mobile else 900}, is_mobile=mobile, has_touch=mobile,
                                     device_scale_factor=1, reduced_motion='reduce' if reduced else 'no-preference')
+    await ctx.add_init_script(DEMO_INIT)
     page = await ctx.new_page()
     await page.goto(base + path, wait_until='load', timeout=60000)
     await page.wait_for_timeout(3200)  # hero entrance choreography

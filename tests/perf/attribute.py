@@ -6,6 +6,11 @@ self time by library/module, and lists every running animation afterwards.
 import argparse, asyncio, collections, json, os
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'perf')
 NO_LENIS = open(os.path.join(HERE, 'profile.py'), encoding='utf-8').read().split('NO_LENIS = r"""')[1].split('"""')[0]
@@ -24,6 +29,7 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(channel='chrome')
         ctx = await b.new_context(viewport={'width': a.width, 'height': 844 if mobile else 900}, is_mobile=mobile, has_touch=mobile, device_scale_factor=3 if mobile else 1)
+        await ctx.add_init_script(DEMO_INIT)
         if a.no_lenis: await ctx.add_init_script(NO_LENIS)
         if a.css: await ctx.add_init_script('document.addEventListener("DOMContentLoaded", () => { const s = document.createElement("style"); s.textContent = ' + json.dumps(a.css) + '; document.head.appendChild(s); });')
         page = await ctx.new_page(); cdp = await ctx.new_cdp_session(page)

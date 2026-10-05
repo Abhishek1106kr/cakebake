@@ -8,6 +8,11 @@ Writes .tresor/test-results/admin-e2e.json. Exit code 1 if any check fails.
 import argparse, asyncio, json, os, re, sys, time
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'test-results')
 CHECKS = []
@@ -85,6 +90,7 @@ async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(channel='chrome')
         ctx = await browser.new_context(viewport={'width': 1440, 'height': 900}, accept_downloads=True)
+        await ctx.add_init_script(DEMO_INIT)
         shop = await ctx.new_page()
         admin = await ctx.new_page()
         errors = []
@@ -262,13 +268,13 @@ async def main():
 
         # ---------- 8. Permissions ----------
         await go(admin, base, '/admin')
-        await admin.locator('select[aria-label^="Signed in as"]').select_option('staff-kitchen')
+        await admin.locator('select[aria-label="Demo staff role"]').select_option('staff-kitchen')
         await go(admin, base, '/admin/products')
         check('kitchen staff cannot open products', await admin.locator('.ad-noaccess').count() > 0)
         check('kitchen staff do not see restricted nav', await admin.locator('.ad-nav a:has-text("Products")').count() == 0 and await admin.locator('.ad-nav a:has-text("Kitchen")').count() == 1)
         await go(admin, base, f'/admin/orders/{oid}')
         check('kitchen staff see masked customer contact', '9845012345' not in (await admin.text_content('.ad-detail') or ''))
-        await admin.locator('select[aria-label^="Signed in as"]').select_option('staff-owner')
+        await admin.locator('select[aria-label="Demo staff role"]').select_option('staff-owner')
         await admin.wait_for_timeout(400)
 
         # ---------- 9. Global search ----------

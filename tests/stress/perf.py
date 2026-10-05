@@ -4,6 +4,11 @@ Writes .tresor/test-results/performance.json."""
 import argparse, asyncio, json, os, time
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'test-results')
 FIX = os.path.join(HERE, 'fixtures')
@@ -38,6 +43,7 @@ async def main():
         for label, vp in (('desktop', {'width': 1440, 'height': 900}), ('mobile', {'width': 390, 'height': 844})):
             for route in ROUTES:
                 ctx = await b.new_context(viewport=vp, is_mobile=label == 'mobile', has_touch=label == 'mobile')
+                await ctx.add_init_script(DEMO_INIT)
                 await ctx.add_init_script(OBSERVERS)
                 page = await ctx.new_page()
                 await page.goto(args.base + route, wait_until='load')
@@ -45,6 +51,7 @@ async def main():
                 out['pages'].setdefault(route, {})[label] = await page_metrics(page)
                 await ctx.close()
         ctx = await b.new_context(viewport={'width': 1440, 'height': 900})
+        await ctx.add_init_script(DEMO_INIT)
         await ctx.add_init_script(OBSERVERS)
         page = await ctx.new_page()
         cdp = await ctx.new_cdp_session(page)

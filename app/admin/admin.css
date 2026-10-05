@@ -476,3 +476,57 @@ body.ad-locked { overflow: hidden; }
 .ad-audit-change { max-width: 340px; overflow-wrap: anywhere; font-size: 12px; }
 .ad-wrap { overflow-wrap: anywhere; white-space: pre-wrap; max-width: 260px; }
 @media (max-width: 1024px) { .ad-copilot { position: static; } }
+
+/* ───────── Demo sign-in (mock, see lib/admin/mock-auth.ts) ───────── */
+.ad-gate { min-height: 100vh; display: grid; place-items: center; background: var(--ad-bg); color: var(--ad-muted); }
+.ad-login { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; background: #F7F5F1; }
+.ad-login-card { width: min(400px, 100%); background: var(--ad-white); border: 1px solid #E6E2DA; border-radius: 14px; padding: 32px 28px 24px; box-shadow: 0 18px 50px rgba(60, 52, 40, .07); display: grid; gap: 14px; }
+.ad-login-brand { display: flex; align-items: baseline; gap: 10px; }
+.ad-login-word { font-family: var(--ad-display), Georgia, serif; font-size: 34px; font-weight: 600; letter-spacing: -.01em; line-height: 1; }
+.ad-login-sub { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--ad-muted); }
+.ad-login-env { justify-self: start; margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ad-deeper); background: #EEF2F1; border: 1px solid #D5DEDC; border-radius: 999px; padding: 3px 10px; }
+.ad-login-title { font-family: var(--ad-display), Georgia, serif; font-size: 26px; font-weight: 500; line-height: 1.15; margin: 2px 0 4px; }
+.ad-login-form { display: grid; gap: 12px; }
+.ad-login-field { display: grid; gap: 5px; font-weight: 600; font-size: 12px; color: #3B4645; }
+.ad-login-field input { height: 40px; padding: 0 12px; border: 1px solid var(--ad-line); border-radius: 8px; background: var(--ad-white); font-size: 14px; font-weight: 400; }
+.ad-login-field input:focus { outline: 2px solid var(--ad-sage); outline-offset: 1px; border-color: var(--ad-sage); }
+.ad-login-field input[aria-invalid="true"] { border-color: var(--ad-bad); }
+.ad-login-error { margin: 0; padding: 8px 10px; border-radius: 8px; background: var(--ad-bad-bg); color: var(--ad-bad); font-size: 13px; }
+.ad-login-error:focus { outline: none; }
+.ad-login-submit { height: 42px; border: 0; border-radius: 8px; background: var(--ad-deep); color: #fff !important; font-weight: 600; font-size: 14px; transition: background .15s ease; }
+.ad-login-submit:hover { background: var(--ad-deeper); }
+.ad-login-submit:disabled { opacity: .7; cursor: progress; }
+.ad-login-demo { display: grid; gap: 2px; padding: 12px 14px; border: 1px dashed #CBD5D3; border-radius: 10px; background: #F8FAF9; font-size: 13px; }
+.ad-login-demo strong { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ad-deeper); margin-bottom: 2px; }
+.ad-login-demo span { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; color: var(--ad-ink); }
+.ad-login-demo p { margin: 6px 0 0; color: var(--ad-muted); font-size: 12px; line-height: 1.5; }
+.ad-login-back { justify-self: center; font-size: 12px; color: var(--ad-muted) !important; }
+.ad-login-back:hover { color: var(--ad-ink) !important; }
+@media (prefers-reduced-motion: reduce) { .ad-login-submit { transition: none; } }
+
+/* Demo labels in the shell */
+.ad-demo-tag { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; background: #EEF2F1; border: 1px solid #D5DEDC; color: var(--ad-deeper); font-size: 9px; font-weight: 700; letter-spacing: .12em; vertical-align: middle; }
+.ad-staff-wrap { display: flex; align-items: center; gap: 6px; }
+.ad-staff-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ad-muted); white-space: nowrap; }
+.ad-logout { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border: 1px solid var(--ad-line); border-radius: 6px; background: var(--ad-white); font-weight: 600; white-space: nowrap; }
+.ad-logout:hover { background: var(--ad-hover); }
+@media (max-width: 768px) {
+  .ad-staff-label { display: none; }
+  .ad-logout { width: 34px; padding: 0; justify-content: center; }
+  .ad-logout span { display: none; }
+}
+/* Brand: "Tresor" on the first line with the close button; "Demo · Command centre" below. */
+.ad-brand { flex-wrap: wrap; row-gap: 2px; }
+.ad-brand > span { order: 3; flex-basis: 100%; white-space: nowrap; }
+/* Room for the "Demo role" label without cutting the role name off. */
+.ad-staff.ad-staff-wrap { max-width: none; padding: 0 4px 0 8px; }
+.ad-staff.ad-staff-wrap select { max-width: 210px; }
+@media (max-width: 1180px) { .ad-staff.ad-staff-wrap select { max-width: 150px; } }
+@media (max-width: 768px) { .ad-staff.ad-staff-wrap select { max-width: 104px; } .ad-staff.ad-staff-wrap { padding: 0 4px; } }
+@media (max-width: 480px) {
+  /* Phones: search becomes an icon button so the demo controls fit. */
+  .ad-searchbtn { flex: none; width: 34px; padding: 0; justify-content: center; }
+  .ad-searchbtn span { display: none; }
+  .ad-top { justify-content: flex-start; }
+  .ad-top-right { margin-left: auto; }
+}

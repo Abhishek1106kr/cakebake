@@ -1,6 +1,6 @@
 {
  "base": "http://localhost:3004",
- "seconds": 170,
+ "seconds": 171,
  "passed": 63,
  "total": 63,
  "checks": [
@@ -32,7 +32,7 @@
   {
    "name": "order carries the simulated payment reference",
    "ok": true,
-   "detail": "SIM-MUU4K31I-260"
+   "detail": "SIM-MUUTAFNL-260"
   },
   {
    "name": "admin moves the order to PREPARING",
@@ -87,7 +87,7 @@
   {
    "name": "order timeline shows created, payment, invoice, WhatsApp, every status",
    "ok": true,
-   "detail": "Order created4 Oct, 11:28 pmConfirmed4 Oct, 11:28 pmPaid by UPI (simulated)Ref SIM-MUU4K31I-2604 Oct, 11:28 pmInvoice generatedINV-10424 Oct, 11:28 pmWhatsApp sentconfirmation4 Oct, 11:28 pmPreparing4"
+   "detail": "Order created5 Oct, 11:01 amConfirmed5 Oct, 11:01 amPaid by UPI (simulated)Ref SIM-MUUTAFNL-2605 Oct, 11:01 amInvoice generatedINV-10425 Oct, 11:01 amWhatsApp sentconfirmation5 Oct, 11:01 amPreparing5"
   },
   {
    "name": "second order consumed butter",

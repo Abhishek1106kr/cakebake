@@ -1,5 +1,6 @@
 import './globals.css';
 import { ReactNode } from 'react';
+import type { Metadata } from 'next';
 import { StoreHeader } from '@/components/store-header';
 import { StoreFooter } from '@/components/store-footer';
 import { StoreProvider } from '@/components/store-provider';
@@ -9,11 +10,18 @@ import { cakeScript } from '@/lib/cake/font';
 import { SmoothScroll } from '@/components/smooth-scroll';
 import { HideOnAdmin } from '@/components/hide-on-admin';
 import { AnnouncementBar } from '@/components/announcement-bar';
+import { MockSiteWarning } from '@/components/mock-site-warning';
 import 'lenis/dist/lenis.css';
 
-export const metadata = {
+// Demonstration deployment: ask compliant crawlers not to index, follow, archive or snippet
+// anything (also sent as an X-Robots-Tag header, see next.config.ts). Not a security boundary.
+export const metadata: Metadata = {
   title: 'Tresor Bakery — pastry, cakes & slow rituals',
-  description: 'A premium neighbourhood bakery in Bengaluru.',
+  description: 'A premium neighbourhood bakery in Bengaluru. Demonstration website.',
+  robots: {
+    index: false, follow: false, noarchive: true, nosnippet: true,
+    googleBot: { index: false, follow: false, noarchive: true, nosnippet: true },
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -33,6 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <HideOnAdmin><StoreFooter /></HideOnAdmin>
           </TransitionProvider>
         </StoreProvider>
+        <MockSiteWarning />
       </body>
     </html>
   );

@@ -21,6 +21,11 @@ Writes .tresor/perf/<label>.json.
 import argparse, asyncio, json, os, statistics, time
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'perf')
 PAGES = {
@@ -100,6 +105,7 @@ async def run_once(browser, base, key, width, args, trace=False):
     vp = {'width': width, 'height': 844 if mobile else (900 if width >= 1280 else 768)}
     ctx = await browser.new_context(viewport=vp, is_mobile=mobile, has_touch=mobile, device_scale_factor=3 if mobile else 1,
                                     reduced_motion='reduce' if args.reduced_motion else 'no-preference')
+    await ctx.add_init_script(DEMO_INIT)
     await ctx.add_init_script(INIT)
     if args.no_lenis: await ctx.add_init_script(NO_LENIS)
     page = await ctx.new_page()

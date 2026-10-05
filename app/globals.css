@@ -1234,3 +1234,16 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 /* Announcement bar (admin → Content). Hidden unless one is live. */
 .announce-bar{background:var(--deep);color:#F4F7F6;font-size:12.5px;line-height:1.4;text-align:center;padding:8px 16px;overflow-wrap:anywhere}.announce-bar a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+
+/* ───────── Demo deployment: header chip and one-time warning ───────── */
+.logo-wrap{display:flex;align-items:center;gap:10px;min-width:0}
+.demo-chip{display:inline-flex;align-items:center;height:22px;padding:0 9px;border:1px solid rgba(101,120,118,.35);border-radius:999px;background:rgba(255,255,255,.55);color:var(--brand-dark);font-size:9.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.demo-chip-short{display:none}
+@media (max-width:560px){.demo-chip-long{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.demo-chip-short{display:inline}.demo-chip{padding:0 7px}}
+.demo-warning-layer{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;background:rgba(32,38,37,.55);backdrop-filter:blur(3px)}
+.demo-warning{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--surface);border-radius:16px;padding:26px 24px 22px;box-shadow:0 30px 80px rgba(20,26,25,.35);border-top:4px solid #A15C2E}
+.demo-warning h2{margin:0 0 12px;font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7A3E17}
+.demo-warning p{margin:0 0 10px;font-size:14.5px;line-height:1.6;color:#2B3332}
+.demo-warning-ok{margin-top:8px;width:100%;min-height:46px;border:0;border-radius:10px;background:var(--brand);color:#fff;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.demo-warning-ok:hover{background:var(--brand-dark)}
+.demo-warning-ok:focus-visible{outline:3px solid #A15C2E;outline-offset:3px}

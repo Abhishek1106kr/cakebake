@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { track, useTrackOnce } from '@/components/intelligence';
-import { ArrowRight, Check, CreditCard, LockKeyhole, Smartphone } from 'lucide-react';
+import { ArrowRight, Check, CreditCard, Info, Smartphone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useStore } from '@/components/store-provider';
@@ -121,11 +121,13 @@ export default function CheckoutPage() {
                 <button className={payment === 'COD' ? 'active' : ''} onClick={() => setPayment('COD')}><span className="cod-icon">₹</span>Pay at door</button>
               </div>
               <div className="payment-box">
-                <div className="payment-box-top"><LockKeyhole size={18} /><div><strong>{payment === 'COD' ? 'Cash / UPI at the door' : `Secure ${payment} payment`}</strong><span>{orderTime}</span></div></div>
+                <div className="payment-box-top"><Info size={18} /><div><strong>{payment === 'COD' ? 'Cash / UPI at the door' : `Simulated ${payment} payment`}</strong><span>{orderTime}</span></div></div>
                 {payment !== 'COD' ? (
-                  <div className="mock-payment-fields">
-                    <input placeholder={payment === 'UPI' ? 'name@upi' : 'Card number'} />
-                    <div className="split-input"><input placeholder={payment === 'UPI' ? 'Optional note' : 'MM / YY'} /><input placeholder={payment === 'UPI' ? ' ' : 'CVC'} /></div>
+                  // Demonstration only: fixed, read-only demo values so nobody types real payment details.
+                  <div className="mock-payment-fields" aria-label="Demo payment details (read-only, nothing is charged)">
+                    <input readOnly tabIndex={-1} aria-label={payment === 'UPI' ? 'Demo UPI ID' : 'Demo card number'} value={payment === 'UPI' ? 'demo@upi' : '4111 1111 1111 1111 (demo)'} />
+                    <div className="split-input"><input readOnly tabIndex={-1} aria-label={payment === 'UPI' ? 'Demo note' : 'Demo expiry'} value={payment === 'UPI' ? 'Demo payment' : '12 / 30'} /><input readOnly tabIndex={-1} aria-label={payment === 'UPI' ? 'Demo reference' : 'Demo CVC'} value={payment === 'UPI' ? 'SIM' : '•••'} /></div>
+                    <p className="small muted">Demo values only. Don’t enter real card or UPI details anywhere on this site.</p>
                   </div>
                 ) : <p className="small muted">Your order is confirmed now. The mock assumes payment is completed when the rider arrives.</p>}
               </div>

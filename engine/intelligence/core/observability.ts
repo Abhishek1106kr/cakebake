@@ -27,13 +27,14 @@ let records: OperationRecord[] | null = null;
 const listeners = new Set<(r: OperationRecord) => void>();
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
-const hasStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+// Touching window.localStorage itself throws when storage is blocked (some privacy modes).
+const hasStorage = () => { try { return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'; } catch { return false; } };
 
 function load(): OperationRecord[] {
   if (records) return records;
   records = [];
   if (hasStorage()) {
-    records = recordsOnly<OperationRecord>(parseStored(window.localStorage.getItem(KEY)));
+    try { records = recordsOnly<OperationRecord>(parseStored(window.localStorage.getItem(KEY))); } catch { records = []; }
   }
   return records!;
 }

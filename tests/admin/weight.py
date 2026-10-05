@@ -9,6 +9,11 @@ animations, JS transferred, DOM nodes. Median of 3 runs.
 import argparse, asyncio, json, os, statistics
 from playwright.async_api import async_playwright
 
+# Demo deployment: skip the one-time warning and sign in to the mock admin before every page
+# (the warning and the sign-in have their own tests in tests/demo/demo_e2e.py).
+DEMO_INIT = "try{localStorage.setItem('tresor-demo-warning-seen','1');localStorage.setItem('tresor-demo-admin-auth',JSON.stringify({v:1,email:'test@omni.com',signedInAt:new Date().toISOString()}))}catch(e){}"
+
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, '..', '..', '.tresor', 'test-results')
 PAGES = ['/', '/admin', '/admin/orders', '/admin/kitchen', '/admin/analytics']
@@ -16,6 +21,7 @@ PAGES = ['/', '/admin', '/admin/orders', '/admin/kitchen', '/admin/analytics']
 
 async def run(browser, base, path, width):
     ctx = await browser.new_context(viewport={'width': width, 'height': 900 if width > 800 else 844}, device_scale_factor=1)
+    await ctx.add_init_script(DEMO_INIT)
     page = await ctx.new_page()
     cdp = await ctx.new_cdp_session(page)
     await cdp.send('Performance.enable')
