@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "mock:generate": "tsx scripts/generate-mock-data.ts",
+    "mock:validate": "tsx scripts/validate-mock-data.ts"
   },
   "dependencies": {
     "framer-motion": "^12.43.0",
@@ -24,6 +26,7 @@
     "@types/react-dom": "^19.0.2",
     "eslint": "^9.16.0",
     "eslint-config-next": "^15.1.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.2",
     "vitest": "^3.2.7"
   }
