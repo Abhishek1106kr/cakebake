@@ -26,3 +26,9 @@ public/our-story/
 /.claude/skills/brag/
 /.claude/skills/brag-slim/
 /brag-output*/
+
+# Vercel CLI project link (local)
+.vercel
+
+.vercel
+.env*
