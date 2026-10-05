@@ -5,6 +5,7 @@
 
 import { baseProducts, type Product } from '@/lib/data';
 import { recipes } from '@/lib/inventory';
+import { isRecord } from '@/lib/safe-storage';
 
 export type ProductStatus = 'ACTIVE' | 'INACTIVE' | 'ARCHIVED';
 export type StockPolicy = 'ingredients' | 'made-to-order' | 'unlimited';
@@ -74,7 +75,8 @@ export function recordFromProduct(p: Product): ProductRecord {
 
 /** Stored records (admin changes and new products) over the code menu, code order first. */
 export function buildCatalog(stored: Record<string, ProductRecord> | null | undefined, base: Product[] = baseProducts): ProductRecord[] {
-  const saved = stored ?? {};
+  // Keep only well-formed records: stored data may come from an older version.
+  const saved = Object.fromEntries(Object.entries(isRecord(stored) ? stored : {}).filter(([, r]) => isRecord(r))) as Record<string, ProductRecord>;
   const fromBase = base.map((p) => (saved[p.id] ? { ...recordFromProduct(p), ...saved[p.id] } : recordFromProduct(p)));
   const created = Object.values(saved).filter((r) => r.createdInAdmin && !base.some((p) => p.id === r.id)).sort((a, b) => (a.updatedAt ?? '').localeCompare(b.updatedAt ?? ''));
   return [...fromBase, ...created];

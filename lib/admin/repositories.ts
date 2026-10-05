@@ -15,7 +15,7 @@ import type { Invoice } from '@/lib/automation/automation';
 import { AUTOMATION_KEYS } from '@/lib/automation/runner';
 import { appendAudit, AUDIT_LIMIT, type AuditRecord } from './audit';
 import type { Staff } from './permissions';
-import { seedStaff } from './permissions';
+import { ROLES, seedStaff, type Role } from './permissions';
 import type { ProductRecord } from './catalog';
 import { normalizeOverrides, type CakeOverrides } from './cake-builder';
 import { normalizeSettings, type SettingsValues } from './settings';
@@ -23,6 +23,7 @@ import { DEFAULT_SLOTS, type Announcement, type Campaign, type ContentSlot } fro
 import type { MediaOverlay } from './media-library';
 import type { CustomerProfile } from './customers';
 import type { AttentionState } from './attention';
+import { recordsOnly } from '@/lib/safe-storage';
 
 export const ADMIN_KEYS = {
   staff: 'tresor-staff', session: 'tresor-admin-session', audit: 'tresor-audit', catalog: 'tresor-catalog', cake: 'tresor-cake-overrides',
@@ -135,7 +136,7 @@ const isObj = (raw: unknown): raw is Record<string, unknown> => Boolean(raw) && 
 
 export function createBrowserRepositories() {
   return {
-    staff: new BrowserRepository<Staff[]>(ADMIN_KEYS.staff, () => seedStaff(), (raw) => (Array.isArray(raw) && raw.length ? (raw as Staff[]) : seedStaff())),
+    staff: new BrowserRepository<Staff[]>(ADMIN_KEYS.staff, () => seedStaff(), (raw) => { const list = recordsOnly<Staff>(raw, (s) => typeof s.id === 'string' && typeof s.name === 'string' && ROLES.includes(s.role as Role)); return list.length ? list : seedStaff(); }),
     session: new BrowserRepository<string | null>(ADMIN_KEYS.session, () => 'staff-owner'),
     audit: new BrowserAuditRepository(),
     catalog: new BrowserRepository<Record<string, ProductRecord>>(ADMIN_KEYS.catalog, () => ({}), (raw) => (isObj(raw) ? (raw as Record<string, ProductRecord>) : {})),

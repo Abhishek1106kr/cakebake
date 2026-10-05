@@ -5,6 +5,7 @@
 import type { Order, OrderStatus } from '@/lib/orders';
 import { sessionId } from '@/engine/intelligence/context/context';
 import { emitDomain } from '@/lib/admin/domain-events';
+import { isRecord, recordsOnly } from '@/lib/safe-storage';
 import {
   afterAttempt, buildInvoice, maskPhone, newJob, NOTIFY_STATUSES, RETRY_DELAYS_MS, whatsappMessage,
   type AutomationEvent, type AutomationEventType, type Faults, type Invoice, type Job,
@@ -18,11 +19,11 @@ export type OutboxMessage = { jobId: string; orderId: string; to: string; text: 
 const read = <T,>(k: string, fallback: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : fallback; } catch { return fallback; } };
 const write = (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); window.dispatchEvent(new Event('tresor-automation')); } catch { /* storage full */ } };
 
-export const readJobs = () => read<Job[]>(KEYS.jobs, []);
-export const readLog = () => read<AutomationEvent[]>(KEYS.log, []);
-export const readInvoices = () => read<Record<string, Invoice>>(KEYS.invoices, {});
-export const readOutbox = () => read<OutboxMessage[]>(KEYS.outbox, []);
-export const readFaults = () => read<Faults>(KEYS.faults, {});
+export const readJobs = () => recordsOnly<Job>(read<unknown>(KEYS.jobs, []), (j) => typeof j.id === 'string' && typeof j.orderId === 'string');
+export const readLog = () => recordsOnly<AutomationEvent>(read<unknown>(KEYS.log, []), (e) => typeof e.type === 'string');
+export const readInvoices = () => { const v = read<unknown>(KEYS.invoices, {}); return (isRecord(v) ? v : {}) as Record<string, Invoice>; };
+export const readOutbox = () => recordsOnly<OutboxMessage>(read<unknown>(KEYS.outbox, []));
+export const readFaults = () => { const v = read<unknown>(KEYS.faults, {}); return (isRecord(v) ? v : {}) as Faults; };
 
 let seq = 0;
 function log(type: AutomationEventType, orderId: string, status: AutomationEvent['status'], detail?: string) {

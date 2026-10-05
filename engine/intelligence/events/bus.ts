@@ -2,6 +2,7 @@
 // reported, never stored. Storage is pluggable so tests run in memory.
 
 import { createEvent, validateEvent, type Actor, type EventType, type TresorEvent } from './schema';
+import { isRecord, parseStored, recordsOnly } from '@/lib/safe-storage';
 
 export type EventStore = { load(): TresorEvent[]; save(events: TresorEvent[]): void };
 
@@ -20,7 +21,12 @@ export function memoryStore(initial: TresorEvent[] = []): EventStore {
 export function browserStore(key = 'tresor-events', limit = 1000): EventStore {
   let cache: TresorEvent[] | null = null;
   let timer: ReturnType<typeof setTimeout> | null = null;
-  const readStored = (): TresorEvent[] => { try { return JSON.parse(window.localStorage.getItem(key) || '[]'); } catch { return []; } };
+  const readStored = (): TresorEvent[] => {
+    try {
+      return recordsOnly<TresorEvent>(parseStored(window.localStorage.getItem(key)),
+        (e) => typeof e.id === 'string' && typeof e.type === 'string' && typeof e.timestamp === 'string' && isRecord(e.payload));
+    } catch { return []; }
+  };
   const merge = (a: TresorEvent[], b: TresorEvent[]) => {
     const byId = new Map<string, TresorEvent>();
     for (const e of [...a, ...b]) byId.set(e.id, e);

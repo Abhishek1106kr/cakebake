@@ -3,6 +3,7 @@
 // error. Kept in a bounded in-memory ring and persisted (debounced) in the browser.
 
 import type { ProviderKind } from './contract';
+import { parseStored, recordsOnly } from '@/lib/safe-storage';
 
 export type OperationRecord = {
   id: string;
@@ -32,7 +33,7 @@ function load(): OperationRecord[] {
   if (records) return records;
   records = [];
   if (hasStorage()) {
-    try { records = JSON.parse(window.localStorage.getItem(KEY) || '[]'); } catch { records = []; }
+    records = recordsOnly<OperationRecord>(parseStored(window.localStorage.getItem(KEY)));
   }
   return records!;
 }

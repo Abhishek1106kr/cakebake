@@ -11,6 +11,7 @@
 import type { Evidence } from '../core/contract';
 import type { Insight } from '../insights/insights';
 import type { StockOutlook } from '../forecast/forecast';
+import { parseStored, recordsOnly } from '@/lib/safe-storage';
 
 export const DECISIONS_VERSION = 'decisions-v1';
 
@@ -81,7 +82,7 @@ export function memoryDecisionStore(initial: DecisionRecord[] = []): DecisionSto
 
 export function browserDecisionStore(key = 'tresor-decisions'): DecisionStore {
   return {
-    load() { try { return JSON.parse(window.localStorage.getItem(key) || '[]'); } catch { return []; } },
+    load() { try { return recordsOnly<DecisionRecord>(parseStored(window.localStorage.getItem(key)), (r) => typeof r.actionId === 'string'); } catch { return []; } },
     save(next) { try { window.localStorage.setItem(key, JSON.stringify(next.slice(-500))); } catch { /* full or blocked */ } },
   };
 }
