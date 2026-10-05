@@ -817,7 +817,9 @@ function campaign(id: string, name: string, description: string, start: Date, en
   const attributed = orders.filter((o) => o.status !== 'CANCELLED' && inRange(new Date(o.createdAt), start, end) && o.items.some((l) => featured.includes(l.product.id)));
   return {
     id, name, description, start: iso(start), end: iso(end), status, archived: false, audience: 'everyone', heroMediaId: null, featuredProductIds: featured,
-    category: null, cta: { label: 'Shop now', href: '/shop' }, priority: 2, createdAt: iso(new Date(start.getTime() - 9 * DAY)), updatedAt: iso(new Date(start.getTime() - 2 * DAY)),
+    // Planned ahead: created and last edited before the dataset's 'now', even for future campaigns.
+    category: null, cta: { label: 'Shop now', href: '/shop' }, priority: 2,
+    createdAt: iso(new Date(Math.min(start.getTime() - 9 * DAY, ANCHOR.getTime() - 6 * DAY))), updatedAt: iso(new Date(Math.min(start.getTime() - 2 * DAY, ANCHOR.getTime() - 2 * DAY))),
     attributedOrderIds: attributed.map((o) => o.id),
     attributedRevenue: attributed.reduce((s, o) => s + o.items.filter((l) => featured.includes(l.product.id)).reduce((t, l) => t + l.unitPrice * l.qty, 0), 0),
     ...extra,

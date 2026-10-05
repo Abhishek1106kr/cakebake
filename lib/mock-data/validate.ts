@@ -226,6 +226,15 @@ export function validateDataset(ds: MockDataset): ValidationReport {
   const highest = Math.max(...ds.orders.map((o) => Number(o.id.replace(/\D/g, ''))));
   if (highest !== ORDER_NUMBER_FLOOR) fail(`last shipped order is ${highest}, but new orders start after ORDER_NUMBER_FLOOR ${ORDER_NUMBER_FLOOR}`);
 
+  // ── Nothing happens after the dataset's 'now' (except future slots and campaign windows) ──
+  const anchorT = new Date(ds.manifest.anchor).getTime() + 1000;
+  const late = (what: string, at: string | null | undefined) => { if (at && new Date(at).getTime() > anchorT) fail(`${what} is dated after the anchor (${at})`); };
+  for (const o of ds.orders) { late(o.id, o.createdAt); for (const h of o.history) late(`${o.id} ${h.status}`, h.at); }
+  for (const r of ds.audit) late(r.id, r.at);
+  for (const c of ds.campaigns) { late(`${c.id} createdAt`, c.createdAt); late(`${c.id} updatedAt`, c.updatedAt); }
+  for (const n of ds.notifications) late(n.id, n.createdAt);
+  for (const x of ds.issues) { late(x.id, x.updatedAt); for (const m of x.messages) late(`${x.id} message`, m.at); }
+
   // ── Manifest ──
   for (const id of ds.manifest.liveOrderIds) if (!orderIds.has(id)) fail(`manifest: unknown live order ${id}`);
   if (ds.manifest.counts.orders !== ds.orders.length) fail('manifest: order count disagrees');

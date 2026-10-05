@@ -27,7 +27,8 @@ export const PERMISSIONS = [
   'intelligence.view', 'intelligence.approve',
   'automations.view', 'automations.retry',
   'invoices.view', 'invoices.regenerate',
-  'finance.refund',
+  'payments.view', 'payments.refund',
+  'issues.view', 'issues.manage', 'issues.assign',
   'staff.view', 'staff.manage',
   'audit.view',
   'settings.view', 'settings.edit',
@@ -50,11 +51,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'campaigns.view', 'campaigns.edit', 'content.view', 'content.edit', 'media.view', 'media.edit',
     'analytics.view', 'analytics.export', 'intelligence.view', 'intelligence.approve',
     'automations.view', 'automations.retry', 'invoices.view', 'audit.view', 'settings.view', 'staff.view',
+    'payments.view', 'issues.view', 'issues.manage', 'issues.assign',
   ],
-  KITCHEN: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view'],
+  KITCHEN: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view', 'issues.view'],
   BAKER: ['overview.view', 'kitchen.view', 'kitchen.update', 'customCakes.view', 'customCakes.update', 'customCakes.notes', 'inventory.view'],
-  DELIVERY: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view'],
-  SUPPORT: ['overview.view', 'orders.view', 'customers.view', 'customers.pii', 'customers.edit', 'invoices.view', 'automations.view', 'automations.retry', 'customCakes.view'],
+  DELIVERY: ['overview.view', 'orders.view', 'orders.update', 'kitchen.view', 'issues.view'],
+  SUPPORT: ['overview.view', 'orders.view', 'customers.view', 'customers.pii', 'customers.edit', 'invoices.view', 'automations.view', 'automations.retry', 'customCakes.view', 'payments.view', 'issues.view', 'issues.manage', 'issues.assign'],
 };
 
 export const ROLE_LABEL: Record<Role, string> = {
@@ -68,7 +70,7 @@ export const ROLE_SUMMARY: Record<Role, string> = {
   KITCHEN: 'Orders, kitchen board and custom cake production.',
   BAKER: 'Kitchen board and custom cake production sheets.',
   DELIVERY: 'Orders ready to leave and their delivery status.',
-  SUPPORT: 'Customers, their orders, invoices and message retries.',
+  SUPPORT: 'Customers, issues, payments (view), invoices and message retries.',
 };
 
 /**

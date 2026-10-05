@@ -535,3 +535,10 @@ body.ad-locked { overflow: hidden; }
 .ad-model-answer p { margin: 0 0 4px; }
 .ad-model-answer.is-loading { color: var(--ad-muted); border-left-color: var(--ad-line); }
 .ad-model-answer svg { vertical-align: -2px; }
+/* Issues: customer conversation and team-only notes */
+.ad-thread { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 8px; }
+.ad-thread li { display: grid; gap: 3px; max-width: 85%; padding: 8px 10px; border-radius: 10px; background: var(--ad-neutral-bg); }
+.ad-thread li.is-out { justify-self: end; background: var(--ad-info-bg); }
+.ad-thread-meta { font-size: 11px; color: var(--ad-muted); }
+.ad-note-item { background: #FCFCFB; border-left: 3px dashed var(--ad-mist); padding-left: 8px !important; }
+.ad-section-title svg { vertical-align: -2px; margin-right: 4px; }

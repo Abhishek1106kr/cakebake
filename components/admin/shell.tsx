@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   BarChart3, Bell, Bot, Boxes, BrainCircuit, CakeSlice, ChefHat, ClipboardList, FileText, Image as ImageIcon, LayoutDashboard, LayoutTemplate,
-  Megaphone, Menu, PackageSearch, ScrollText, Search, Settings, Shield, SlidersHorizontal, Store, Users, X, Check, CheckCheck, LogOut,
+  Megaphone, Menu, PackageSearch, ScrollText, Search, Settings, Shield, SlidersHorizontal, Store, Users, X, Check, CheckCheck, LogOut, LifeBuoy, Wallet,
 } from 'lucide-react';
 import { useStore } from '@/components/store-provider';
 import { AdminProvider, useAdmin } from './admin-provider';
@@ -24,6 +24,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     { href: '/admin/orders', label: 'Orders', icon: ClipboardList, permission: 'orders.view' },
     { href: '/admin/kitchen', label: 'Kitchen', icon: ChefHat, permission: 'kitchen.view' },
     { href: '/admin/custom-cakes', label: 'Custom Cakes', icon: CakeSlice, permission: 'customCakes.view' },
+    { href: '/admin/issues', label: 'Issues', icon: LifeBuoy, permission: 'issues.view' },
   ] },
   { group: 'Catalogue', items: [
     { href: '/admin/products', label: 'Products', icon: PackageSearch, permission: 'products.view' },
@@ -42,6 +43,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
   ] },
   { group: 'System', items: [
     { href: '/admin/automations', label: 'Automations', icon: Bot, permission: 'automations.view' },
+    { href: '/admin/payments', label: 'Payments', icon: Wallet, permission: 'payments.view' },
     { href: '/admin/invoices', label: 'Invoices', icon: FileText, permission: 'invoices.view' },
     { href: '/admin/staff', label: 'Staff', icon: Shield, permission: 'staff.view' },
     { href: '/admin/audit', label: 'Audit Log', icon: ScrollText, permission: 'audit.view' },

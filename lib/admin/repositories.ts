@@ -17,6 +17,7 @@ import { appendAudit, AUDIT_LIMIT, type AuditRecord } from './audit';
 import type { Staff } from './permissions';
 import { ROLES, seedStaff, type Role } from './permissions';
 import type { ProductRecord } from './catalog';
+import type { SeedIssue } from '@/lib/mock-data/types';
 import { normalizeOverrides, type CakeOverrides } from './cake-builder';
 import { normalizeSettings, type SettingsValues } from './settings';
 import { DEFAULT_SLOTS, type Announcement, type Campaign, type ContentSlot } from './marketing';
@@ -29,7 +30,7 @@ export const ADMIN_KEYS = {
   staff: 'tresor-staff', session: 'tresor-admin-session', audit: 'tresor-audit', catalog: 'tresor-catalog', cake: 'tresor-cake-overrides',
   settings: 'tresor-settings', campaigns: 'tresor-campaigns', slots: 'tresor-content-slots', announcements: 'tresor-announcements',
   media: 'tresor-media-overlay', notes: 'tresor-internal-notes', profiles: 'tresor-customer-profiles', attention: 'tresor-attention-states',
-  kitchen: 'tresor-kitchen-state', seen: 'tresor-admin-seen',
+  kitchen: 'tresor-kitchen-state', seen: 'tresor-admin-seen', issues: 'tresor-issues',
 } as const;
 
 /** A document-shaped store: one value, read, replaced, observed. */
@@ -153,6 +154,8 @@ export function createBrowserRepositories(seed: { staff?: Staff[]; campaigns?: C
     attention: new BrowserRepository<Record<string, AttentionState>>(ADMIN_KEYS.attention, () => ({}), (raw) => (isObj(raw) ? (raw as Record<string, AttentionState>) : {})),
     kitchen: new BrowserRepository<Record<string, KitchenState>>(ADMIN_KEYS.kitchen, () => ({}), (raw) => (isObj(raw) ? (raw as Record<string, KitchenState>) : {})),
     seen: new BrowserRepository<string>(ADMIN_KEYS.seen, () => new Date(Date.now() - 3600000).toISOString()),
+    /** Issues created or changed in this browser, by id (shipped issues are the base). */
+    issues: new BrowserRepository<Record<string, SeedIssue>>(ADMIN_KEYS.issues, () => ({}), (raw) => (isObj(raw) ? (raw as Record<string, SeedIssue>) : {})),
     invoices: new BrowserInvoiceRepository(),
   };
 }

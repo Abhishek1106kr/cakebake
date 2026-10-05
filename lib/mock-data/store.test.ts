@@ -54,6 +54,29 @@ describe('moving the dataset to today', () => {
     expect(validateDataset(shifted).problems).toEqual([]);
   });
 
+  it('never puts anything in the future when it is earlier in the day than the anchor', () => {
+    const morning = new Date(anchor.getTime() + 30 * DAY - 6 * 3600_000); // 10 am, 30 days later
+    const m = shiftDataset(ds, morning);
+    const t = morning.getTime();
+    const stamps: [string, string][] = [
+      ...m.orders.flatMap((o) => [[o.id, o.createdAt], ...o.history.map((h) => [o.id, h.at])] as [string, string][]),
+      ...m.payments.flatMap((p) => [[p.id, p.createdAt], ...(p.capturedAt ? [[p.id, p.capturedAt]] : [])] as [string, string][]),
+      ...m.issues.flatMap((i) => [[i.id, i.createdAt], [i.id, i.updatedAt], ...i.messages.map((x) => [i.id, x.at]), ...i.internalNotes.map((x) => [i.id, x.at])] as [string, string][]),
+      ...m.notifications.map((n) => [n.id, n.createdAt] as [string, string]),
+      ...m.inventory.movements.map((x) => [x.id, x.at] as [string, string]),
+      ...m.audit.map((r) => [r.id, r.at] as [string, string]),
+      ...m.automations.jobs.map((j) => [j.id, j.createdAt] as [string, string]),
+    ];
+    const future = stamps.filter(([, at]) => new Date(at).getTime() > t + 1000);
+    expect(future.slice(0, 3)).toEqual([]);
+    // Threads keep their order.
+    for (const i of m.issues) for (let k = 1; k < i.messages.length; k += 1) expect(i.messages[k].at >= i.messages[k - 1].at).toBe(true);
+    // Today's live orders are still today, newest last placed most recently.
+    const live = m.orders.filter((o) => o.liveOffsetMin !== undefined).sort((a, b) => b.liveOffsetMin! - a.liveOffsetMin!);
+    for (let k = 1; k < live.length; k += 1) expect(live[k].createdAt > live[k - 1].createdAt).toBe(true);
+    expect(validateDataset(m).problems.filter((p) => !p.startsWith('analytics')).slice(0, 3)).toEqual([]);
+  });
+
   it('does not change the shipped data', () => {
     expect(ds.orders[0].createdAt).toBe(read('orders')[0].createdAt);
   });

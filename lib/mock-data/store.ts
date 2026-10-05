@@ -17,7 +17,6 @@ const base = '/mock-data';
 
 /** Start of the calendar day in India for a time. */
 const istDayStart = (t: number) => Math.floor((t + IST_MS) / DAY) * DAY - IST_MS;
-const shiftIso = (iso: string | null | undefined, ms: number) => (iso ? new Date(new Date(iso).getTime() + ms).toISOString() : (iso ?? null));
 
 /** Whole days between the dataset's anchor day and today (India). */
 export function dayShift(anchorIso: string, now: Date): number {
@@ -33,19 +32,36 @@ export function shiftSlot(order: Pick<Order, 'slot' | 'createdAt' | 'items'>, ms
   return `${day} · ${m[1]}–${m[2]}`;
 }
 
-/** The dataset moved in time for `now`. Pure: the input is not changed. */
+/**
+ * The dataset moved in time for `now`. Pure: the input is not changed.
+ * Whole-day shift for history. If it is earlier in the day than the dataset's anchor time, today's
+ * records are compressed into midnight–now (order kept), so nothing lands in the future; today's
+ * live orders keep their "minutes ago", scaled the same way.
+ */
 export function shiftDataset(ds: MockDataset, now: Date): MockDataset {
   const D = dayShift(ds.manifest.anchor, now);
-  const orderDelta = new Map<string, number>();
+  const anchorToday = new Date(ds.manifest.anchor).getTime() + D;
+  const todayStart = istDayStart(now.getTime());
+  const k = now.getTime() < anchorToday ? Math.max(0, (now.getTime() - todayStart) / (anchorToday - todayStart)) : 1;
+  /** Shifts one timestamp by whole days, compressing today's part when needed. */
+  const day = (t: number) => { const x = t + D; return k < 1 && x > todayStart ? todayStart + (x - todayStart) * k : x; };
+  const orderDelta = new Map<string, (t: number) => number>();
   const orders: SeedOrder[] = ds.orders.map((o) => {
-    const delta = o.liveOffsetMin !== undefined ? now.getTime() - o.liveOffsetMin * MIN - new Date(o.createdAt).getTime() : D;
-    orderDelta.set(o.id, delta);
-    return { ...o, createdAt: shiftIso(o.createdAt, delta)!, history: o.history.map((h) => ({ ...h, at: shiftIso(h.at, delta)! })), slot: shiftSlot(o, D) };
+    const created = new Date(o.createdAt).getTime();
+    // Live orders: placed `liveOffsetMin` minutes before now (scaled), steps keep their spacing (scaled).
+    const fn = o.liveOffsetMin !== undefined
+      ? (t: number) => now.getTime() - o.liveOffsetMin! * MIN * k + (t - created) * k
+      : day;
+    orderDelta.set(o.id, fn);
+    const at = (iso: string) => new Date(fn(new Date(iso).getTime())).toISOString();
+    return { ...o, createdAt: at(o.createdAt), history: o.history.map((h) => ({ ...h, at: at(h.at) })), slot: shiftSlot(o, D) };
   });
-  const by = (orderId: string | undefined) => (orderId && orderDelta.has(orderId) ? orderDelta.get(orderId)! : D);
+  const fnFor = (orderId: string | undefined) => (orderId && orderDelta.get(orderId)) || day;
+  const shiftIso = (iso: string | null | undefined, fn: (t: number) => number) => (iso ? new Date(fn(new Date(iso).getTime())).toISOString() : (iso ?? null));
+  const by = fnFor;
   const byOrderId = new Map(orders.map((o) => [o.id, o]));
   return {
-    manifest: { ...ds.manifest, anchor: shiftIso(ds.manifest.anchor, D)! },
+    manifest: { ...ds.manifest, anchor: new Date(anchorToday).toISOString() },
     customers: ds.customers.map((c) => {
       const first = c.orderIds[0], last = c.orderIds[c.orderIds.length - 1];
       return { ...c, createdAt: shiftIso(c.createdAt, by(first))!, firstOrderAt: first ? byOrderId.get(first)!.createdAt : null, lastOrderAt: last ? byOrderId.get(last)!.createdAt : null };
@@ -63,18 +79,18 @@ export function shiftDataset(ds: MockDataset, now: Date): MockDataset {
       return { ...x, createdAt: shiftIso(x.createdAt, d)!, updatedAt: shiftIso(x.updatedAt, d)!, resolvedAt: shiftIso(x.resolvedAt, d), internalNotes: x.internalNotes.map((n) => ({ ...n, at: shiftIso(n.at, d)! })), messages: x.messages.map((m) => ({ ...m, at: shiftIso(m.at, d)! })) };
     }),
     notifications: ds.notifications.map((n) => {
-      const d = n.resourceType === 'order' ? by(n.resourceId) : D;
+      const d = n.resourceType === 'order' ? by(n.resourceId) : day;
       return { ...n, createdAt: shiftIso(n.createdAt, d)!, readAt: shiftIso(n.readAt, d), resolvedAt: shiftIso(n.resolvedAt, d) };
     }),
     automations: {
       jobs: ds.automations.jobs.map((j) => ({ ...j, createdAt: shiftIso(j.createdAt, by(j.orderId))!, updatedAt: shiftIso(j.updatedAt, by(j.orderId))! })),
       log: ds.automations.log.map((e) => ({ ...e, timestamp: shiftIso(e.timestamp, by(e.orderId))! })),
     },
-    inventory: { ingredients: ds.inventory.ingredients, movements: ds.inventory.movements.map((m) => ({ ...m, at: shiftIso(m.at, D)! })) },
+    inventory: { ingredients: ds.inventory.ingredients, movements: ds.inventory.movements.map((m) => ({ ...m, at: shiftIso(m.at, day)! })) },
     analytics: { ...ds.analytics, days: ds.analytics.days.map((d) => ({ ...d, date: new Date(Date.parse(`${d.date}T00:00:00Z`) + D).toISOString().slice(0, 10) })) },
-    staff: ds.staff.map((s) => ({ ...s, createdAt: shiftIso(s.createdAt, D)! })),
-    campaigns: ds.campaigns.map((c) => ({ ...c, start: shiftIso(c.start, D)!, end: shiftIso(c.end, D)!, createdAt: shiftIso(c.createdAt, D)!, updatedAt: shiftIso(c.updatedAt, D)! })),
-    audit: ds.audit.map((r) => ({ ...r, at: shiftIso(r.at, r.entity.type === 'order' ? by(r.entity.id) : D)! })),
+    staff: ds.staff.map((s) => ({ ...s, createdAt: shiftIso(s.createdAt, day)! })),
+    campaigns: ds.campaigns.map((c) => ({ ...c, start: shiftIso(c.start, day)!, end: shiftIso(c.end, day)!, createdAt: shiftIso(c.createdAt, day)!, updatedAt: shiftIso(c.updatedAt, day)! })),
+    audit: ds.audit.map((r) => ({ ...r, at: shiftIso(r.at, r.entity.type === 'order' ? by(r.entity.id) : day)! })),
   };
 }
 

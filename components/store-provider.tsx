@@ -116,6 +116,8 @@ type StoreContextValue = {
   ensureSeed: () => void;
   /** Stock history: the shipped movements and this browser's own, newest first. */
   movementHistory: (Movement | SeedMovement)[];
+  /** True when the order is the shipped record, unchanged in this browser. */
+  isShippedOrder: (o: Order) => boolean;
 };
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -420,6 +422,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const isShippedOrder = useCallback((o: Order) => seedRef.current.get(o.id) === o, []);
+
   const movementHistory = useMemo(
     () => [...movements, ...(seed?.inventory.movements ?? [])].sort((a, b) => b.at.localeCompare(a.at)),
     [movements, seed],
@@ -433,7 +437,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     cartCount: totals.itemCount, subtotal: totals.subtotal, deliveryFee: totals.delivery, total: totals.total, toFreeDelivery: totals.toFreeDelivery,
     orders, myOrders, latestOrder: orders.find((o) => o.id === latestId) ?? null, findOrder: (id) => orders.find((o) => o.id === id),
     placeOrder, advance, cancel, transition, refund, devSetStatus, inventory, movements, recordMovement, setReorderPoint, resetDemo, catalogRevision,
-    seed, seedStatus, ensureSeed, movementHistory,
+    seed, seedStatus, ensureSeed, movementHistory, isShippedOrder,
   };
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

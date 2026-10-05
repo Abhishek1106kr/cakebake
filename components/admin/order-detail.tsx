@@ -51,7 +51,7 @@ export function OrderDetail({ order }: { order: Order }) {
       <div className="ad-detail-actions ad-no-print">
         <AdvanceButton order={order} />
         {canCancel(order) && admin.can('orders.cancel') && <button type="button" className="ad-btn ad-btn-sm ad-btn-quiet-danger" onClick={() => cancel(order)}>Cancel order…</button>}
-        {order.paymentStatus === 'REFUND_PENDING' && admin.can('finance.refund') && <button type="button" className="ad-btn ad-btn-sm" onClick={() => refund(order)}>Mark refund completed…</button>}
+        {order.paymentStatus === 'REFUND_PENDING' && admin.can('payments.refund') && <button type="button" className="ad-btn ad-btn-sm" onClick={() => refund(order)}>Mark refund completed…</button>}
         <Link className="ad-btn ad-btn-sm ad-btn-ghost" href={`/track/${order.id}` as Route} target="_blank" rel="noopener">Customer tracking <ExternalLink size={12} /></Link>
         <button type="button" className="ad-btn ad-btn-sm ad-btn-ghost" onClick={() => window.print()}><Printer size={13} /> Print</button>
       </div>

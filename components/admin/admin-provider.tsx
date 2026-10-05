@@ -12,7 +12,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useStore } from '@/components/store-provider';
 import { useAutomation } from '@/components/use-automation';
 import { useEvents } from '@/components/admin/insights';
-import type { MockDataset } from '@/lib/mock-data/types';
+import type { MockDataset, SeedCustomer, SeedIssue, SeedPayment } from '@/lib/mock-data/types';
+import { mergeIssues } from '@/lib/admin/issues';
+import { paymentsView } from '@/lib/admin/payments';
 import { createBrowserRepositories, storageProblem, type AdminRepositories, type Repository, type InternalNote, type KitchenState } from '@/lib/admin/repositories';
 import { authorize, can, type Permission, type Staff } from '@/lib/admin/permissions';
 import { makeAudit, type AuditRecord, type AuditSource, type EntityType } from '@/lib/admin/audit';
@@ -112,6 +114,14 @@ type AdminContext = {
   automation: ReturnType<typeof useAutomation>;
   events: ReturnType<typeof useEvents>;
   lastDomainEvent: DomainEvent | null;
+  /** Support issues: shipped plus created or changed here. */
+  issues: SeedIssue[];
+  saveIssue: (issue: SeedIssue) => void;
+  /** Payments: shipped records, updated for orders placed or changed here. */
+  payments: SeedPayment[];
+  /** Shipped customer records by normalised phone (CUS ids, preferences). */
+  customerByPhone: Map<string, SeedCustomer>;
+  staffName: (id: string | null) => string;
 };
 
 const Ctx = createContext<AdminContext | null>(null);
@@ -148,6 +158,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const automation = useMemo(() => mergeAutomation(localAutomation, store.seed), [localAutomation, store.seed]);
   // Shipped staff actions first, then this browser's (append-only either way), oldest to newest.
   const audit = useMemo(() => (store.seed ? [...store.seed.audit, ...auditRepoValue] : auditRepoValue), [store.seed, auditRepoValue]);
+  const issueOverlay = useRepo(repos?.issues ?? null, EMPTY.obj as Record<string, SeedIssue>);
+  const issues = useMemo(() => mergeIssues(store.seed?.issues ?? [], issueOverlay), [store.seed, issueOverlay]);
+  const saveIssue = useCallback((issue: SeedIssue) => { repos?.issues.write({ ...repos.issues.read(), [issue.id]: issue }); }, [repos]);
+  const payments = useMemo(() => paymentsView(store.orders, store.seed?.payments ?? [], store.isShippedOrder), [store.orders, store.seed, store.isShippedOrder]);
+  const customerByPhone = useMemo(() => new Map((store.seed?.customers ?? []).map((c) => [c.phone, c])), [store.seed]);
   useEffect(() => { if (store.seed) registerSeedJobs(store.seed.automations.jobs); }, [store.seed]);
   const events = useEvents();
 
@@ -291,6 +306,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     audit, catalogRecords, catalog, saveProduct, cakeOverrides, cakeCatalog, saveCakeOverrides, settings, saveSettings,
     campaigns, saveCampaigns, slots, saveSlots, announcements, saveAnnouncements, mediaOverlay, saveMediaOverlay, notes, addNote,
     profiles, saveProfile, kitchen, saveKitchen, customers, attention, unread, setAttentionState, markAllRead, automation, events, lastDomainEvent,
+    issues, saveIssue, payments, customerByPhone, staffName: (id) => (id ? staffList.find((x) => x.id === id)?.name ?? id : 'Unassigned'),
   };
 
   return (
