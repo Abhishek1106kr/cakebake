@@ -3,7 +3,7 @@
 #
 # The photos in public/mock-assets and public/our-story ARE uploaded on purpose: the client preview
 # must look exactly like the local site. It is deployed from this computer (never via GitHub, where
-# the repo is public) and protected by SITE_PASSWORD.
+# the repo is public). The preview has no password: anyone with the URL can see these photos.
 
 # Secrets: keys go into Vercel's environment variables, never into an upload.
 .env

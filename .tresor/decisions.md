@@ -371,3 +371,16 @@ Reasoning:
 - On a public demo with a mock sign-in, the key's credits need protecting on the server; in-memory limits are a demo-grade measure (a shared store would be needed for strict limits across instances).
 
 Related: TRESOR-AI-COPILOT.
+
+## DEC-028 · The client preview has no password
+Date: 2026-10-12
+
+Decision:
+The site-wide HTTP Basic Auth (`middleware.ts`, `SITE_PASSWORD`) is removed at the owner's request. A deployed preview built with `NEXT_PUBLIC_LOCAL_MEDIA=1` from this computer, with the photo folders uploaded, is open to anyone with the URL. The admin's demo sign-in (`/admin/login`) stays.
+
+Consequences:
+- Replaces the "protected by SITE_PASSWORD" part of the client-preview setup (commit 80d8efb). DEC-026's protection for the reference photos no longer holds for such a deployment: other bakeries' images and identifiable people, including a child, can be viewed and downloaded publicly.
+- noindex (metadata, robots.txt, X-Robots-Tag in `next.config.ts`) still applies; it asks crawlers not to index, it does not block access.
+- `/api/ai/copilot` is reachable by anyone; its same-origin check and per-visitor limits (DEC-027) are the only guard on the key's credits.
+
+Related: TRESOR-DEMO-DEPLOY.
