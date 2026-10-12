@@ -10,6 +10,7 @@ import { EASE, EASE_IMAGE } from '@/lib/motion';
 import { browserContext, selectRendition, type IntelligenceContext } from '@/engine/intelligence';
 import { useElementScrollProgress } from './scroll-progress';
 import { useMediaVariant } from '@/lib/media-variants';
+import { mediaAvailable } from '@/lib/local-media';
 
 /**
  * Reduced-motion preference, but only after mount. The server can't know it, so the
@@ -41,7 +42,7 @@ function useMediaContext() {
  * crop when the asset has one, and falls back silently if the file is missing.
  */
 export function Media({ asset, className = '', imgStyle, eager = false, sizes = '100vw' }: { asset: MediaAsset; className?: string; imgStyle?: MotionStyle; eager?: boolean; sizes?: string }) {
-  const [failed, setFailed] = useState(!asset.src);
+  const [failed, setFailed] = useState(!mediaAvailable(asset.src));
   const ctx = useMediaContext();
   // AVIF/WebP at several widths and a blurred placeholder, when variants exist (development, local images).
   const variant = useMediaVariant(asset.type === 'image' ? asset.src : undefined);

@@ -45,4 +45,24 @@ npm install
 npm run dev
 ```
 
+## CI/CD
+
+`.github/workflows/ci.yml` runs on every push and pull request:
+
+1. **Check:** `npm ci`, typecheck, unit tests, `mock:validate`, production build.
+2. **Browser end-to-end:** `tests/demo/data_e2e.py` and `tests/demo/demo_e2e.py` against that build (Playwright + Chrome).
+3. **Deploy (Vercel):** after both pass, pull requests get a preview deployment and `main` goes to production.
+
+Deployments need three repository secrets (GitHub → Settings → Secrets and variables → Actions):
+
+| Secret | Where to find it |
+|---|---|
+| `VERCEL_TOKEN` | vercel.com/account/tokens |
+| `VERCEL_ORG_ID` | `orgId` in `.vercel/project.json` after `vercel link` |
+| `VERCEL_PROJECT_ID` | `projectId` in the same file |
+
+Without them the deploy job skips with a note. `vercel.json` turns off Vercel's own Git deployments so each commit deploys once, from CI. CI builds come from git, so the git-ignored reference photos are never in them; the site shows the illustrated fallbacks. Server-side variables (`OPENROUTER_API_KEY` …) stay in the Vercel project settings.
+
+Dependabot (`.github/dependabot.yml`) opens weekly dependency updates, each checked by the same pipeline.
+
 The project intentionally uses CSS motion instead of requiring a heavy animation dependency so the mock stays easy to run and hand over.

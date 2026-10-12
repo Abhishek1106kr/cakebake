@@ -384,3 +384,15 @@ Consequences:
 - `/api/ai/copilot` is reachable by anyone; its same-origin check and per-visitor limits (DEC-027) are the only guard on the key's credits.
 
 Related: TRESOR-DEMO-DEPLOY.
+
+## DEC-029 · GitHub Actions builds, tests and deploys; Vercel's Git deployments are off
+Date: 2026-10-12
+
+Decision:
+`.github/workflows/ci.yml` runs typecheck, unit tests, mock-data validation, a production build and the browser suites (`tests/demo/data_e2e.py`, `demo_e2e.py`) on every push and pull request. When they pass, it deploys with the Vercel CLI: previews for pull requests, production for `main`. `vercel.json` sets `git.deploymentEnabled: false` so Vercel doesn't deploy the same commit a second time. Unit tests pin `TZ=Asia/Kolkata` (the bakery's timezone; two tests failed on UTC machines).
+
+Consequences:
+- CI builds come from git, so production deployments show the illustrated fallbacks, not the reference photos. Once the secrets are set, the first deployment from `main` replaces a photo preview deployed from the owner's computer. A photo preview needs a manual `vercel deploy` again, which the next push to `main` would then replace.
+- `<Media>` and story films no longer request git-ignored photos in builds without them (the browser suite caught two 404s on the homepage).
+
+Related: TRESOR-DEMO-DEPLOY.

@@ -1,0 +1,161 @@
+# CI/CD for the Tresor demo.
+#
+#   every push and pull request: typecheck, unit tests, mock-data validation, production build,
+#                                then the browser end-to-end suites against that build
+#   pull request:                preview deployment on Vercel (after every check passes)
+#   push to main:                production deployment on Vercel (after every check passes)
+#
+# Deployments need three repository secrets (Settings → Secrets and variables → Actions):
+#   VERCEL_TOKEN       a token from vercel.com/account/tokens
+#   VERCEL_ORG_ID      "orgId" in .vercel/project.json after `vercel link`
+#   VERCEL_PROJECT_ID  "projectId" in the same file
+# Without them the deploy jobs skip with a note; the checks still run.
+#
+# Builds here come from git, so the git-ignored reference photos are never part of them: the
+# deployed site shows the illustrated fallbacks (DEC-026).
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # Never cancel a production deployment halfway; superseded PR runs can go.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  # The bakery's timezone: slot times in the code and the tests are IST.
+  TZ: Asia/Kolkata
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    name: Typecheck, unit tests, data, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run mock:validate
+      - run: npm run build
+      - name: Keep the build for the end-to-end job
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: |
+            .next
+            !.next/cache
+          include-hidden-files: true
+          retention-days: 1
+
+  e2e:
+    name: Browser end-to-end
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: next-build
+          path: .next
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright (the suites launch Google Chrome)
+        run: |
+          pip install playwright
+          if ! command -v google-chrome >/dev/null; then python -m playwright install --with-deps chrome; fi
+      - name: Start the production server
+        run: |
+          nohup npx next start -p 3004 > next-server.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3004 && exit 0; sleep 1; done
+          cat next-server.log; exit 1
+      - name: Dataset end-to-end
+        run: python tests/demo/data_e2e.py --base http://localhost:3004
+      - name: Demo deployment end-to-end
+        if: success() || failure()
+        run: python tests/demo/demo_e2e.py --base http://localhost:3004
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: |
+            .tresor/test-results/data-e2e.json
+            .tresor/test-results/demo-e2e.json
+            next-server.log
+          include-hidden-files: true
+          if-no-files-found: ignore
+
+  deploy:
+    name: Deploy to Vercel (${{ github.event_name == 'pull_request' && 'preview' || 'production' }})
+    needs: [check, e2e]
+    # Production from main only; previews for pull requests from this repository (forks get no secrets).
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      TARGET: ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    steps:
+      - name: Check the Vercel secrets
+        id: secrets
+        run: |
+          if [ -n "$VERCEL_TOKEN" ] && [ -n "$VERCEL_ORG_ID" ] && [ -n "$VERCEL_PROJECT_ID" ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Deployment skipped: set VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID as repository secrets."
+          fi
+      - uses: actions/checkout@v4
+        if: steps.secrets.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install the Vercel CLI
+        if: steps.secrets.outputs.ok == 'true'
+        run: npm install --global vercel@latest
+      - name: Pull the project settings and environment
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          vercel pull --yes --environment="$TARGET" --token="$VERCEL_TOKEN"
+          # The photos are not in git, so a build that expects them would show broken images.
+          sed -i '/^NEXT_PUBLIC_LOCAL_MEDIA=/d' .vercel/.env.*.local 2>/dev/null || true
+      - name: Build
+        if: steps.secrets.outputs.ok == 'true'
+        run: vercel build $([ "$TARGET" = production ] && echo --prod) --token="$VERCEL_TOKEN"
+      - name: Deploy
+        id: deploy
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          url=$(vercel deploy --prebuilt $([ "$TARGET" = production ] && echo --prod) --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed ($TARGET): $url" >> "$GITHUB_STEP_SUMMARY"

@@ -7,6 +7,7 @@ import { motion, type MotionStyle, type TargetAndTransition } from 'framer-motio
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { Media, Parallax, useReducedMotionSafe } from '@/components/cinematic';
 import { storyAsset, type StoryVideo } from '@/lib/story-media';
+import { mediaAvailable } from '@/lib/local-media';
 import { browserContext } from '@/engine/intelligence';
 import { EASE, EASE_IMAGE } from '@/lib/motion';
 
@@ -50,8 +51,8 @@ export function FilmLoop({ id, className = '', eager = false, focus, style }: { 
   const asset = storyAsset(id) as StoryVideo;
   const allowed = useFilmAllowed();
   const ref = useRef<HTMLVideoElement>(null);
-  const [failed, setFailed] = useState(false);
-  const [posterFailed, setPosterFailed] = useState(false);
+  const [failed, setFailed] = useState(!mediaAvailable(asset.src));
+  const [posterFailed, setPosterFailed] = useState(!mediaAvailable(asset.poster));
   const objectPosition = focus ?? asset.focus;
   // One observer drives both the video and the grain over it.
   const frame = useLiveWhileVisible<HTMLDivElement>((live) => {
